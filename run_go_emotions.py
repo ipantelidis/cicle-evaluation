@@ -335,6 +335,13 @@ notebooks = [
     f"{BASE}/go-emotions-qwen-2.5-3b-fewshot-tfidf-2.0k-samples-2-shots.ipynb",
     f"{BASE}/go-emotions-qwen-2.5-3b-fewshot-tfidf-2.0k-samples-4-shots.ipynb",
     f"{BASE}/go-emotions-qwen-2.5-3b-fewshot-tfidf-2.0k-samples-8-shots.ipynb",
+    # zero-shot
+    f"{BASE}/go-emotions-llama-3.1-8b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/go-emotions-llama-3.2-3b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/go-emotions-ministral-3b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/go-emotions-mistral-7b-v0.3-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/go-emotions-qwen-2.5-3b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/go-emotions-qwen-2.5-7b-zeroshot-2.0k-samples.ipynb",
 ]
 
 total   = len(notebooks)

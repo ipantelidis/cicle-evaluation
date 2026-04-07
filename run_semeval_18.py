@@ -335,6 +335,13 @@ notebooks = [
     f"{BASE}/semeval-18-qwen-2.5-3b-fewshot-tfidf-2.0k-samples-2-shots.ipynb",
     f"{BASE}/semeval-18-qwen-2.5-3b-fewshot-tfidf-2.0k-samples-4-shots.ipynb",
     f"{BASE}/semeval-18-qwen-2.5-3b-fewshot-tfidf-2.0k-samples-8-shots.ipynb",
+    # zero-shot
+    f"{BASE}/semeval-18-llama-3.1-8b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-llama-3.2-3b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-ministral-3b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-mistral-7b-v0.3-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-qwen-2.5-3b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-qwen-2.5-7b-zeroshot-2.0k-samples.ipynb",
 ]
 
 total   = len(notebooks)
