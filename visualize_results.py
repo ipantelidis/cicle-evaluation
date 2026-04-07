@@ -25,8 +25,11 @@ DATASET_PREFIX = {
 }
 LLM_LABELS = {
     "llama-3.1-8b":    "Llama 3.1-8B",
+    "llama-3.2-3b":    "Llama 3.2-3B",
     "mistral-7b-v0.3": "Mistral 7B",
+    "ministral-3b":    "Ministral 3B",
     "qwen-2.5-7b":     "Qwen 2.5-7B",
+    "qwen-2.5-3b":     "Qwen 2.5-3B",
 }
 EMB_LABELS = {
     "contriever": "Contriever",
@@ -46,9 +49,12 @@ PALETTE_EMB = {
     "TF-IDF":     "#e76f51",
 }
 PALETTE_LLM = {
-    "Llama 3.1-8B": "#4361ee",
-    "Mistral 7B":   "#7209b7",
-    "Qwen 2.5-7B":  "#f72585",
+    "Llama 3.1-8B":  "#4361ee",
+    "Llama 3.2-3B":  "#90b4ff",
+    "Mistral 7B":    "#7209b7",
+    "Ministral 3B":  "#b060e8",
+    "Qwen 2.5-7B":   "#f72585",
+    "Qwen 2.5-3B":   "#f985c0",
 }
 
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -158,27 +164,37 @@ def plot1_overview():
 
 # ── PLOT 2: Macro-F1 vs #shots (fewshot & cicle, α=0.05, averaged over emb/clf) ─
 def plot2_shots():
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5), sharey=False)
     fig.suptitle("Macro-F1 vs. Number of Shots (α=0.05 for CICLe)", fontsize=14, fontweight="bold")
     shot_vals = [1, 2, 4, 8]
+    # Distinguish 7B (solid markers) from 3B (hollow markers) visually
+    markers_fs  = {"llama-3.1-8b": "o", "llama-3.2-3b": "o",
+                   "mistral-7b-v0.3": "s", "ministral-3b": "s",
+                   "qwen-2.5-7b": "^", "qwen-2.5-3b": "^"}
+    fillstyle   = {"llama-3.1-8b": "full", "llama-3.2-3b": "none",
+                   "mistral-7b-v0.3": "full", "ministral-3b": "none",
+                   "qwen-2.5-7b": "full", "qwen-2.5-3b": "none"}
 
     for ax, dataset in zip(axes, DATASETS):
         for llm_key, llm_label in LLM_LABELS.items():
+            color = PALETTE_LLM[llm_label]
+            mk    = markers_fs[llm_key]
+            fs    = fillstyle[llm_key]
             # fewshot: average over embeddings
             fs_vals = []
             for s in shot_vals:
                 recs = R(method="fewshot", dataset=dataset, llm=llm_key, shots=s)
                 fs_vals.append(np.mean([r["macro_f1"] for r in recs]) if recs else np.nan)
-            ax.plot(shot_vals, fs_vals, marker="o", linestyle="--",
-                    label=f"Few-shot {llm_label}", alpha=0.8)
+            ax.plot(shot_vals, fs_vals, marker=mk, fillstyle=fs, linestyle="--",
+                    color=color, label=f"Few-shot {llm_label}", alpha=0.85)
 
             # cicle: alpha=0.05, average over embeddings and classifiers
             cl_vals = []
             for s in shot_vals:
                 recs = R(method="cicle", dataset=dataset, llm=llm_key, shots=s, alpha=0.05)
                 cl_vals.append(np.mean([r["macro_f1"] for r in recs]) if recs else np.nan)
-            ax.plot(shot_vals, cl_vals, marker="s", linestyle="-",
-                    label=f"CICLe {llm_label}", alpha=0.8)
+            ax.plot(shot_vals, cl_vals, marker=mk, fillstyle=fs, linestyle="-",
+                    color=color, label=f"CICLe {llm_label}", alpha=0.85)
 
         # baseline reference lines
         for clf, style in [("lr", ":"), ("svm", "-.")]:
@@ -195,10 +211,9 @@ def plot2_shots():
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(alpha=0.3)
 
-    # single legend below
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=4, fontsize=8,
-               bbox_to_anchor=(0.5, -0.12))
+    fig.legend(handles, labels, loc="lower center", ncol=7, fontsize=7.5,
+               bbox_to_anchor=(0.5, -0.18))
     plt.tight_layout()
     plt.savefig(f"{OUT_DIR}/2_macrof1_vs_shots.png", dpi=150, bbox_inches="tight")
     plt.close()
@@ -246,9 +261,10 @@ def plot3_embeddings():
 def plot4_llm_heatmap():
     llms = list(LLM_LABELS.keys())
     methods = [("fewshot", "Few-shot"), ("cicle", "CICLe")]
+    n_llms = len(llms)
 
     fig, axes = plt.subplots(len(methods), len(DATASETS),
-                             figsize=(14, 7), squeeze=False)
+                             figsize=(14, 4 + n_llms * 0.7), squeeze=False)
     fig.suptitle("Macro-F1 by LLM and Dataset\n(best configuration per cell)",
                  fontsize=14, fontweight="bold")
 
@@ -264,12 +280,15 @@ def plot4_llm_heatmap():
             mat = np.array(mat)
             sns.heatmap(mat, ax=ax, annot=True, fmt=".3f", cmap="YlOrRd",
                         vmin=0, vmax=1, cbar=(col == len(DATASETS) - 1),
-                        xticklabels=[method_label if row == 0 else ""],
+                        xticklabels=[method_label],
                         yticklabels=[LLM_LABELS[l] for l in llms] if col == 0 else False)
             if row == 0:
                 ax.set_title(DATASET_LABELS[dataset], fontsize=10)
             ax.set_xlabel("")
             ax.tick_params(axis="x", bottom=False, labelbottom=False)
+            # Bold row label on left column only
+            if col == 0:
+                ax.set_ylabel(method_label, fontsize=12, fontweight="bold", labelpad=8)
 
     plt.tight_layout()
     plt.savefig(f"{OUT_DIR}/4_llm_heatmap_macrof1.png", dpi=150, bbox_inches="tight")
@@ -315,12 +334,14 @@ def plot6_full_comparison():
     n_datasets = len(DATASETS)
     n_llms = len(llms)
     x = np.arange(n_datasets)
-    total_groups = n_llms + 1  # LLMs + baseline
-    width = 0.8 / total_groups
+    total_groups = n_llms + 2  # 6 LLMs + LR baseline + SVM baseline
+    width = 0.88 / total_groups
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(20, 6))
     fig.suptitle("Best Macro-F1: CICLe vs. Few-shot vs. Baseline per LLM",
                  fontsize=14, fontweight="bold")
+
+    llm_colors = list(PALETTE_LLM.values())
 
     for ax, (method_key, method_label) in zip(axes, [("cicle", "CICLe"), ("fewshot", "Few-shot")]):
         for i, llm in enumerate(llms):
@@ -331,26 +352,24 @@ def plot6_full_comparison():
                 vals.append(b["macro_f1"] if b else 0)
             offset = (i - (total_groups - 1) / 2) * width
             ax.bar(x + offset, vals, width, label=LLM_LABELS[llm],
-                   color=list(PALETTE_LLM.values())[i], edgecolor="white")
+                   color=llm_colors[i], edgecolor="white")
 
-        # baseline
-        bl_lr, bl_svm = [], []
-        for dataset in DATASETS:
-            lr  = best(R(method="baseline", dataset=dataset, classifier="lr"))
-            svm = best(R(method="baseline", dataset=dataset, classifier="svm"))
-            bl_lr.append(lr["macro_f1"]  if lr  else 0)
-            bl_svm.append(svm["macro_f1"] if svm else 0)
-
-        offset = (n_llms - (total_groups - 1) / 2) * width
-        ax.bar(x + offset, bl_lr,  width * 0.5, label="Baseline LR",  color="#adb5bd", edgecolor="white")
-        ax.bar(x + offset + width * 0.5, bl_svm, width * 0.5, label="Baseline SVM", color="#6c757d", edgecolor="white")
+        # baselines as two narrow bars at the end
+        for j, (clf, color, lbl) in enumerate([("lr", "#adb5bd", "Baseline LR"),
+                                                ("svm", "#6c757d", "Baseline SVM")]):
+            vals = []
+            for dataset in DATASETS:
+                b = best(R(method="baseline", dataset=dataset, classifier=clf))
+                vals.append(b["macro_f1"] if b else 0)
+            offset = (n_llms + j - (total_groups - 1) / 2) * width
+            ax.bar(x + offset, vals, width, label=lbl, color=color, edgecolor="white")
 
         ax.set_title(method_label, fontsize=12)
         ax.set_xticks(x)
         ax.set_xticklabels([DATASET_LABELS[d] for d in DATASETS], fontsize=10)
         ax.set_ylabel("Macro-F1")
         ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1))
-        ax.legend(fontsize=9, loc="upper right")
+        ax.legend(fontsize=8, loc="upper right", ncol=2)
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(axis="y", alpha=0.3)
         ax.set_ylim(0, 1)
@@ -387,13 +406,184 @@ def plot7_heatmap_detail():
                         cbar=col == 2)
             if row == 0:
                 ax.set_title(DATASET_LABELS[dataset], fontsize=11)
-            ax.set_ylabel(method_label if col == 0 else "")
+            ax.set_ylabel(method_label if col == 0 else "", fontsize=12, fontweight="bold", labelpad=8)
             ax.set_xlabel("Shots" if row == 1 else "")
+            # Add a clear row banner on the leftmost column
+            if col == 0:
+                ax.annotate(f"── {method_label} ──", xy=(-0.35, 0.5),
+                            xycoords="axes fraction", fontsize=11, fontweight="bold",
+                            color="#333333", va="center", ha="center", rotation=90)
 
     plt.tight_layout()
     plt.savefig(f"{OUT_DIR}/7_heatmap_emb_shots_macrof1.png", dpi=150, bbox_inches="tight")
     plt.close()
     print("Saved plot 7")
+
+
+# ── PLOT 8: Pareto frontier — Macro-F1 vs. Mean Prompt Length ────────────────
+def plot8_pareto():
+    """
+    Pareto plot: Macro-F1 (higher=better) vs. mean prompt length in characters
+    (lower=better — a consequence of the chosen config, not a free parameter).
+
+    Each point = best F1 over classifiers for one
+    (method × LLM × embedding × shots × alpha × dataset) combination.
+    The Pareto front (upper-left) marks configs not dominated by any other.
+    Baselines have no LLM prompt → plotted at x = 0.
+    """
+    from collections import defaultdict
+
+    # ── Load lengths files ────────────────────────────────────────────────────
+    lengths_lookup = {}   # (dataset, stem) → prompt_length_mean
+    for dataset in DATASETS:
+        lengths_dir = f"{BASE_DIR}/{dataset}/results/lengths"
+        for path in glob.glob(f"{lengths_dir}/*.json"):
+            stem = os.path.basename(path).replace(".json", "")
+            with open(path) as f:
+                d = json.load(f)
+            lengths_lookup[(dataset, stem)] = d["prompt_lengths"]["mean"]
+
+    # ── Annotate each record with prompt_length_mean ──────────────────────────
+    def alpha_str(a):
+        return f"{a:.2f}"
+
+    def get_prompt_length(rec):
+        ds, pfx, m = rec["dataset"], DATASET_PREFIX[rec["dataset"]], rec["method"]
+        if m == "baseline":
+            return 0.0
+        elif m == "fewshot":
+            stem = (f"{pfx}-{rec['llm']}-fewshot-{rec['embedding']}"
+                    f"-2.0k-samples-{rec['shots']}-shots")
+        else:  # cicle
+            stem = (f"{pfx}-{rec['llm']}-cicle-{rec['embedding']}-{rec['classifier']}"
+                    f"-2.0k-samples-{rec['shots']}-shots-{alpha_str(rec['alpha'])}-α")
+        return lengths_lookup.get((ds, stem))
+
+    # ── Collapse classifier: best F1 per (dataset, method, llm, emb, shots, alpha) ─
+    best_f1   = defaultdict(lambda: -np.inf)
+    best_rec  = {}
+    best_plen = {}
+
+    for rec in records:
+        key = (rec["dataset"], rec["method"],
+               rec.get("llm"), rec.get("embedding"),
+               rec.get("shots"), rec.get("alpha"))
+        pl = get_prompt_length(rec)
+        if pl is None:
+            continue
+        if rec["macro_f1"] > best_f1[key]:
+            best_f1[key]  = rec["macro_f1"]
+            best_rec[key] = rec
+            best_plen[key] = pl
+
+    pts_all = [{**best_rec[k], "prompt_length_mean": best_plen[k]}
+               for k in best_rec]
+    print(f"  Pareto: {len(pts_all)} configs after collapsing classifier "
+          f"(from {len(records)} records)")
+
+    # ── Pareto front: lower prompt_length AND higher macro_f1 ────────────────
+    def pareto_front(pts):
+        sorted_pts = sorted(pts, key=lambda p: (p["prompt_length_mean"], -p["macro_f1"]))
+        front, best = [], -np.inf
+        for p in sorted_pts:
+            if p["macro_f1"] >= best:
+                best = p["macro_f1"]
+                front.append(p)
+        return front
+
+    # ── Visual style ──────────────────────────────────────────────────────────
+    method_color  = {"baseline": "#6c757d", "fewshot": "#0077b6", "cicle": "#e63946"}
+    method_label  = {"baseline": "Baseline (no LLM)", "fewshot": "Few-shot", "cicle": "CICLe"}
+    method_marker = {"baseline": "*",  "fewshot": "o",  "cicle": "D"}
+    method_size   = {"baseline": 220,  "fewshot": 22,   "cicle": 22}
+    method_alpha_v= {"baseline": 1.0,  "fewshot": 0.30, "cicle": 0.30}
+    method_zorder = {"baseline": 5,    "fewshot": 2,    "cicle": 3}
+
+    # ── One panel per dataset ─────────────────────────────────────────────────
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6), sharey=False)
+    fig.suptitle(
+        "Pareto Frontier: Macro-F1 vs. Mean Prompt Length\n"
+        "(upper-left = best trade-off between performance and inference cost; "
+        "best classifier selected per config)",
+        fontsize=13, fontweight="bold",
+    )
+
+    for ax, dataset in zip(axes, DATASETS):
+        pts = [p for p in pts_all if p["dataset"] == dataset]
+
+        # — background scatter (all non-Pareto configs) —
+        for m in ["fewshot", "cicle", "baseline"]:
+            mpts = [p for p in pts if p["method"] == m]
+            if not mpts:
+                continue
+            ax.scatter(
+                [p["prompt_length_mean"] for p in mpts],
+                [p["macro_f1"] for p in mpts],
+                c=method_color[m], marker=method_marker[m],
+                s=method_size[m], alpha=method_alpha_v[m],
+                label=method_label[m],
+                zorder=method_zorder[m], linewidths=0,
+            )
+
+        # — Pareto front line —
+        front = pareto_front(pts)
+        fx = [p["prompt_length_mean"] for p in front]
+        fy = [p["macro_f1"] for p in front]
+        ax.plot(fx, fy, color="#222222", lw=2.0, linestyle="--",
+                zorder=7, label="Pareto front")
+
+        # — Pareto points: larger, black-bordered, coloured by method —
+        for p in front:
+            ax.scatter(
+                p["prompt_length_mean"], p["macro_f1"],
+                c=method_color[p["method"]], marker=method_marker[p["method"]],
+                s=method_size[p["method"]] * 3.5,
+                edgecolors="#222222", linewidths=1.4,
+                zorder=8,
+            )
+
+        # — Label each Pareto point with its LLM (if applicable) —
+        for p in front:
+            llm_lbl = LLM_LABELS.get(p.get("llm", ""), "")
+            if llm_lbl:
+                ax.annotate(
+                    llm_lbl,
+                    xy=(p["prompt_length_mean"], p["macro_f1"]),
+                    xytext=(0, 7), textcoords="offset points",
+                    fontsize=6.5, ha="center", color="#222222",
+                    zorder=9,
+                )
+
+        # — Axes formatting —
+        ax.set_title(DATASET_LABELS[dataset], fontsize=11)
+        ax.set_xlabel("Mean prompt length (characters)", fontsize=10)
+        if ax is axes[0]:
+            ax.set_ylabel("Macro-F1", fontsize=10)
+        ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1))
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.grid(alpha=0.2)
+
+    # — Shared legend (deduplicated) —
+    seen_labels = set()
+    legend_handles, legend_labels_list = [], []
+    for ax in axes:
+        for h, l in zip(*ax.get_legend_handles_labels()):
+            if l not in seen_labels:
+                seen_labels.add(l)
+                legend_handles.append(h)
+                legend_labels_list.append(l)
+
+    fig.legend(
+        legend_handles, legend_labels_list,
+        loc="lower center", ncol=len(legend_labels_list),
+        fontsize=9, bbox_to_anchor=(0.5, -0.06),
+    )
+
+    plt.tight_layout(rect=[0, 0.04, 1, 1])
+    plt.savefig(f"{OUT_DIR}/8_pareto_macrof1_vs_promptlength.png",
+                dpi=150, bbox_inches="tight")
+    plt.close()
+    print("Saved plot 8")
 
 
 # ── Run all plots ─────────────────────────────────────────────────────────────
@@ -404,5 +594,6 @@ plot4_llm_heatmap()
 plot5_alpha()
 plot6_full_comparison()
 plot7_heatmap_detail()
+plot8_pareto()
 
 print(f"\nAll plots saved to: {OUT_DIR}/")
