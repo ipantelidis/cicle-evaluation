@@ -71,20 +71,25 @@ def parse_filename(stem, dataset):
     m = re.match(r"^(tfidf)-(lr|svm)-2\.0k-samples$", name)
     if m:
         return dict(method="baseline", embedding=m.group(1), classifier=m.group(2),
-                    llm=None, shots=None, alpha=None)
+                    llm=None, shots=None, alpha=None, variant=None)
 
-    # Fewshot: {llm}-fewshot-{emb}-2.0k-samples-{shots}-shots
-    m = re.match(r"^(.+)-fewshot-(\w+)-2\.0k-samples-(\d+)-shots$", name)
+    # Fewshot: {llm}-fewshot-{emb}-2.0k-samples-{shots}-shots[-pc|-fixed]
+    m = re.match(r"^(.+)-fewshot-(\w+)-2\.0k-samples-(\d+)-shots(?:-(pc|fixed))?$", name)
     if m:
         return dict(method="fewshot", llm=m.group(1), embedding=m.group(2),
-                    shots=int(m.group(3)), alpha=None, classifier=None)
+                    shots=int(m.group(3)), alpha=None, classifier=None,
+                    variant=m.group(4))
 
-    # CICLe: {llm}-cicle-{emb}-{clf}-2.0k-samples-{shots}-shots-{alpha}-α
-    m = re.match(r"^(.+)-cicle-(\w+)-(lr|svm)-2\.0k-samples-(\d+)-shots-([\d.]+)-α$", name)
+    # CICLe: {llm}-cicle-{emb}-{clf}-2.0k-samples-{shots}-shots[-pc|-fixed]-{alpha}-α
+    m = re.match(r"^(.+)-cicle-(\w+)-(lr|svm)-2\.0k-samples-(\d+)-shots(?:-(pc|fixed))?-([\d.]+)-α$", name)
     if m:
         return dict(method="cicle", llm=m.group(1), embedding=m.group(2),
                     classifier=m.group(3), shots=int(m.group(4)),
-                    alpha=float(m.group(5)))
+                    alpha=float(m.group(6)), variant=m.group(5))
+
+    # Zeroshot: skip silently (not part of the main analysis)
+    if re.match(r"^.+-zeroshot-2\.0k-samples$", name):
+        return "skip"
 
     return None
 
@@ -98,6 +103,11 @@ def load_all():
             meta = parse_filename(stem, dataset)
             if meta is None:
                 print(f"  [warn] could not parse: {stem}")
+                continue
+            if meta == "skip":
+                continue
+            # Skip files for models not in our LLM list (e.g. llama-3.1-70b, qwen-2.5-32b)
+            if meta["llm"] is not None and meta["llm"] not in LLM_LABELS:
                 continue
             with open(path) as f:
                 d = json.load(f)
@@ -449,14 +459,16 @@ def plot8_pareto():
 
     def get_prompt_length(rec):
         ds, pfx, m = rec["dataset"], DATASET_PREFIX[rec["dataset"]], rec["method"]
+        v = rec.get("variant")  # "pc", "fixed", or None
+        vsuffix = f"-{v}" if v else ""
         if m == "baseline":
             return 0.0
         elif m == "fewshot":
             stem = (f"{pfx}-{rec['llm']}-fewshot-{rec['embedding']}"
-                    f"-2.0k-samples-{rec['shots']}-shots")
+                    f"-2.0k-samples-{rec['shots']}-shots{vsuffix}")
         else:  # cicle
             stem = (f"{pfx}-{rec['llm']}-cicle-{rec['embedding']}-{rec['classifier']}"
-                    f"-2.0k-samples-{rec['shots']}-shots-{alpha_str(rec['alpha'])}-α")
+                    f"-2.0k-samples-{rec['shots']}-shots{vsuffix}-{alpha_str(rec['alpha'])}-α")
         return lengths_lookup.get((ds, stem))
 
     # ── Collapse classifier: best F1 per (dataset, method, llm, emb, shots, alpha) ─

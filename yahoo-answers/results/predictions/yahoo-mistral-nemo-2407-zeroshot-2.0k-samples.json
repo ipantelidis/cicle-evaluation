@@ -1,0 +1,217 @@
+{
+  "classification_report": {
+    "Business & Finance": {
+      "precision": 0.5087719298245614,
+      "recall": 0.3411764705882353,
+      "f1-score": 0.4084507042253521,
+      "support": 85.0
+    },
+    "Computers & Internet": {
+      "precision": 0.8604651162790697,
+      "recall": 0.7254901960784313,
+      "f1-score": 0.7872340425531915,
+      "support": 102.0
+    },
+    "Culture": {
+      "precision": 0.5535714285714286,
+      "recall": 0.27927927927927926,
+      "f1-score": 0.3712574850299401,
+      "support": 111.0
+    },
+    "Education & Reference": {
+      "precision": 0.4537037037037037,
+      "recall": 0.5157894736842106,
+      "f1-score": 0.4827586206896552,
+      "support": 95.0
+    },
+    "Entertainment & Music": {
+      "precision": 0.4880952380952381,
+      "recall": 0.7735849056603774,
+      "f1-score": 0.5985401459854015,
+      "support": 106.0
+    },
+    "Family & Relationships": {
+      "precision": 0.5,
+      "recall": 0.85,
+      "f1-score": 0.6296296296296297,
+      "support": 120.0
+    },
+    "Health": {
+      "precision": 0.6615384615384615,
+      "recall": 0.8269230769230769,
+      "f1-score": 0.7350427350427351,
+      "support": 104.0
+    },
+    "Politics & Government": {
+      "precision": 0.7962962962962963,
+      "recall": 0.40186915887850466,
+      "f1-score": 0.5341614906832298,
+      "support": 107.0
+    },
+    "Science": {
+      "precision": 0.7454545454545455,
+      "recall": 0.47126436781609193,
+      "f1-score": 0.5774647887323944,
+      "support": 87.0
+    },
+    "Sports": {
+      "precision": 0.9090909090909091,
+      "recall": 0.6024096385542169,
+      "f1-score": 0.7246376811594203,
+      "support": 83.0
+    },
+    "micro avg": {
+      "precision": 0.6032887975334018,
+      "recall": 0.587,
+      "f1-score": 0.5950329447541814,
+      "support": 1000.0
+    },
+    "macro avg": {
+      "precision": 0.6476987628854214,
+      "recall": 0.5787786567462425,
+      "f1-score": 0.5849177323730949,
+      "support": 1000.0
+    },
+    "weighted avg": {
+      "precision": 0.6416122261697231,
+      "recall": 0.587,
+      "f1-score": 0.5850727311369294,
+      "support": 1000.0
+    }
+  },
+  "accuracy": 0.587,
+  "confusion_matrix": [
+    [
+      29,
+      3,
+      2,
+      10,
+      9,
+      20,
+      6,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      74,
+      2,
+      2,
+      9,
+      4,
+      3,
+      0,
+      4,
+      0
+    ],
+    [
+      2,
+      0,
+      31,
+      4,
+      18,
+      33,
+      3,
+      8,
+      4,
+      1
+    ],
+    [
+      11,
+      0,
+      8,
+      49,
+      8,
+      5,
+      6,
+      2,
+      2,
+      1
+    ],
+    [
+      0,
+      2,
+      2,
+      4,
+      82,
+      9,
+      3,
+      0,
+      2,
+      2
+    ],
+    [
+      0,
+      0,
+      2,
+      3,
+      11,
+      102,
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      3,
+      2,
+      9,
+      86,
+      1,
+      1,
+      1
+    ],
+    [
+      8,
+      0,
+      3,
+      10,
+      11,
+      16,
+      8,
+      43,
+      1,
+      0
+    ],
+    [
+      1,
+      4,
+      4,
+      15,
+      5,
+      2,
+      12,
+      0,
+      41,
+      0
+    ],
+    [
+      2,
+      2,
+      2,
+      8,
+      13,
+      4,
+      1,
+      0,
+      0,
+      50
+    ]
+  ],
+  "labels": [
+    "Business & Finance",
+    "Computers & Internet",
+    "Culture",
+    "Education & Reference",
+    "Entertainment & Music",
+    "Family & Relationships",
+    "Health",
+    "Politics & Government",
+    "Science",
+    "Sports"
+  ]
+}

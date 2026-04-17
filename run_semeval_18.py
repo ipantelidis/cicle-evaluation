@@ -681,6 +681,10 @@ notebooks = [
     f"{BASE}/semeval-18-qwen-2.5-7b-cicle-tfidf-svm-2.0k-samples-2-shots-fixed-0.20-α.ipynb",
     f"{BASE}/semeval-18-qwen-2.5-7b-cicle-tfidf-svm-2.0k-samples-4-shots-fixed-0.05-α.ipynb",
     f"{BASE}/semeval-18-qwen-2.5-7b-cicle-tfidf-svm-2.0k-samples-8-shots-fixed-0.05-α.ipynb",
+    # zero-shot larger models
+    # f"{BASE}/semeval-18-llama-3.1-70b-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-mistral-nemo-2407-zeroshot-2.0k-samples.ipynb",
+    f"{BASE}/semeval-18-qwen-2.5-32b-zeroshot-2.0k-samples.ipynb",
 ]
 
 total   = len(notebooks)
