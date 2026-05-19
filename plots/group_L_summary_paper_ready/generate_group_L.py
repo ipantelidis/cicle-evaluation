@@ -61,7 +61,7 @@ SIZE_COLORS   = {"large": "#264653", "small": "#e76f51"}
 SHOTS      = [1, 2, 4, 8]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 
 METHOD_COLORS = {
     "baseline": "#adb5bd",
@@ -224,8 +224,8 @@ def plot_L1():
         ("Baseline LR",  lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["method"]=="baseline" and r["clf"]=="lr"])),
         ("Baseline SVM", lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["method"]=="baseline" and r["clf"]=="svm"])),
         ("Zero-shot",    lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["llm"]==llm and r["method"]=="zeroshot"])),
-        ("Few-shot",     lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["llm"]==llm and r["method"]=="fewshot"])),
-        ("CICLe",        lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["llm"]==llm and r["method"]=="cicle"])),
+        ("Few-shot",     lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["llm"]==llm and r["method"]=="fewshot" and r["variant"]=="fixed"])),
+        ("CICLe",        lambda ds, llm: _max_f1([r for r in RECORDS if r["dataset"]==ds and r["llm"]==llm and r["method"]=="cicle" and r["variant"]=="fixed"])),
     ]
 
     for ds in DATASETS:
@@ -308,7 +308,8 @@ def plot_L2():
                     fam_llms = list(models.values())
                     pts = [r["macro_f1"] for r in RECORDS
                            if r["dataset"] == ds and r["method"] == method
-                           and r["llm"] in fam_llms]
+                           and r["llm"] in fam_llms
+                           and (r["variant"] is None or r["variant"] == "fixed")]
 
                 if not pts:
                     continue
@@ -383,13 +384,13 @@ def plot_L3():
                     cicle_best = _max_f1([
                         r for r in RECORDS
                         if r["dataset"] == ds and r["llm"] == llm
-                        and r["method"] == "cicle"
+                        and r["method"] == "cicle" and r["variant"] == "fixed"
                         and r["embedding"] == emb and r["shots"] == shots
                     ])
                     fs_best = _max_f1([
                         r for r in RECORDS
                         if r["dataset"] == ds and r["llm"] == llm
-                        and r["method"] == "fewshot"
+                        and r["method"] == "fewshot" and r["variant"] == "fixed"
                         and r["embedding"] == emb and r["shots"] == shots
                     ])
                     if not np.isnan(cicle_best) and not np.isnan(fs_best):
@@ -460,7 +461,8 @@ def plot_L4():
 
     for ds in DATASETS:
         llm_recs = [r for r in RECORDS
-                    if r["dataset"] == ds and r["llm"] is not None]
+                    if r["dataset"] == ds and r["llm"] is not None
+                    and (r["variant"] is None or r["variant"] == "fixed")]
         top10 = sorted(llm_recs, key=lambda r: r["macro_f1"], reverse=True)[:10]
         if not top10:
             continue
@@ -545,6 +547,7 @@ def plot_L5():
             for llm, size in [(large, "large"), (small, "small")]:
                 sub = [r for r in RECORDS
                        if r["dataset"] == ds and r["llm"] == llm
+                       and r["variant"] == "fixed"
                        and not np.isnan(r["mean_prompt"])]
                 if not sub:
                     continue

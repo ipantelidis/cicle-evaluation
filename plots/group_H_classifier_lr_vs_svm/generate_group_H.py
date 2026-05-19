@@ -61,7 +61,7 @@ EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
 ALPHAS     = [0.01, 0.05, 0.10, 0.20]
 ALPHA_LABELS = ["0.01", "0.05", "0.10", "0.20"]
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 
 CLF_COLORS = {"lr": "#4361ee", "svm": "#e63946"}
 EPSILON    = 0.001   # tie threshold
@@ -136,7 +136,7 @@ def matched_pairs(ds):
     Yield (lr_f1, svm_f1, llm, emb, shots, alpha, variant) for every
     matched CICLe config (same dataset, llm, emb, shots, alpha, variant).
     """
-    subset = [r for r in RECORDS if r["dataset"] == ds]
+    subset = [r for r in RECORDS if r["dataset"] == ds and r["variant"] == "fixed"]
     lookup = {
         (r["llm"], r["embedding"], r["shots"], r["alpha"], r["variant"], r["clf"]): r["macro_f1"]
         for r in subset

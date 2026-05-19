@@ -61,7 +61,7 @@ SIZE_COLORS   = {"large": "#264653", "small": "#e76f51"}
 SHOTS      = [1, 2, 4, 8]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 
 METHOD_COLORS = {
     "cicle":   "#e63946",
@@ -168,19 +168,21 @@ def _mean(vals):
 
 
 def best_cicle(ds, llm, shots, emb=None):
-    """Best CICLe F1 over variant × alpha × clf (optionally fixing embedding)."""
+    """Best CICLe F1 over alpha × clf — fixed variant only."""
     sub = [r for r in RECORDS
            if r["dataset"] == ds and r["llm"] == llm
            and r["method"] == "cicle" and r["shots"] == shots
+           and r["variant"] == "fixed"
            and (emb is None or r["embedding"] == emb)]
     return _max([r["macro_f1"] for r in sub])
 
 
 def best_fewshot(ds, llm, shots, emb=None):
-    """Best few-shot F1 over variant (optionally fixing embedding)."""
+    """Best few-shot F1 — fixed variant only."""
     sub = [r for r in RECORDS
            if r["dataset"] == ds and r["llm"] == llm
            and r["method"] == "fewshot" and r["shots"] == shots
+           and r["variant"] == "fixed"
            and (emb is None or r["embedding"] == emb)]
     return _max([r["macro_f1"] for r in sub])
 

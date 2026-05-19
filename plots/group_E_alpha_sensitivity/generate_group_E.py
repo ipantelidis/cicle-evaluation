@@ -64,7 +64,7 @@ SHOTS_COLORS = {1: "#4cc9f0", 2: "#4361ee", 4: "#7209b7", 8: "#f72585"}
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
 EMB_COLORS = {"contriever": "#4361ee", "minilm": "#e07c00", "tfidf": "#2dc653"}
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 CLASSIFIERS = ["lr", "svm"]
 CLF_COLORS  = {"lr": "#4361ee", "svm": "#e63946"}
 CLF_LABELS  = {"lr": "LR", "svm": "SVM"}
@@ -144,15 +144,15 @@ def _mean(vals):
     return float(np.mean(clean)) if clean else np.nan
 
 
-def f1_alpha(ds, llm, emb, shots, alpha, clf=None, variant=None):
-    """Mean F1 over matching records (optionally fixing clf and/or variant)."""
+def f1_alpha(ds, llm, emb, shots, alpha, clf=None, variant="fixed"):
+    """Mean F1 over matching records — fixed variant by default."""
     sub = [
         r for r in RECORDS
         if r["dataset"] == ds and r["llm"] == llm
         and r["embedding"] == emb and r["shots"] == shots
         and r["alpha"] == alpha
-        and (clf     is None or r["clf"]     == clf)
-        and (variant is None or r["variant"] == variant)
+        and r["variant"] == variant
+        and (clf is None or r["clf"] == clf)
     ]
     return _mean([r["macro_f1"] for r in sub])
 

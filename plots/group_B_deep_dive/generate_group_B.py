@@ -77,7 +77,7 @@ SHOTS = [1, 2, 4, 8]
 ALPHAS = [0.01, 0.05, 0.10, 0.20]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
-VARIANTS = ["pc", "fixed"]
+VARIANTS = ["fixed"]
 VARIANT_LABELS = {"pc": "PC", "fixed": "Fixed"}
 CLASSIFIERS = ["lr", "svm"]
 CLF_LABELS = {"lr": "LR", "svm": "SVM"}
@@ -234,37 +234,39 @@ def mean_f1(records):
 
 # ── Plot-specific reductions ─────────────────────────────────────────────────
 def best_cicle_for_embedding(dataset, llm, embedding, shots):
-    """Best CICLe score for one embedding at one shots value."""
+    """Best CICLe score for one embedding at one shots value — fixed variant only."""
     subset = [
         r for r in records_for(dataset, llm, "cicle")
-        if r["embedding"] == embedding and r["shots"] == shots
+        if r["embedding"] == embedding and r["shots"] == shots and r["variant"] == "fixed"
     ]
     return max_f1(subset)
 
 
 def best_fewshot_for_embedding(dataset, llm, embedding, shots):
-    """Best few-shot score for one embedding at one shots value."""
+    """Best few-shot score for one embedding at one shots value — fixed variant only."""
     subset = [
         r for r in records_for(dataset, llm, "fewshot")
-        if r["embedding"] == embedding and r["shots"] == shots
+        if r["embedding"] == embedding and r["shots"] == shots and r["variant"] == "fixed"
     ]
     return max_f1(subset)
 
 
 def best_cicle_for_alpha(dataset, llm, embedding, shots, alpha):
-    """Best CICLe score at a fixed alpha, optimizing over variant and classifier."""
+    """Best CICLe score at a fixed alpha — fixed variant only."""
     subset = [
         r for r in records_for(dataset, llm, "cicle")
         if r["embedding"] == embedding and r["shots"] == shots and r["alpha"] == alpha
+        and r["variant"] == "fixed"
     ]
     return max_f1(subset)
 
 
 def best_cicle_for_clf(dataset, llm, embedding, shots, clf):
-    """Best CICLe score for one classifier, optimizing over alpha and variant."""
+    """Best CICLe score for one classifier — fixed variant only."""
     subset = [
         r for r in records_for(dataset, llm, "cicle")
         if r["embedding"] == embedding and r["shots"] == shots and r["clf"] == clf
+        and r["variant"] == "fixed"
     ]
     return max_f1(subset)
 
@@ -279,10 +281,11 @@ def best_cicle_for_variant(dataset, llm, embedding, shots, variant):
 
 
 def prompt_length_records(dataset, llm):
-    """All model-specific records with a usable prompt length."""
+    """Model-specific records with a usable prompt length — fixed variant only."""
     return [
         r for r in records_for(dataset, llm)
         if not np.isnan(r["prompt_mean"])
+        and (r["variant"] is None or r["variant"] == "fixed")
     ]
 
 
@@ -569,8 +572,6 @@ def main():
     plot_B2()
     print("B3 — LR vs SVM per embedding per shots")
     plot_B3()
-    print("B4 — PC vs Fixed variant comparison")
-    plot_B4()
     print("B5 — Radar chart: CICLe vs few-shot")
     plot_B5()
     print("B6 — Macro-F1 vs prompt length")

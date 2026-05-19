@@ -60,7 +60,7 @@ SHOTS      = [1, 2, 4, 8]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
 EMB_COLORS = {"contriever": "#4361ee", "minilm": "#e07c00", "tfidf": "#2dc653"}
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 VARIANT_LABELS = {"pc": "PC", "fixed": "Fixed"}
 
 # ── Matplotlib style ──────────────────────────────────────────────────────────
@@ -154,19 +154,21 @@ def _mean(vals):
 
 
 def best_cicle(ds, llm, emb, shots=None):
-    """Best CICLe F1 over variant × alpha × clf (and optionally shots)."""
+    """Best CICLe F1 over alpha × clf — fixed variant only."""
     sub = [r for r in RECORDS
            if r["dataset"] == ds and r["llm"] == llm
            and r["method"] == "cicle" and r["embedding"] == emb
+           and r["variant"] == "fixed"
            and (shots is None or r["shots"] == shots)]
     return _max([r["macro_f1"] for r in sub])
 
 
 def best_fewshot(ds, llm, emb, shots=None):
-    """Best few-shot F1 over variant (and optionally shots)."""
+    """Best few-shot F1 — fixed variant only."""
     sub = [r for r in RECORDS
            if r["dataset"] == ds and r["llm"] == llm
            and r["method"] == "fewshot" and r["embedding"] == emb
+           and r["variant"] == "fixed"
            and (shots is None or r["shots"] == shots)]
     return _max([r["macro_f1"] for r in sub])
 
@@ -593,9 +595,6 @@ def main():
     plot_D4()
     print("D5 — Embedding win counts")
     plot_D5()
-    print("D6 — Embedding × variant interaction")
-    plot_D6()
-
     print(f"\nDone. {count_saved_plots()} plots saved under {HERE}/")
 
 

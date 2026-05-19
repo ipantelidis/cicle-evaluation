@@ -56,7 +56,7 @@ MODEL_LABELS = {
 SHOTS = [1, 2, 4, 8]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
-VARIANTS = ["pc", "fixed"]
+VARIANTS = ["fixed"]
 
 FAMILY_COLORS = {"Llama": "#4361ee", "Mistral": "#7209b7", "Qwen": "#e07c00"}
 SIZE_COLORS = {"large": "#264653", "small": "#e76f51"}
@@ -209,17 +209,17 @@ def zeroshot_value(dataset, llm):
 
 
 def best_cicle(dataset, llm):
-    return max_f1(records_for(dataset, llm, "cicle"))
+    return max_f1([r for r in records_for(dataset, llm, "cicle") if r["variant"] == "fixed"])
 
 
 def best_fewshot(dataset, llm):
-    return max_f1(records_for(dataset, llm, "fewshot"))
+    return max_f1([r for r in records_for(dataset, llm, "fewshot") if r["variant"] == "fixed"])
 
 
 def best_cicle_for_embedding(dataset, llm, embedding, shots):
     subset = [
         r for r in records_for(dataset, llm, "cicle")
-        if r["embedding"] == embedding and r["shots"] == shots
+        if r["embedding"] == embedding and r["shots"] == shots and r["variant"] == "fixed"
     ]
     return max_f1(subset)
 
@@ -227,7 +227,7 @@ def best_cicle_for_embedding(dataset, llm, embedding, shots):
 def best_fewshot_for_embedding(dataset, llm, embedding, shots):
     subset = [
         r for r in records_for(dataset, llm, "fewshot")
-        if r["embedding"] == embedding and r["shots"] == shots
+        if r["embedding"] == embedding and r["shots"] == shots and r["variant"] == "fixed"
     ]
     return max_f1(subset)
 

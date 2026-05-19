@@ -59,7 +59,7 @@ MODEL_LABELS = {
 
 SHOTS      = [1, 2, 4, 8]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 EPSILON    = 0.001
 
 # ── Matplotlib style ──────────────────────────────────────────────────────────
@@ -152,9 +152,10 @@ def load_records():
 
 # ── Lookup helpers ────────────────────────────────────────────────────────────
 def best_record(ds, llm, method, emb=None, shots=None):
-    """Return the record with the highest macro-F1 matching the filters."""
+    """Return the record with the highest macro-F1 — fixed variant only."""
     sub = [r for r in RECORDS
            if r["dataset"] == ds and r["llm"] == llm and r["method"] == method
+           and (r["variant"] is None or r["variant"] == "fixed")
            and (emb   is None or r["embedding"] == emb)
            and (shots is None or r["shots"]     == shots)]
     return max(sub, key=lambda r: r["macro_f1"]) if sub else None

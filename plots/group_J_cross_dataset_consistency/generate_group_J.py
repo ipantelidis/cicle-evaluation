@@ -61,7 +61,7 @@ FAMILY_COLORS = {"Llama": "#4361ee", "Mistral": "#7209b7", "Qwen": "#e07c00"}
 SHOTS      = [1, 2, 4, 8]
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
-VARIANTS   = ["pc", "fixed"]
+VARIANTS   = ["fixed"]
 
 # ── Matplotlib style ──────────────────────────────────────────────────────────
 plt.rcParams.update({
@@ -145,20 +145,21 @@ def _max(vals):
 
 
 def best_overall(ds, llm):
-    """Best macro-F1 across all methods and configs for a (dataset, model)."""
-    sub = [r for r in RECORDS if r["dataset"] == ds and r["llm"] == llm]
+    """Best macro-F1 across all methods — fixed variant only (or None for zeroshot)."""
+    sub = [r for r in RECORDS if r["dataset"] == ds and r["llm"] == llm
+           and (r["variant"] is None or r["variant"] == "fixed")]
     return _max([r["macro_f1"] for r in sub])
 
 
 def best_cicle(ds, llm):
     sub = [r for r in RECORDS if r["dataset"] == ds and r["llm"] == llm
-           and r["method"] == "cicle"]
+           and r["method"] == "cicle" and r["variant"] == "fixed"]
     return _max([r["macro_f1"] for r in sub])
 
 
 def best_fewshot(ds, llm):
     sub = [r for r in RECORDS if r["dataset"] == ds and r["llm"] == llm
-           and r["method"] == "fewshot"]
+           and r["method"] == "fewshot" and r["variant"] == "fixed"]
     return _max([r["macro_f1"] for r in sub])
 
 
@@ -169,17 +170,18 @@ def zeroshot_val(ds, llm):
 
 
 def best_cicle_emb(ds, emb):
-    """Best CICLe F1 for this embedding, averaged over all models."""
+    """Best CICLe F1 for this embedding, averaged over all models — fixed variant only."""
     sub = [r for r in RECORDS if r["dataset"] == ds and r["method"] == "cicle"
-           and r["embedding"] == emb]
+           and r["embedding"] == emb and r["variant"] == "fixed"]
     vals = [r["macro_f1"] for r in sub]
     clean = [v for v in vals if not np.isnan(v)]
     return float(np.mean(clean)) if clean else np.nan
 
 
 def best_method_ds(ds, method):
-    """Best macro-F1 for a (dataset, method), maximised over all configs."""
-    sub = [r for r in RECORDS if r["dataset"] == ds and r["method"] == method]
+    """Best macro-F1 for a (dataset, method) — fixed variant only."""
+    sub = [r for r in RECORDS if r["dataset"] == ds and r["method"] == method
+           and (r["variant"] is None or r["variant"] == "fixed")]
     return _max([r["macro_f1"] for r in sub])
 
 

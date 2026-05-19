@@ -64,7 +64,7 @@ SHOTS_COLORS = {1: "#4cc9f0", 2: "#4361ee", 4: "#7209b7", 8: "#f72585"}
 EMBEDDINGS   = ["contriever", "minilm", "tfidf"]
 EMB_LABELS   = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
 EMB_COLORS   = {"contriever": "#4361ee", "minilm": "#e07c00", "tfidf": "#2dc653"}
-VARIANTS     = ["pc", "fixed"]
+VARIANTS     = ["fixed"]
 VARIANT_LABELS = {"pc": "PC", "fixed": "Fixed"}
 
 METHOD_COLORS = {"cicle": "#e63946", "fewshot": "#4361ee"}
@@ -196,7 +196,8 @@ def plot_K1():
     for ds in DATASETS:
         for llm in ALL_MODELS:
             sub = [r for r in RECORDS
-                   if r["dataset"] == ds and r["llm"] == llm]
+                   if r["dataset"] == ds and r["llm"] == llm
+                   and r["variant"] == "fixed"]
             if not sub:
                 continue
 
@@ -281,7 +282,7 @@ def plot_K2():
             for method in ["cicle", "fewshot"]:
                 sub = [r for r in RECORDS
                        if r["dataset"] == ds and r["llm"] == llm
-                       and r["method"] == method]
+                       and r["method"] == method and r["variant"] == "fixed"]
                 if not sub:
                     continue
                 best = max(sub, key=lambda r: r["macro_f1"])
@@ -423,7 +424,8 @@ def plot_K4():
     for ds in DATASETS:
         for llm in ALL_MODELS:
             sub = [r for r in RECORDS
-                   if r["dataset"] == ds and r["llm"] == llm]
+                   if r["dataset"] == ds and r["llm"] == llm
+                   and r["variant"] == "fixed"]
             if not sub:
                 continue
 
@@ -484,9 +486,11 @@ def plot_K5():
             large, small = models["large"], models["small"]
 
             large_recs = [r for r in RECORDS
-                          if r["dataset"] == ds and r["llm"] == large]
+                          if r["dataset"] == ds and r["llm"] == large
+                          and r["variant"] == "fixed"]
             small_recs = [r for r in RECORDS
-                          if r["dataset"] == ds and r["llm"] == small]
+                          if r["dataset"] == ds and r["llm"] == small
+                          and r["variant"] == "fixed"]
 
             if not large_recs and not small_recs:
                 continue

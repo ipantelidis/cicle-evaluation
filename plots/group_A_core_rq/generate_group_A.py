@@ -55,7 +55,7 @@ SHOTS = [1, 2, 4, 8]
 SHOTS_COLORS = {1: "#4cc9f0", 2: "#4361ee", 4: "#7209b7", 8: "#f72585"}
 EMBEDDINGS = ["contriever", "minilm", "tfidf"]
 EMB_LABELS  = {"contriever": "Contriever", "minilm": "MiniLM", "tfidf": "TF-IDF"}
-VARIANTS      = ["pc", "fixed"]
+VARIANTS      = ["fixed"]
 VARIANT_LABELS = {"pc": "PC (per-class)", "fixed": "Fixed (total)"}
 
 # ── Global matplotlib style ───────────────────────────────────────────────────
@@ -153,13 +153,12 @@ def load_baseline():
 
 
 def all_cicle_vals(ds, llm, shots):
-    """All macro-F1 values for a (dataset, llm, shots) combo across all configs."""
+    """All macro-F1 values for a (dataset, llm, shots) combo — fixed variant only."""
     vals = []
     for emb in CICLE.get(ds, {}).get(llm, {}):
-        for v in CICLE[ds][llm][emb]:
-            for a in CICLE[ds][llm][emb][v].get(shots, {}):
-                for clf in CICLE[ds][llm][emb][v][shots][a]:
-                    vals.append(CICLE[ds][llm][emb][v][shots][a][clf])
+        for a in CICLE[ds][llm][emb].get("fixed", {}).get(shots, {}):
+            for clf in CICLE[ds][llm][emb]["fixed"][shots][a]:
+                vals.append(CICLE[ds][llm][emb]["fixed"][shots][a][clf])
     return vals
 
 
@@ -178,11 +177,10 @@ def mean_std_cicle(ds, llm, shots):
 
 
 def best_fewshot(ds, llm, shots):
-    """Best macro-F1 for a (dataset, llm, shots) combo across all configs."""
+    """Best macro-F1 for a (dataset, llm, shots) combo — fixed variant only."""
     vals = []
     for emb in FEWSHOT.get(ds, {}).get(llm, {}):
-        for v in FEWSHOT[ds][llm][emb]:
-            vals.append(FEWSHOT[ds][llm][emb][v].get(shots, np.nan))
+        vals.append(FEWSHOT[ds][llm][emb].get("fixed", {}).get(shots, np.nan))
     return max([x for x in vals if not np.isnan(x)], default=np.nan)
 
 
@@ -846,8 +844,8 @@ def plot_A8():
     out = os.path.join(HERE, "A8_heatmap_gap_zeroshot")
     os.makedirs(out, exist_ok=True)
 
-    row_keys   = [(e, v) for e in EMBEDDINGS for v in VARIANTS]
-    row_labels = [f"{EMB_LABELS[e]} / {VARIANT_LABELS[v]}" for e, v in row_keys]
+    row_keys   = [(e, "fixed") for e in EMBEDDINGS]
+    row_labels = [EMB_LABELS[e] for e, _ in row_keys]
     col_keys   = list(FAMILIES.keys())
 
     for ds in DATASETS:
@@ -918,15 +916,14 @@ def plot_A9():
             for shots in SHOTS:
                 w, t, l = 0, 0, 0
                 for emb in EMBEDDINGS:
-                    for v in VARIANTS:
-                        lf = fewshot_val(ds, large, shots, emb, v)
-                        sc = best_cicle_by_emb_var(ds, small, shots, emb, v)
-                        if np.isnan(lf) or np.isnan(sc):
-                            continue
-                        diff = sc - lf
-                        if diff > EPSILON:       w += 1
-                        elif diff < -EPSILON:    l += 1
-                        else:                    t += 1
+                    lf = fewshot_val(ds, large, shots, emb, "fixed")
+                    sc = best_cicle_by_emb_var(ds, small, shots, emb, "fixed")
+                    if np.isnan(lf) or np.isnan(sc):
+                        continue
+                    diff = sc - lf
+                    if diff > EPSILON:       w += 1
+                    elif diff < -EPSILON:    l += 1
+                    else:                    t += 1
 
                 row_labels.append(f"{fam}  {shots}s")
                 wins.append(w)
@@ -1004,12 +1001,8 @@ def main():
     plot_A1()
     print("A2 — Mean ± std across all CICLe configs vs. large zero-shot")
     plot_A2()
-    print("A3 — Gap plot: adding large few-shot reference")
+    print("A3 — Gap plot: adding large few-shot reference (fixed variant)")
     plot_A3()
-    print("A3_1 — Same as A3, PC variant only")
-    plot_A3_1()
-    print("A3_2 — Same as A3, Fixed variant only")
-    plot_A3_2()
     print("A4 — Break-even shots")
     plot_A4()
     print("A5 — Scatter: small CICLe vs. large zero-shot (A5_1 per-family, A5_2 all families)")
