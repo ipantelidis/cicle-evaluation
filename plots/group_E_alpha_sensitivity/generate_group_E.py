@@ -179,41 +179,33 @@ def _safe_fname(s):
 def plot_E1():
     """
     54 plots (3 datasets × 6 models × 3 embeddings).
-    X = alpha, one line per shots value. Shows optimal alpha per shots.
+    X = alpha, single line at 2 shots. Shows optimal alpha.
     """
     out = ensure_dir("E1_alpha_curves_per_model_per_embedding")
+    shots = 2
 
     for ds in DATASETS:
         for llm in ALL_MODELS:
             for emb in EMBEDDINGS:
-                fig, ax = plt.subplots(figsize=(6, 4.5))
-                has_data = False
-
-                for shots in SHOTS:
-                    vals = [f1_alpha(ds, llm, emb, shots, a) for a in ALPHAS]
-                    if all(np.isnan(v) for v in vals):
-                        continue
-                    ax.plot(
-                        ALPHAS, vals,
-                        color=SHOTS_COLORS[shots], marker="o",
-                        linewidth=2, markersize=7,
-                        label=f"{shots} shot{'s' if shots > 1 else ''}",
-                    )
-                    has_data = True
-
-                if not has_data:
-                    plt.close(fig)
+                vals = [f1_alpha(ds, llm, emb, shots, a) for a in ALPHAS]
+                if all(np.isnan(v) for v in vals):
                     continue
+
+                fig, ax = plt.subplots(figsize=(6, 4.5))
+                ax.plot(
+                    ALPHAS, vals,
+                    color=SHOTS_COLORS[shots], marker="o",
+                    linewidth=2, markersize=7,
+                )
 
                 ax.set_xticks(ALPHAS)
                 ax.set_xticklabels(ALPHA_LABELS)
                 ax.set_xlabel("Alpha (α)")
                 ax.set_ylabel("Macro-F1")
                 ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1, decimals=0))
-                ax.legend(framealpha=0.9)
                 ax.set_title(
                     f"{DATASET_LABELS[ds]}  ·  {MODEL_LABELS[llm]}  ·  {EMB_LABELS[emb]}\n"
-                    f"Macro-F1 vs. alpha  (mean over variant × classifier)",
+                    f"Macro-F1 vs. alpha  (2 shots, mean over classifiers)",
                     fontweight="bold",
                 )
 
@@ -225,55 +217,40 @@ def plot_E1():
                 print(f"  E1 saved: {fname}")
 
 
-# ── E2: Alpha × shots heatmap per model (averaged over embeddings & clf) ──────
+# ── E2: Alpha bar chart per model (averaged over embeddings & clf) ─────────────
 def plot_E2():
     """
     18 plots (3 datasets × 6 models).
-    4×4 heatmap: rows = alpha, cols = shots.
+    Bar chart: x = alpha, y = mean F1 at 2 shots, averaged over embeddings & classifiers.
     """
     out = ensure_dir("E2_alpha_shots_heatmap_per_model")
+    shots = 2
 
     for ds in DATASETS:
         for llm in ALL_MODELS:
-            mat = np.full((len(ALPHAS), len(SHOTS)), np.nan)
-
-            for ri, alpha in enumerate(ALPHAS):
-                for ci, shots in enumerate(SHOTS):
-                    vals = [
-                        f1_alpha(ds, llm, emb, shots, alpha)
-                        for emb in EMBEDDINGS
-                    ]
-                    mat[ri, ci] = _mean(vals)
-
-            if np.all(np.isnan(mat)):
+            vals = [
+                _mean([f1_alpha(ds, llm, emb, shots, alpha) for emb in EMBEDDINGS])
+                for alpha in ALPHAS
+            ]
+            if all(np.isnan(v) for v in vals):
                 continue
 
-            fig, ax = plt.subplots(figsize=(6.5, 5))
-            vmax = np.nanmax(mat)
-            vmin = np.nanmin(mat)
-            im = ax.imshow(mat, cmap="YlGn", vmin=vmin, vmax=vmax, aspect="auto")
-            ax.set_xticks(range(len(SHOTS)))
-            ax.set_xticklabels([str(s) for s in SHOTS])
-            ax.set_yticks(range(len(ALPHAS)))
-            ax.set_yticklabels(ALPHA_LABELS)
-            ax.set_xlabel("Shots")
-            ax.set_ylabel("Alpha (α)")
-            ax.grid(False)
-            cbar = fig.colorbar(im, ax=ax, pad=0.02, shrink=0.9)
-            cbar.set_label("Mean Macro-F1", fontsize=9)
-            cbar.ax.yaxis.set_major_formatter(
-                mticker.PercentFormatter(xmax=1, decimals=0))
+            fig, ax = plt.subplots(figsize=(6.5, 4.5))
+            colors = ["#4cc9f0", "#4361ee", "#7209b7", "#f72585"]
+            bars = ax.bar(ALPHA_LABELS, vals, color=colors, edgecolor="white", linewidth=1.2)
+            for bar, v in zip(bars, vals):
+                if not np.isnan(v):
+                    ax.text(bar.get_x() + bar.get_width() / 2,
+                            bar.get_height() + 0.002,
+                            f"{v:.3f}", ha="center", va="bottom",
+                            fontsize=9, fontweight="bold")
 
-            for ri in range(mat.shape[0]):
-                for ci in range(mat.shape[1]):
-                    v = mat[ri, ci]
-                    if not np.isnan(v):
-                        ax.text(ci, ri, f"{v:.3f}", ha="center", va="center",
-                                fontsize=9, fontweight="bold", color="black")
-
+            ax.set_xlabel("Alpha (α)")
+            ax.set_ylabel("Mean Macro-F1")
+            ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1, decimals=0))
             ax.set_title(
                 f"{DATASET_LABELS[ds]}  ·  {MODEL_LABELS[llm]}\n"
-                f"Alpha × shots  (mean Macro-F1 over embeddings and classifiers)",
+                f"Alpha sensitivity at 2 shots  (mean over embeddings and classifiers)",
                 fontweight="bold",
             )
 
@@ -284,52 +261,38 @@ def plot_E2():
             print(f"  E2 saved: {fname}")
 
 
-# ── E3: Alpha × shots heatmap per model × embedding ───────────────────────────
+# ── E3: Alpha bar chart per model × embedding ─────────────────────────────────
 def plot_E3():
     """
     54 plots (3 datasets × 6 models × 3 embeddings).
-    Same as E2 but not averaged over embeddings.
+    Bar chart: x = alpha, y = mean F1 at 2 shots, averaged over classifiers.
     """
     out = ensure_dir("E3_alpha_shots_heatmap_per_model_per_embedding")
+    shots = 2
 
     for ds in DATASETS:
         for llm in ALL_MODELS:
             for emb in EMBEDDINGS:
-                mat = np.full((len(ALPHAS), len(SHOTS)), np.nan)
-
-                for ri, alpha in enumerate(ALPHAS):
-                    for ci, shots in enumerate(SHOTS):
-                        mat[ri, ci] = f1_alpha(ds, llm, emb, shots, alpha)
-
-                if np.all(np.isnan(mat)):
+                vals = [f1_alpha(ds, llm, emb, shots, alpha) for alpha in ALPHAS]
+                if all(np.isnan(v) for v in vals):
                     continue
 
-                fig, ax = plt.subplots(figsize=(6.5, 5))
-                vmax = np.nanmax(mat)
-                vmin = np.nanmin(mat)
-                im = ax.imshow(mat, cmap="YlGn", vmin=vmin, vmax=vmax, aspect="auto")
-                ax.set_xticks(range(len(SHOTS)))
-                ax.set_xticklabels([str(s) for s in SHOTS])
-                ax.set_yticks(range(len(ALPHAS)))
-                ax.set_yticklabels(ALPHA_LABELS)
-                ax.set_xlabel("Shots")
-                ax.set_ylabel("Alpha (α)")
-                ax.grid(False)
-                cbar = fig.colorbar(im, ax=ax, pad=0.02, shrink=0.9)
-                cbar.set_label("Mean Macro-F1", fontsize=9)
-                cbar.ax.yaxis.set_major_formatter(
-                    mticker.PercentFormatter(xmax=1, decimals=0))
+                fig, ax = plt.subplots(figsize=(6.5, 4.5))
+                colors = ["#4cc9f0", "#4361ee", "#7209b7", "#f72585"]
+                bars = ax.bar(ALPHA_LABELS, vals, color=colors, edgecolor="white", linewidth=1.2)
+                for bar, v in zip(bars, vals):
+                    if not np.isnan(v):
+                        ax.text(bar.get_x() + bar.get_width() / 2,
+                                bar.get_height() + 0.002,
+                                f"{v:.3f}", ha="center", va="bottom",
+                                fontsize=9, fontweight="bold")
 
-                for ri in range(mat.shape[0]):
-                    for ci in range(mat.shape[1]):
-                        v = mat[ri, ci]
-                        if not np.isnan(v):
-                            ax.text(ci, ri, f"{v:.3f}", ha="center", va="center",
-                                    fontsize=9, fontweight="bold", color="black")
-
+                ax.set_xlabel("Alpha (α)")
+                ax.set_ylabel("Mean Macro-F1")
+                ax.yaxis.set_major_formatter(mticker.PercentFormatter(xmax=1, decimals=0))
                 ax.set_title(
                     f"{DATASET_LABELS[ds]}  ·  {MODEL_LABELS[llm]}  ·  {EMB_LABELS[emb]}\n"
-                    f"Alpha × shots  (mean Macro-F1 over classifiers and variants)",
+                    f"Alpha sensitivity at 2 shots  (mean over classifiers)",
                     fontweight="bold",
                 )
 
@@ -349,23 +312,24 @@ def plot_E4():
     """
     out = ensure_dir("E4_optimal_alpha_distribution")
 
+    shots = 2
+
     for ds in DATASETS:
         alpha_counts = {a: 0 for a in ALPHAS}
 
         for llm in ALL_MODELS:
             for emb in EMBEDDINGS:
-                for shots in SHOTS:
-                    for clf in CLASSIFIERS:
-                        for variant in VARIANTS:
-                            vals = {
-                                a: f1_alpha(ds, llm, emb, shots, a, clf, variant)
-                                for a in ALPHAS
-                            }
-                            valid = {a: v for a, v in vals.items()
-                                     if not np.isnan(v)}
-                            if valid:
-                                winner = max(valid, key=valid.get)
-                                alpha_counts[winner] += 1
+                for clf in CLASSIFIERS:
+                    for variant in VARIANTS:
+                        vals = {
+                            a: f1_alpha(ds, llm, emb, shots, a, clf, variant)
+                            for a in ALPHAS
+                        }
+                        valid = {a: v for a, v in vals.items()
+                                 if not np.isnan(v)}
+                        if valid:
+                            winner = max(valid, key=valid.get)
+                            alpha_counts[winner] += 1
 
         fig, ax = plt.subplots(figsize=(6.5, 4.5))
         colors = ["#4cc9f0", "#4361ee", "#7209b7", "#f72585"]
@@ -384,7 +348,7 @@ def plot_E4():
         ax.set_ylabel("Win count")
         ax.set_title(
             f"{DATASET_LABELS[ds]}\n"
-            f"Optimal alpha distribution  "
+            f"Optimal alpha distribution at 2 shots  "
             f"(configs where this alpha yields the highest Macro-F1)",
             fontweight="bold",
         )
@@ -405,6 +369,8 @@ def plot_E5():
     """
     out = ensure_dir("E5_alpha_sensitivity_by_model_size")
 
+    shots = 2
+
     for ds in DATASETS:
         fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
 
@@ -418,7 +384,6 @@ def plot_E5():
                     sub_vals = [
                         f1_alpha(ds, llm, emb, shots, alpha)
                         for emb in EMBEDDINGS
-                        for shots in SHOTS
                     ]
                     vals.append(_mean(sub_vals))
 
@@ -442,8 +407,8 @@ def plot_E5():
 
         fig.suptitle(
             f"{DATASET_LABELS[ds]}\n"
-            f"Alpha sensitivity by model size  "
-            f"(mean over shots, embeddings, classifiers, variants)",
+            f"Alpha sensitivity by model size at 2 shots  "
+            f"(mean over embeddings and classifiers)",
             fontweight="bold",
         )
 
@@ -463,6 +428,8 @@ def plot_E6():
     """
     out = ensure_dir("E6_lr_vs_svm_alpha_sensitivity")
 
+    shots = 2
+
     for ds in DATASETS:
         for llm in ALL_MODELS:
             fig, axes = plt.subplots(1, 3, figsize=(13, 4.5), sharey=True)
@@ -470,13 +437,7 @@ def plot_E6():
 
             for ax, emb in zip(axes, EMBEDDINGS):
                 for clf in CLASSIFIERS:
-                    vals = []
-                    for alpha in ALPHAS:
-                        sub = [
-                            f1_alpha(ds, llm, emb, shots, alpha, clf=clf)
-                            for shots in SHOTS
-                        ]
-                        vals.append(_mean(sub))
+                    vals = [f1_alpha(ds, llm, emb, shots, alpha, clf=clf) for alpha in ALPHAS]
 
                     if all(np.isnan(v) for v in vals):
                         continue
@@ -505,7 +466,7 @@ def plot_E6():
 
             fig.suptitle(
                 f"{DATASET_LABELS[ds]}  ·  {MODEL_LABELS[llm]}\n"
-                f"LR vs SVM alpha sensitivity  (mean over shots and variants)",
+                f"LR vs SVM alpha sensitivity at 2 shots",
                 fontweight="bold",
             )
 

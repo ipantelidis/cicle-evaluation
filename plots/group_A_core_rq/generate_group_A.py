@@ -962,7 +962,7 @@ def plot_A9():
         ax.axvline(50, color="#333333", linewidth=0.8, linestyle="--", alpha=0.5)
         ax.set_title(
             f"{DATASET_LABELS[ds]}\nWin-rate: small CICLe vs. large few-shot\n"
-            f"(each config pair = one embedding × variant combination)",
+            f"(each config pair = one embedding; fixed-total-k variant)",
             fontweight="bold")
         ax.legend(loc="lower right", framealpha=0.9, fontsize=8.5)
         ax.grid(axis="x", alpha=0.3)

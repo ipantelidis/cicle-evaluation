@@ -360,64 +360,53 @@ def plot_H5():
         print(f"  H5 saved: {fname}")
 
 
-# ── H6: Alpha × shots heatmap of SVM − LR per model ─────────────────────────
+# ── H6: SVM − LR bar chart per alpha per model (at 2 shots) ──────────────────
 def plot_H6():
     """
     18 plots (3 datasets × 6 models).
-    Rows = alpha, cols = shots. Cell = mean(SVM − LR) over embeddings × variants.
-    Diverging palette: green = SVM wins, red = LR wins.
+    Bar chart: x = alpha, y = mean(SVM − LR) at 2 shots, averaged over embeddings.
+    Diverging colours: green = SVM wins, red = LR wins.
     """
     out = ensure_dir("H6_alpha_shots_heatmap_svm_minus_lr")
+    shots = 2
 
     for ds in DATASETS:
         for llm in ALL_MODELS:
-            pairs = [
-                p for p in matched_pairs(ds) if p[2] == llm
-            ]
+            pairs = [p for p in matched_pairs(ds) if p[2] == llm and p[4] == shots]
             if not pairs:
                 continue
 
-            mat = np.full((len(ALPHAS), len(SHOTS)), np.nan)
-            for ri, alpha in enumerate(ALPHAS):
-                for ci, shots in enumerate(SHOTS):
-                    deltas = [
-                        (sv - lr) * 100
-                        for lr, sv, lm, emb, s, a, v in pairs
-                        if s == shots and a == alpha
-                    ]
-                    if deltas:
-                        mat[ri, ci] = float(np.mean(deltas))
+            vals = []
+            for alpha in ALPHAS:
+                deltas = [
+                    (sv - lr) * 100
+                    for lr, sv, lm, emb, s, a, v in pairs
+                    if a == alpha
+                ]
+                vals.append(float(np.mean(deltas)) if deltas else np.nan)
 
-            if np.all(np.isnan(mat)):
+            if all(np.isnan(v) for v in vals):
                 continue
 
-            fig, ax = plt.subplots(figsize=(6.5, 5))
-            vmax = np.nanmax(np.abs(mat)) if not np.all(np.isnan(mat)) else 0.1
-            im = ax.imshow(mat, cmap="RdYlGn", vmin=-vmax, vmax=vmax,
-                           aspect="auto")
-            ax.set_xticks(range(len(SHOTS)))
-            ax.set_xticklabels([str(s) for s in SHOTS])
-            ax.set_yticks(range(len(ALPHAS)))
-            ax.set_yticklabels(ALPHA_LABELS)
-            ax.set_xlabel("Shots")
-            ax.set_ylabel("Alpha (α)")
-            ax.grid(False)
-            cbar = fig.colorbar(im, ax=ax, pad=0.02, shrink=0.9)
-            cbar.set_label("SVM − LR  (pp)", fontsize=9)
+            colors = ["#2dc653" if (not np.isnan(v) and v > 0) else "#e63946"
+                      for v in vals]
 
-            for ri in range(mat.shape[0]):
-                for ci in range(mat.shape[1]):
-                    v = mat[ri, ci]
-                    if not np.isnan(v):
-                        txt_color = "white" if abs(v) > vmax * 0.6 else "black"
-                        ax.text(ci, ri, f"{v:+.2f}",
-                                ha="center", va="center",
-                                fontsize=9, fontweight="bold", color=txt_color)
+            fig, ax = plt.subplots(figsize=(6.5, 4.5))
+            bars = ax.bar(ALPHA_LABELS, vals, color=colors, edgecolor="white", linewidth=1.2)
+            for bar, v in zip(bars, vals):
+                if not np.isnan(v):
+                    ax.text(bar.get_x() + bar.get_width() / 2,
+                            v + (0.02 if v >= 0 else -0.02),
+                            f"{v:+.2f}", ha="center",
+                            va="bottom" if v >= 0 else "top",
+                            fontsize=9, fontweight="bold")
 
+            ax.axhline(0, color="#333333", linewidth=1.0, linestyle="--", alpha=0.7)
+            ax.set_xlabel("Alpha (α)")
+            ax.set_ylabel("SVM − LR  (pp)")
             ax.set_title(
                 f"{DATASET_LABELS[ds]}  ·  {MODEL_LABELS[llm]}\n"
-                f"SVM − LR  (pp)  ·  alpha × shots  "
-                f"(mean over embeddings and variants)",
+                f"SVM − LR delta at 2 shots  (mean over embeddings)",
                 fontweight="bold",
             )
 

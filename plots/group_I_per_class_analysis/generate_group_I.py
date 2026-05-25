@@ -178,7 +178,32 @@ def _safe_fname(s):
     return s.replace("-", "_").replace(".", "")
 
 
+SEMEVAL_LABEL_MAP = {
+    "☀":  "sun",
+    "✨":  "sparkles",
+    "❤":  "heart",
+    "🇺🇸": "US flag",
+    "🎄":  "christmas tree",
+    "💕":  "two hearts",
+    "💙":  "blue heart",
+    "💜":  "purple heart",
+    "💯":  "100",
+    "📷":  "camera",
+    "📸":  "camera flash",
+    "🔥":  "fire",
+    "😁":  "grinning",
+    "😂":  "joy",
+    "😉":  "wink",
+    "😊":  "smile",
+    "😍":  "heart eyes",
+    "😎":  "cool",
+    "😘":  "kiss",
+    "😜":  "wink tongue",
+}
+
+
 def _short_label(label, max_len=18):
+    label = SEMEVAL_LABEL_MAP.get(label, label)
     return label if len(label) <= max_len else label[:max_len - 1] + "…"
 
 
@@ -232,9 +257,8 @@ def plot_I1():
                 for ci in range(3):
                     v = mat[ri, ci]
                     if not np.isnan(v):
-                        txt_color = "white" if v < 0.35 else "black"
                         ax.text(ci, ri, f"{v:.2f}", ha="center", va="center",
-                                fontsize=6.5, color=txt_color)
+                                fontsize=6.5, color="black")
 
             cbar = fig.colorbar(im, ax=ax, pad=0.02, shrink=0.6)
             cbar.set_label("Per-class F1", fontsize=8)
