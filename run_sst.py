@@ -1,5 +1,20 @@
 import subprocess
 import os
+import nbformat
+
+
+def is_executed(path):
+    nb = nbformat.read(path, as_version=4)
+    code_cells = [c for c in nb.cells if c.cell_type == "code"]
+    if not code_cells:
+        return False
+    for c in code_cells:
+        if c.execution_count is None:
+            return False
+        for out in c.get("outputs", []):
+            if out.get("output_type") == "error":
+                return False
+    return True
 
 BASE = "/home/v25/ippa6201/cicle-evaluation/sst"
 
@@ -60,12 +75,18 @@ env["CUDA_VISIBLE_DEVICES"] = GPU_ID
 env["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 for nb in notebooks:
+    if is_executed(nb):
+        print(f"Skipping {nb} (already executed)")
+        continue
     print(f"Running {nb}...")
-    subprocess.run([
-        "/home/v25/ippa6201/cicle-evaluation/.venv/bin/jupyter", "nbconvert",
-        "--to", "notebook",
-        "--execute",
-        "--inplace",
-        "--ExecutePreprocessor.timeout=7200",
-        nb
-    ], check=True, env=env)
+    try:
+        subprocess.run([
+            "/home/v25/ippa6201/cicle-evaluation/.venv/bin/jupyter", "nbconvert",
+            "--to", "notebook",
+            "--execute",
+            "--inplace",
+            "--ExecutePreprocessor.timeout=7200",
+            nb
+        ], check=True, env=env)
+    except subprocess.CalledProcessError:
+        print(f"FAILED: {nb}, continuing...")
