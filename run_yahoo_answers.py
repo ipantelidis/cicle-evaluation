@@ -702,7 +702,8 @@ for nb in notebooks:
     print(f'Running {stem}...')
     try:
         subprocess.run(
-            ["jupyter", "nbconvert", "--to", "notebook", "--execute", "--inplace", nb],
+            ["/home/v25/ippa6201/cicle-evaluation/.venv/bin/jupyter", "nbconvert",
+             "--to", "notebook", "--execute", "--inplace", nb],
             check=True
         )
         ran += 1
