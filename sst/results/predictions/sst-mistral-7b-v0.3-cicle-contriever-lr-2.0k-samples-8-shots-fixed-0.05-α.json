@@ -1,97 +1,97 @@
 {
   "classification_report": {
+    "positive": {
+      "precision": 0.516245487364621,
+      "recall": 0.6190476190476191,
+      "f1-score": 0.562992125984252,
+      "support": 231.0
+    },
+    "neutral": {
+      "precision": 0.4772727272727273,
+      "recall": 0.23863636363636365,
+      "f1-score": 0.3181818181818182,
+      "support": 176.0
+    },
     "very negative": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.398989898989899,
+      "recall": 0.626984126984127,
+      "f1-score": 0.4876543209876543,
       "support": 126.0
     },
     "very positive": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.6388888888888888,
+      "recall": 0.5082872928176796,
+      "f1-score": 0.5661538461538461,
       "support": 181.0
     },
-    "neutral": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 176.0
-    },
     "negative": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.6056910569105691,
+      "recall": 0.5209790209790209,
+      "f1-score": 0.5601503759398496,
       "support": 286.0
     },
-    "positive": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 231.0
-    },
     "micro avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.5299055613850997,
+      "recall": 0.505,
+      "f1-score": 0.5171530977982591,
       "support": 1000.0
     },
     "macro avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.527417611885341,
+      "recall": 0.5027868846929621,
+      "f1-score": 0.499026497449484,
       "support": 1000.0
     },
     "weighted avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.5423919660192664,
+      "recall": 0.505,
+      "f1-score": 0.5101724792194497,
       "support": 1000.0
     }
   },
-  "accuracy": 0.0,
+  "accuracy": 0.505,
   "confusion_matrix": [
     [
+      143,
+      12,
+      4,
+      42,
+      7
+    ],
+    [
+      50,
+      42,
+      24,
+      8,
+      45
+    ],
+    [
+      1,
+      1,
+      79,
       0,
+      45
+    ],
+    [
+      76,
+      1,
       0,
-      0,
-      0,
+      92,
       0
     ],
     [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
+      7,
+      32,
+      91,
+      2,
+      149
     ]
   ],
   "labels": [
+    "positive",
+    "neutral",
     "very negative",
     "very positive",
-    "neutral",
-    "negative",
-    "positive"
+    "negative"
   ]
 }

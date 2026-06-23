@@ -1,97 +1,97 @@
 {
   "classification_report": {
     "very positive": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.6285714285714286,
+      "recall": 0.4861878453038674,
+      "f1-score": 0.5482866043613707,
       "support": 181.0
     },
     "positive": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.5058823529411764,
+      "recall": 0.5584415584415584,
+      "f1-score": 0.5308641975308642,
       "support": 231.0
     },
     "very negative": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.3717277486910995,
+      "recall": 0.5634920634920635,
+      "f1-score": 0.4479495268138801,
       "support": 126.0
     },
-    "negative": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 286.0
-    },
     "neutral": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.6049382716049383,
+      "recall": 0.2784090909090909,
+      "f1-score": 0.38132295719844356,
       "support": 176.0
     },
+    "negative": {
+      "precision": 0.576,
+      "recall": 0.5034965034965035,
+      "f1-score": 0.5373134328358209,
+      "support": 286.0
+    },
     "micro avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.52453653217012,
+      "recall": 0.481,
+      "f1-score": 0.5018257694314032,
       "support": 1000.0
     },
     "macro avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.5374239603617286,
+      "recall": 0.4780054123286167,
+      "f1-score": 0.4891473437480759,
       "support": 1000.0
     },
     "weighted avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.548673084238388,
+      "recall": 0.481,
+      "f1-score": 0.49909562765555743,
       "support": 1000.0
     }
   },
-  "accuracy": 0.0,
+  "accuracy": 0.481,
   "confusion_matrix": [
     [
+      88,
+      69,
       0,
       0,
-      0,
-      0,
-      0
+      2
+    ],
+    [
+      46,
+      129,
+      3,
+      10,
+      10
     ],
     [
       0,
-      0,
-      0,
-      0,
-      0
+      1,
+      71,
+      1,
+      53
     ],
     [
-      0,
-      0,
-      0,
-      0,
-      0
+      4,
+      45,
+      24,
+      49,
+      41
     ],
     [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
+      2,
+      11,
+      93,
+      21,
+      144
     ]
   ],
   "labels": [
     "very positive",
     "positive",
     "very negative",
-    "negative",
-    "neutral"
+    "neutral",
+    "negative"
   ]
 }

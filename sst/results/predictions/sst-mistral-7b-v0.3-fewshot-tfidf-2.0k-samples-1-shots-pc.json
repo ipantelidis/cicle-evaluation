@@ -1,97 +1,97 @@
 {
   "classification_report": {
-    "negative": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 286.0
-    },
-    "very positive": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 181.0
-    },
     "neutral": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.42857142857142855,
+      "recall": 0.3068181818181818,
+      "f1-score": 0.3576158940397351,
       "support": 176.0
     },
-    "very negative": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 126.0
+    "negative": {
+      "precision": 0.5674418604651162,
+      "recall": 0.42657342657342656,
+      "f1-score": 0.4870259481037924,
+      "support": 286.0
     },
     "positive": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.4577114427860697,
+      "recall": 0.39826839826839827,
+      "f1-score": 0.42592592592592593,
       "support": 231.0
     },
+    "very negative": {
+      "precision": 0.365,
+      "recall": 0.5793650793650794,
+      "f1-score": 0.44785276073619634,
+      "support": 126.0
+    },
+    "very positive": {
+      "precision": 0.5850340136054422,
+      "recall": 0.47513812154696133,
+      "f1-score": 0.524390243902439,
+      "support": 181.0
+    },
     "micro avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.48031496062992124,
+      "recall": 0.427,
+      "f1-score": 0.4520910534674431,
       "support": 1000.0
     },
     "macro avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.4807517490856113,
+      "recall": 0.43723264151440944,
+      "f1-score": 0.4485621545416178,
       "support": 1000.0
     },
     "weighted avg": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
+      "precision": 0.4953294432677618,
+      "recall": 0.427,
+      "f1-score": 0.4519627893966691,
       "support": 1000.0
     }
   },
-  "accuracy": 0.0,
+  "accuracy": 0.427,
   "confusion_matrix": [
     [
-      0,
-      0,
-      0,
-      0,
+      54,
+      33,
+      36,
+      21,
+      9
+    ],
+    [
+      44,
+      122,
+      7,
+      101,
+      2
+    ],
+    [
+      23,
+      11,
+      92,
+      4,
+      50
+    ],
+    [
+      2,
+      48,
+      1,
+      73,
       0
     ],
     [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0
+      3,
+      1,
+      65,
+      1,
+      86
     ]
   ],
   "labels": [
-    "negative",
-    "very positive",
     "neutral",
+    "negative",
+    "positive",
     "very negative",
-    "positive"
+    "very positive"
   ]
 }
