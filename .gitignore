@@ -1,7 +1,3 @@
 .venv
-
-token.txt
-
-run_notebooks.py
-
-yahoo-answers-full
+__pycache__/
+*.log
