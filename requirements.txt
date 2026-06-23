@@ -1,0 +1,35 @@
+# Python 3.10. Exact versions used to produce the paper's results;
+# install everything with a single:
+#
+#   pip install -r requirements.txt
+#
+# PyTorch's CUDA-enabled wheels aren't on the default PyPI index, so the
+# extra index below is required for the torch==2.8.0+cu128 line to
+# resolve. If your machine needs a different CUDA build (e.g. cu121),
+# change the +cu128 suffix and the index URL to match.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.8.0+cu128
+
+# --- core numerical / data ---
+numpy==2.2.6
+pandas==2.3.3
+scikit-learn==1.7.2
+
+# --- conformal prediction (the "CI" in CICLe) ---
+crepes==0.9.0
+
+# --- language models, embeddings, datasets ---
+transformers==5.3.0
+accelerate==1.13.0
+sentence-transformers==5.3.0
+datasets==4.6.1
+
+# --- plotting (figures from analysis_lib.py / visualize.py) ---
+matplotlib==3.10.8
+seaborn==0.13.2
+
+# --- misc ---
+tqdm==4.67.3
+
+# --- running / regenerating the experiment notebooks (see run.py) ---
+jupyter==1.1.1
