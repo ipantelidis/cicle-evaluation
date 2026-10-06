@@ -10,3 +10,4 @@ cache/
 logs/
 results/
 logs_*.out
+paper/figures/out/

@@ -63,6 +63,8 @@ def load(results_dir, dataset):
             "pred": np.array([code[r["pred"]] if r["pred"] is not None else len(labels)
                               for r in records]),
             "n_classes": len(labels), "metrics": d["metrics"],
+            "gold_in_set": (np.array([bool(r["gold_in_set"]) for r in records])
+                            if "gold_in_set" in records[0] else None),
         }
     return runs
 
