@@ -1,0 +1,32 @@
+\section{Introduction}
+\label{sec:intro}
+
+Large language models (LLMs) classify text from a few labelled examples placed in the prompt, without any weight update \citep{brown2020language}.
+This is attractive when labelled data are scarce or skewed.
+It is also fragile.
+Which examples are shown, and in what order, can move accuracy by as much as a change in model size \citep{liu2022makes,lu2022fantastically,zhao2021calibrate}.
+With many classes the prompt must also carry the label space, and the model must pick one label out of dozens.
+
+Conformal In-Context Learning (CICLe) was proposed by \citet{randl2024cicle} to make this decision smaller before the LLM sees it.
+A small classifier is calibrated with class-conditional conformal prediction so that, for each input, it returns a set of candidate labels that contains the true label with a chosen probability.
+The LLM is then asked to choose among these candidates only, with retrieved examples drawn from the candidate classes, and is not called at all when the set has one element.
+
+CICLe was evaluated on one food-safety dataset.
+A pilot study on four further datasets, run with the original CICLe prompts, reported that its benefit grows with class imbalance.
+We do not trust that result, and we explain why.
+The pilot protocol let only the zero-shot prompt list the admissible labels, drew few-shot and CICLe examples from pools of different size, and left the conformal sets unseeded, so that runs could not be paired.
+The first flaw alone produced 20--35\% unparseable outputs for some models and was misread as a model-dependent effect. % CHECK
+This paper replaces the pilot with a corrected protocol and asks two sharper questions, which rule to use for narrowing the label space given a small classifier, and when the LLM is worth calling at all.
+
+We evaluate CICLe on five English classification datasets, six open LLMs of 3B to 8B parameters with partial runs of 12B and 32B models, and three data seeds, with paired bootstrap tests over test instances throughout.
+Our contributions are the following.
+\begin{enumerate}
+  \setlength\itemsep{0pt}
+  \item \textbf{A corrected protocol.} Every prompt lists the admissible labels, every method retrieves from the same labelled pool, and calibration splits, conformal sets and test samples are seeded. We show that these choices change conclusions. Invalid outputs fall from 20--35\% to 0--6\% and the apparent model heterogeneity of the pilot disappears (Section~\ref{sec:res-protocol}). % CHECK
+  \item \textbf{A measured gain.} With wording, pool and seeds held equal, CICLe beats few-shot prompting in eight of nine dataset and retrieval cells by +0.5 to +1.8 macro-F1 points, and shortens Per-Class prompts by 11--38\% (Section~\ref{sec:res-gain}). % CHECK
+  \item \textbf{How to narrow.} At equal mean set size, class-conditional conformal sets match top-$k$ and probability-mass sets on balanced data. When the labelled pool is long-tailed, the alternatives lose coverage on rare classes and 4--11 macro-F1 points, which the LLM cannot recover. The gain over few-shot prompting is largest, +5.6 to +6.5 points, when label names are replaced by nonsense words (Sections~\ref{sec:res-narrowing} and~\ref{sec:res-relabel}). % CHECK
+  \item \textbf{When to call the LLM.} With 1,600 balanced labels, a fine-tuned RoBERTa-base beats every LLM pipeline on four of five datasets, and on the fifth the base classifier alone does. Under a 100$\times$ long-tailed pool the order flips. We give a decision rule and show how the miscoverage level should follow the strength of the classifier (Sections~\ref{sec:res-baselines} and~\ref{sec:res-alpha}). % CHECK
+\end{enumerate}
+We retract the pilot's imbalance claim explicitly. Imbalance of the labelled pool does not widen the gap between CICLe and few-shot prompting. It widens the gap between narrowing rules.
+Code, prompts and per-instance records will be released.
+% Anonymised repository placeholder: \url{https://anonymous.4open.science/r/XXXX}

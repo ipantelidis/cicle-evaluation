@@ -1,0 +1,51 @@
+% APPENDIX SKELETON. Headings follow presentation_plan.md Section 3. Unlimited length.
+
+\section{Prompt Template and Output Parsing}
+\label{app:prompt}
+% build_prompt: task sentence; "The possible classes are: ..."; "Here are some labelled examples:" with
+% "text" => label pairs, most similar first; "Please predict the correct class for the following sample.
+% Only provide the class label." Chat template, greedy decoding, budget = longest label + 4 tokens.
+% parse_output: first non-empty line, NFKC, strip quotes/markdown/punctuation, casefold; exact match, else
+% label-prefix match with a word boundary; otherwise invalid.
+
+\section{Full Result Tables}
+\label{app:full}
+% Tables B1-B5: method x variant x k per dataset (macro-F1, accuracy, invalid %, mean shots, mean prompt
+% tokens), six models; add k=0 row [PENDING]. B6-B10: imb10 / imb100 / relabel variants.
+
+\section{Narrowing Comparisons}
+\label{app:narrowing}
+% Table C1: CICLe minus {few-shot, top-k, mass, marginal, oracle} for all 11 dataset variants, both retrieval
+% variants, with CIs and n. Table C2: coverage, mean set size, singleton rate, per-class minimum coverage.
+% Figure C1: Figure 2 for the Fixed variant.
+
+\section{Model Heterogeneity}
+\label{app:models}
+% Table D1: per-model CICLe minus few-shot, both variants, five datasets, 12 (Ohsumed 6) pairs each, with CIs.
+% Caption contrasts with the pilot's per-model table and attributes the change to listing the labels.
+
+\section{Ablations}
+\label{app:ablations}
+% Table E1: embedding x classifier x alpha blocks (contriever-LR, minilm-LR, minilm-SVM, tfidf-LR; alpha in
+% {0.01, 0.05, 0.10, 0.20}) for four datasets, Llama-3.1-8B + Llama-3.2-3B, 24 cells.
+
+\section{Larger Models}
+\label{app:large}
+% Table F1: Mistral-NeMo-12B (Yahoo, SST: 3 seeds; SemEval: 2 seeds) and Qwen2.5-32B (seed 42 [PENDING 43/44]):
+% zero-shot, few-shot, CICLe, Fixed and PC, k in {1,4}. Also the best 3B + CICLe PC k=4 on seed 42 beside the
+% 32B zero-shot (the honest form of the pilot's size comparison).
+
+\section{Per-Instance Analyses}
+\label{app:instances}
+% Table G1: fixes and breaks relative to few-shot, split by gold-in-set. Table G2: invalid outputs per model x
+% method x dataset, with the most frequent unparseable raw outputs. Table G3: qualitative examples (text,
+% gold, candidate set, few-shot output, CICLe output), half fixed, half broken.
+
+\section{Dataset Details}
+\label{app:data}
+% Class lists; imbalance construction (geometric schedule, minimum five per class, seed-dependent order);
+% Table H1: controlled-imbalance class counts per seed; nonsense-word mapping; subsample sizes.
+
+% \section{Legacy-Prompt Reproduction}
+% \label{app:legacy}
+% Optional: --legacy-prompt rerun on one dataset/model showing the invalid-output artefact directly.

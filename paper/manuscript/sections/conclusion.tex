@@ -1,0 +1,17 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+% SKELETON (about 1.5 quarter pages). Rules of thumb for practitioners, one sentence per claim.
+% - Protocol: list the labels, share the pool, seed the sets, report invalid outputs; otherwise the comparison
+%   measures the prompt, not the method.
+% - Gain: narrowing with CICLe is worth +0.5 to +1.8 points over few-shot and shortens Per-Class prompts;
+%   it is not a large effect and it does not grow with k.
+% - How to narrow: class-conditional CP when the labelled pool is long-tailed (top-k and mass lose 4-11 points
+%   through missed rare classes); any rule on balanced data; narrowing matters most when label names are
+%   uninformative.
+% - When to call the LLM: with ~1,600 balanced labels fine-tune an encoder (or use the classifier alone when it
+%   is strong); use the in-context pipeline when the pool is skewed [or small, pending]; pick alpha by the
+%   strength of the classifier (looser when it is strong or when sets would otherwise be huge).
+% - One sentence: the pilot's "imbalance predicts CICLe's benefit" is retracted; imbalance separates narrowing
+%   rules, not CICLe from few-shot.
+% - Future work: multi-label, pool size (if pending), non-English, learned alpha.

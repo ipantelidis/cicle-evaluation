@@ -1,0 +1,18 @@
+\section*{Limitations}
+\label{sec:limitations}
+
+% SKELETON. One plain paragraph, each item one or two sentences with its consequence (see STYLE_NOTES.md).
+% Content from presentation_plan.md:
+% - Single-label classification only; GoEmotions restricted to single-label comments. Multi-label narrowing
+%   would need a different set construction (R1).
+% - 1,000-instance test samples per seed; intervals are correspondingly wide for per-model comparisons
+%   (12 or 6 pairs).
+% - Six open models of 3-8B parameters; 12B and 32B only partially (32B one seed [PENDING]); no proprietary
+%   models; no 70B under the fixed protocol.
+% - English only.
+% - alpha is chosen on calibration coverage, not tuned; the alpha ablation uses two models.
+% - The CP guarantee is marginal within each class, not conditional on the input; coverage can still vary
+%   across inputs within a class.
+% - Label renaming is an extreme stress test; real deployments sit between informative and nonsense names.
+% - Controlled imbalance on two datasets only; naturally skewed datasets confound imbalance with other properties.
+% - Bootstrap intervals quantify test-sample noise only, with hyperparameters fixed at the reference setting.

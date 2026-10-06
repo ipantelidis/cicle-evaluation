@@ -1,0 +1,17 @@
+% Table 2 (full width): main results at k = 4 plus paired deltas over all k. Spec: figures_and_tables.md.
+% PLACEHOLDER until analyze.py --bootstrap 5000 has been rerun.
+\begin{table*}[t]
+  \centering
+  \small
+  % TODO: rows MiniLM+LR, RoBERTa, zero-shot, few-shot Fixed, CICLe Fixed, few-shot PC, CICLe PC (k=4, mean prompt tokens in small type),
+  %       then Delta Fixed and Delta PC over all k with 95% CI; columns Yahoo | SST-5 | SemEval-18 | GoEmotions | Ohsumed.
+  \begin{tabular}{lccccc}
+    \toprule
+    & Yahoo & SST-5 & SemEval-18 & GoEmotions & Ohsumed \\
+    \midrule
+    \multicolumn{6}{c}{\emph{placeholder}} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Macro-F1 at $k = 4$ for every method (mean over six models and three seeds, supervised rows over three seeds), with the mean prompt tokens per LLM call in small type, and the paired difference CICLe minus few-shot pooled over all $k$ with its 95\% bootstrap interval. Same prompt wording, same 1,600-example pool, seeded conformal sets, paired bootstrap over test instances. Bold marks intervals that exclude zero.}
+  \label{tab:main}
+\end{table*}

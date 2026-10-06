@@ -1,0 +1,45 @@
+\section{Results}
+\label{sec:results}
+
+% SKELETON. Prose is drafted in paper/plan/results_section_draft.md and will be inserted when the
+% pending runs (Ohsumed PC k=1, marginal CP, k=0, oracle, pool size, 32B seeds) are in.
+% Every subsection opens with its claim, then the float, then the numbers (see STYLE_NOTES.md).
+% All numbers at the reference setting (MiniLM, logistic regression, alpha = 0.05), six models x three seeds.
+
+\subsection{The Protocol Decides the Conclusion}
+\label{sec:res-protocol}
+% CLAIM: Listing the labels, sharing the pool and seeding the sets reverse the pilot's model-level picture;
+% invalid outputs fall to 0-6% and no model is significantly hurt by Per-Class CICLe (Appendix D, G).
+
+\subsection{Narrowing the Label Set Helps a Little, and Reliably}
+\label{sec:res-gain}
+% CLAIM: CICLe beats few-shot in 8 of 9 dataset x variant cells by +0.5 to +1.8 points (72 pairs) and
+% Per-Class CICLe uses 11-38% fewer prompt tokens at equal k; the gain does not vanish at k=8.
+\input{tables/main_results}
+\input{figures/fig_tokens}
+
+\subsection{How You Narrow Matters}
+\label{sec:res-narrowing}
+% CLAIM: At equal mean set size CP = top-k = mass on balanced data; under a long-tailed labelled pool the
+% alternatives lose coverage on rare classes and 4-11 macro-F1 points. Imbalance does NOT widen the
+% CICLe-vs-few-shot gap (explicit retraction of the pilot's claim). Coverage bounds the damage (fixes vs breaks).
+\input{figures/fig_imbalance}
+
+\subsection{Uninformative Label Names}
+\label{sec:res-relabel}
+% CLAIM: With every label renamed to a nonsense word, CICLe's margin over few-shot is the largest measured
+% (+6.5 Fixed / +5.6 PC on Yahoo; +0.7 / +1.0 on GoEmotions, 36 pairs).
+\input{tables/relabel}
+
+\subsection{When the LLM Pipeline Is Worth It}
+\label{sec:res-baselines}
+% CLAIM: With 1,600 balanced labels fine-tuned RoBERTa-base beats every pipeline on 4 of 5 datasets and the
+% base classifier alone wins on Yahoo; at 100x imbalance the order flips. [PENDING pool size.] Decision rule.
+\input{tables/baselines}
+
+\subsection{Choosing $\alpha$, and Robustness Across Models}
+\label{sec:res-alpha}
+% CLAIM: A looser alpha pays where the classifier is strong (Yahoo) or sets are otherwise huge (GoEmotions),
+% is flat on SST; embedding matters more than classifier; no model is hurt by PC CICLe; 12B and 32B models
+% also gain (Appendix F); a 3B model with CICLe PC matches 32B zero-shot on the same seed.
+\input{figures/fig_alpha}

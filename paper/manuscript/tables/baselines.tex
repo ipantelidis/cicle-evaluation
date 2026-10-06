@@ -1,0 +1,17 @@
+% Table 4: supervised baselines vs LLM pipelines when the labelled pool is skewed [or small]. Spec: figures_and_tables.md. PLACEHOLDER.
+% May need table* if the pool-size columns arrive.
+\begin{table}[t]
+  \centering
+  \small
+  % TODO: rows MiniLM+LR, RoBERTa-base, zero-shot, few-shot PC k=4, CICLe PC k=4, best LLM pipeline (which);
+  %       columns Yahoo 1x/10x/100x | SST 1x/10x/100x | [PENDING n=250/500/1,000] | SemEval | GoEmotions | Ohsumed.
+  \begin{tabular}{lccc}
+    \toprule
+    & 1$\times$ & 10$\times$ & 100$\times$ \\
+    \midrule
+    \multicolumn{4}{c}{\emph{placeholder}} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Macro-F1 of the supervised baselines and the LLM pipelines as the labelled pool becomes long-tailed. RoBERTa-base is fine-tuned on the same 1,600 examples with the epoch picked on the 400 calibration examples. The logistic regression is trained on the same 1,600. The test sample is identical at every imbalance level. Zero-shot prompting does not depend on the pool, so its value is repeated.}
+  \label{tab:baselines}
+\end{table}

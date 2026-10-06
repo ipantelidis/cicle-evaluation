@@ -1,0 +1,21 @@
+% Table 1: datasets. Imbalance = largest / smallest class in the full training set before subsampling.
+% Mean input lengths for the first four rows come from the pilot pipeline's tokeniser; recompute from
+% the per-instance records (zero-shot prompt_tokens minus template length) before submission. % CHECK
+\begin{table}[t]
+  \centering
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{llrrrl}
+    \toprule
+    \textbf{Dataset} & \textbf{Domain} & \textbf{Cls.} & \textbf{Imb.} & \textbf{Len.} & \textbf{Variants} \\
+    \midrule
+    SST-5         & Sentiment, reviews   &  5 & 2.1$\times$   & 24  & 10$\times$, 100$\times$ \\
+    Yahoo Answers & Topic, Q\&A          & 10 & 1.0$\times$   & 51  & 10$\times$, 100$\times$, renamed \\
+    SemEval-18    & Affect, tweets       & 20 & 8.7$\times$   & 21  & -- \\
+    GoEmotions    & Emotion, Reddit      & 28 & 184.7$\times$ & 17  & renamed \\
+    Ohsumed       & Medical abstracts    & 23 & 65$\times$    & 190$^\dagger$ & Fixed only \\ % CHECK imbalance and length (length is in words from the findings file; convert to tokens)
+    \bottomrule
+  \end{tabular}
+  \caption{Datasets. \emph{Cls.} is the number of classes, \emph{Imb.} the ratio between the largest and the smallest class in the full training set, \emph{Len.} the mean tokenised input length ($^\dagger$in words). \emph{Variants} lists the additional experiments run on the dataset: controlled imbalance of the labelled pool (10$\times$, 100$\times$) and label renaming. Every dataset is subsampled to 1,600 training, 400 calibration and 1,000 test instances per seed (Section~\ref{sec:protocol}).}
+  \label{tab:datasets}
+\end{table}
