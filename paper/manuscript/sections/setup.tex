@@ -17,8 +17,6 @@ It answers whether the findings carry from short texts to documents that fill a 
 % Ohsumed source: the single-label split published on the Hugging Face hub (joao-luz/ohsumed-single); cite or footnote the exact source before submission. % CHECK
 Because SST-5 and Yahoo Answers are balanced, they also serve as the substrate for the controlled imbalance experiment (Section~\ref{sec:protocol}), which varies imbalance alone while every other property stays fixed.
 
-\input{tables/datasets}
-
 \subsection{Models}
 \label{sec:models}
 
@@ -42,8 +40,7 @@ The base classifier, the retrieval pool and the supervised baselines all see the
 The subsample keeps the cost of 18 LLM runs per configuration (six models, three seeds) tractable. The test sample of 1,000 instances lets the paired tests of Section~\ref{sec:metrics} resolve differences of half a point, and the three seeds capture the sampling noise that a single split hides.
 
 \paragraph{Five fixes relative to the pilot.}
-A pilot study of this pipeline on four of the datasets differed from the present protocol in ways that drove its conclusions.
-Only its zero-shot prompt listed the admissible labels. Its few-shot and CICLe prompts did not, and used different wording.
+The pilot (Section~\ref{sec:intro}) listed the admissible labels only in its zero-shot prompt, and its few-shot and CICLe prompts used different wording.
 Between 20\% and 35\% of the outputs of some models then matched no label and were scored as errors, which made CICLe appear to hurt Qwen2.5 and Ministral. % CHECK
 Its few-shot baseline retrieved from a different example pool than CICLe, and its conformal sets were not seeded, so runs could not be paired instance by instance.
 The present protocol makes five changes.

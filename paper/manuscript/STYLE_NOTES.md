@@ -41,7 +41,7 @@ Looked at (modest effort, three papers of our kind, not method papers):
   scope, with a pointer to the protocol section.
 - Related Work as four paragraphs with bold run-in headings (\paragraph), each closing with one
   sentence that positions our study against that group.
-- Setup as five numbered subsections (Datasets, Models, Protocol, Baselines, Metrics), one table
+- Setup as five numbered subsections (Datasets, Models, Protocol, Methods Compared, Metrics and Statistics), one table
   for the datasets, one enumerated list for the five protocol fixes, hyperparameters in one
   sentence each, prompt template and normalisation rules in Appendix A.
 - Results skeleton: each subsection heading states the claim ("Narrowing the label set helps a
