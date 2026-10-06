@@ -1,0 +1,42 @@
+% Table E1. Llama-3.1-8B and Llama-3.2-3B, both retrieval variants, k in {1,4}, 3 seeds (24 cells). Few-shot uses the same embedding for retrieval. Δ = CICLe − few-shot, paired bootstrap CI.
+\begin{tabular}{lllrrrcrrr}
+\toprule
+Dataset & Embedding & Classifier & $\alpha$ & CICLe & few-shot & $\Delta$ & coverage (\%) & set size & no LLM call (\%) \\
+\midrule
+Yahoo Answers & contriever & LR & 0.05 & 57.8 & 58.1 & -0.28\,\textsuperscript{n.s.} {\scriptsize [-0.74, +0.20]} & 95.6 & 5.32 & 5.8 \\
+ & minilm & LR & 0.05 & 59.4 & 59.8 & -0.37\,\textsuperscript{n.s.} {\scriptsize [-0.82, +0.08]} & 95.0 & 5.67 & 3.4 \\
+ & minilm & SVM & 0.05 & 59.8 & 59.8 & -0.05\,\textsuperscript{n.s.} {\scriptsize [-0.50, +0.40]} & 95.6 & 5.79 & 4.7 \\
+ & tfidf & LR & 0.05 & 54.5 & 55.2 & \textbf{-0.69} {\scriptsize [-1.10, -0.30]} & 96.1 & 7.97 & 1.1 \\
+\addlinespace
+ & minilm & LR & 0.01 & 59.8 & 59.8 & -0.07\,\textsuperscript{n.s.} {\scriptsize [-0.30, +0.17]} & 99.1 & 8.98 & 0.0 \\
+ & minilm & LR & 0.10 & 60.8 & 59.8 & \textbf{+0.93} {\scriptsize [+0.31, +1.56]} & 90.1 & 4.01 & 9.8 \\
+ & minilm & LR & 0.20 & 63.4 & 59.8 & \textbf{+3.57} {\scriptsize [+2.67, +4.48]} & 79.3 & 2.08 & 35.4 \\
+\midrule
+SST-5 & contriever & LR & 0.05 & 47.0 & 43.3 & \textbf{+3.69} {\scriptsize [+2.82, +4.53]} & 95.5 & 3.34 & 0.5 \\
+ & minilm & LR & 0.05 & 45.0 & 42.3 & \textbf{+2.65} {\scriptsize [+1.85, +3.46]} & 95.4 & 3.86 & 0.0 \\
+ & minilm & SVM & 0.05 & 44.9 & 42.3 & \textbf{+2.53} {\scriptsize [+1.70, +3.34]} & 96.1 & 3.81 & 0.0 \\
+ & tfidf & LR & 0.05 & 42.8 & 41.2 & \textbf{+1.61} {\scriptsize [+0.92, +2.30]} & 95.0 & 4.30 & 0.1 \\
+\addlinespace
+ & minilm & LR & 0.01 & 43.4 & 42.3 & \textbf{+1.05} {\scriptsize [+0.64, +1.47]} & 99.2 & 4.67 & 0.0 \\
+ & minilm & LR & 0.10 & 45.1 & 42.3 & \textbf{+2.75} {\scriptsize [+1.70, +3.76]} & 90.5 & 3.38 & 0.3 \\
+ & minilm & LR & 0.20 & 44.9 & 42.3 & \textbf{+2.52} {\scriptsize [+1.24, +3.82]} & 80.3 & 2.71 & 3.0 \\
+\midrule
+SemEval-18 & contriever & LR & 0.05 & 16.3 & 15.7 & \textbf{+0.56} {\scriptsize [+0.18, +0.95]} & 94.2 & 16.77 & 0.0 \\
+ & minilm & LR & 0.05 & 15.8 & 15.3 & \textbf{+0.47} {\scriptsize [+0.13, +0.81]} & 94.4 & 17.12 & 0.0 \\
+ & minilm & SVM & 0.05 & 16.0 & 15.3 & \textbf{+0.69} {\scriptsize [+0.34, +1.04]} & 94.9 & 17.13 & 0.0 \\
+ & tfidf & LR & 0.05 & 15.1 & 15.0 & +0.11\,\textsuperscript{n.s.} {\scriptsize [-0.15, +0.37]} & 95.1 & 18.06 & 0.0 \\
+\addlinespace
+ & minilm & LR & 0.01 & 15.4 & 15.3 & +0.12\,\textsuperscript{n.s.} {\scriptsize [-0.07, +0.30]} & 98.8 & 19.42 & 0.0 \\
+ & minilm & LR & 0.10 & 16.4 & 15.3 & \textbf{+1.04} {\scriptsize [+0.56, +1.52]} & 88.5 & 14.64 & 0.0 \\
+ & minilm & LR & 0.20 & 16.7 & 15.3 & \textbf{+1.36} {\scriptsize [+0.73, +1.96]} & 77.8 & 11.48 & 0.0 \\
+\midrule
+GoEmotions & contriever & LR & 0.05 & 25.1 & 22.6 & \textbf{+2.46} {\scriptsize [+1.67, +3.19]} & 95.0 & 21.07 & 0.0 \\
+ & minilm & LR & 0.05 & 23.3 & 22.4 & \textbf{+0.92} {\scriptsize [+0.31, +1.56]} & 95.4 & 22.10 & 0.0 \\
+ & minilm & SVM & 0.05 & 23.7 & 22.4 & \textbf{+1.26} {\scriptsize [+0.64, +2.00]} & 95.1 & 21.75 & 0.0 \\
+ & tfidf & LR & 0.05 & 23.1 & 22.5 & \textbf{+0.56} {\scriptsize [+0.04, +1.13]} & 94.5 & 23.74 & 0.0 \\
+\addlinespace
+ & minilm & LR & 0.01 & 22.9 & 22.4 & \textbf{+0.49} {\scriptsize [+0.14, +0.82]} & 98.8 & 26.74 & 0.0 \\
+ & minilm & LR & 0.10 & 23.8 & 22.4 & \textbf{+1.45} {\scriptsize [+0.74, +2.33]} & 90.9 & 18.10 & 0.0 \\
+ & minilm & LR & 0.20 & 25.4 & 22.4 & \textbf{+3.02} {\scriptsize [+2.09, +4.24]} & 81.0 & 13.15 & 0.0 \\
+\bottomrule
+\end{tabular}

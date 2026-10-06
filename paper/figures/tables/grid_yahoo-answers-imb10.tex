@@ -1,0 +1,27 @@
+% Table B: yahoo-answers-imb10, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
+\begin{tabular}{llrrrrrrr}
+\toprule
+Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+\midrule
+MiniLM + LR & -- & -- & 3 & 50.4 & 53.6 & 0.0 & 0.0 & 0 \\
+RoBERTa-base (fine-tuned) & -- & -- & 3 & 58.7 & 59.4 & 0.0 & 0.0 & 0 \\
+\midrule
+Few-shot & Fixed & 1 & 18 & 54.2 & 53.4 & 4.8 & 1.0 & 285 \\
+Few-shot & Fixed & 4 & 18 & 56.4 & 56.0 & 2.9 & 4.0 & 452 \\
+Few-shot & Per-Class & 1 & 18 & 56.8 & 56.3 & 3.0 & 10.0 & 710 \\
+Few-shot & Per-Class & 4 & 18 & 59.4 & 59.2 & 1.7 & 40.0 & 2,198 \\
+CICLe & Fixed & 1 & 18 & 53.6 & 53.1 & 3.0 & 1.0 & 277 \\
+CICLe & Fixed & 4 & 18 & 56.0 & 55.8 & 1.7 & 4.0 & 447 \\
+CICLe & Per-Class & 1 & 18 & 58.2 & 57.9 & 1.7 & 6.2 & 539 \\
+CICLe & Per-Class & 4 & 18 & 60.3 & 60.3 & 0.9 & 25.0 & 1,509 \\
+\midrule
+Top-$m$ & Fixed & 1 & 18 & 53.2 & 52.6 & 2.7 & 1.0 & 276 \\
+Top-$m$ & Fixed & 4 & 18 & 55.3 & 55.2 & 1.3 & 4.0 & 445 \\
+Top-$m$ & Per-Class & 1 & 18 & 56.1 & 55.8 & 1.3 & 6.0 & 518 \\
+Top-$m$ & Per-Class & 4 & 18 & 58.8 & 58.8 & 0.6 & 24.0 & 1,420 \\
+Prob. mass & Fixed & 1 & 18 & 53.5 & 52.9 & 3.6 & 1.0 & 280 \\
+Prob. mass & Fixed & 4 & 18 & 55.6 & 55.3 & 2.0 & 4.0 & 448 \\
+Prob. mass & Per-Class & 1 & 18 & 56.4 & 56.0 & 1.9 & 7.5 & 591 \\
+Prob. mass & Per-Class & 4 & 18 & 59.3 & 59.1 & 1.1 & 30.0 & 1,714 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,22 @@
+% Table 3. Macro-F1 with the original class names and with every name replaced by a nonsense word (same mapping for all seeds); mean over 6 models x 3 seeds. Δ rows: paired bootstrap CI, 36 pairs.
+\begin{tabular}{llrcccc}
+\toprule
+Dataset & Labels & $k$ & FS Fixed & CICLe Fixed & FS PC & CICLe PC \\
+\midrule
+Yahoo Answers & original & 1 & 54.8 & 54.2 & 57.9 & 59.5 \\
+Yahoo Answers & original & 4 & 58.4 & 58.2 & 61.6 & 62.7 \\
+Yahoo Answers & nonsense words & 1 & 25.3 & 34.3 & 34.1 & 41.1 \\
+Yahoo Answers & nonsense words & 4 & 40.6 & 44.6 & 47.8 & 52.0 \\
+\midrule
+GoEmotions & original & 1 & 24.6 & 25.5 & 25.0 & 26.0 \\
+GoEmotions & original & 4 & 26.4 & 26.8 & 24.8 & 26.0 \\
+GoEmotions & nonsense words & 1 & 8.0 & 8.8 & 10.6 & 11.7 \\
+GoEmotions & nonsense words & 4 & 11.8 & 12.3 & 14.4 & 15.3 \\
+\midrule
+\multicolumn{7}{l}{$\Delta$ CICLe $-$ few-shot, $k \in \{1, 4\}$ (36 pairs)} \\
+Yahoo Answers & original & & \multicolumn{2}{c}{-0.35\,\textsuperscript{n.s.} {\scriptsize [-0.79, +0.10]}} & \multicolumn{2}{c}{\textbf{+1.32} {\scriptsize [+0.90, +1.74]}} \\
+Yahoo Answers & nonsense words & & \multicolumn{2}{c}{\textbf{+6.52} {\scriptsize [+5.96, +7.09]}} & \multicolumn{2}{c}{\textbf{+5.62} {\scriptsize [+5.00, +6.25]}} \\
+GoEmotions & original & & \multicolumn{2}{c}{\textbf{+0.62} {\scriptsize [+0.17, +1.17]}} & \multicolumn{2}{c}{\textbf{+1.10} {\scriptsize [+0.56, +1.65]}} \\
+GoEmotions & nonsense words & & \multicolumn{2}{c}{\textbf{+0.66} {\scriptsize [+0.34, +1.00]}} & \multicolumn{2}{c}{\textbf{+0.98} {\scriptsize [+0.66, +1.39]}} \\
+\bottomrule
+\end{tabular}

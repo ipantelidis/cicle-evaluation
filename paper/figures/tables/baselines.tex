@@ -1,0 +1,13 @@
+% Table 4. Macro-F1; supervised rows mean over 3 seeds, LLM rows over 6 models x 3 seeds. Zero-shot does not depend on the pool (1x column only). F = Fixed retrieval (Ohsumed has no Per-Class runs). Bold = best per column.
+\begin{tabular}{lccccccccc}
+\toprule
+ & Yahoo Answers 1$\times$ & Yahoo Answers 10$\times$ & Yahoo Answers 100$\times$ & SST-5 1$\times$ & SST-5 10$\times$ & SST-5 100$\times$ & SemEval-18 & GoEmotions & Ohsumed \\
+\midrule
+MiniLM + LR & \textbf{65.4} & 50.4 & 31.4 & 35.5 & 20.5 & 12.6 & 9.7 & 11.2 & 45.2 \\
+RoBERTa-base, fine-tuned & 61.8 & 58.7 & 41.2 & \textbf{51.2} & 44.5 & 31.9 & \textbf{24.5} & \textbf{37.0} & \textbf{55.4} \\
+Zero-shot & 55.3 & -- & -- & 40.3 & -- & -- & 12.2 & 24.9 & 35.9 \\
+Few-shot PC, $k$=4 & 61.6 & 59.4 & 54.6 & 46.6 & 44.6 & 40.8 & 15.4 & 24.8 & 50.4\textsuperscript{F} \\
+CICLe PC, $k$=4 & 62.7 & \textbf{60.3} & 55.4 & 47.5 & \textbf{46.5} & 41.9 & 15.7 & 26.0 & 51.7\textsuperscript{F} \\
+Best LLM pipeline & 63.8 {\scriptsize CICLe PC $k$=8} & \textbf{60.3} {\scriptsize CICLe PC $k$=4} & \textbf{56.0} {\scriptsize CICLe PC $k$=1} & 47.6 {\scriptsize CICLe PC $k$=2} & \textbf{46.5} {\scriptsize CICLe PC $k$=4} & \textbf{43.4} {\scriptsize CICLe PC $k$=1} & 16.1 {\scriptsize CICLe F $k$=8} & 27.3 {\scriptsize CICLe F $k$=8} & 51.7 {\scriptsize CICLe F $k$=4} \\
+\bottomrule
+\end{tabular}

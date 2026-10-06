@@ -1,0 +1,37 @@
+% Table B: go-emotions, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
+\begin{tabular}{llrrrrrrr}
+\toprule
+Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+\midrule
+MiniLM + LR & -- & -- & 3 & 11.2 & 43.7 & 0.0 & 0.0 & 0 \\
+RoBERTa-base (fine-tuned) & -- & -- & 3 & 37.0 & 54.0 & 0.0 & 0.0 & 0 \\
+\midrule
+Zero-shot & -- & -- & 18 & 24.9 & 24.2 & 3.0 & 0.0 & 220 \\
+\midrule
+Few-shot & Fixed & 1 & 18 & 24.6 & 24.6 & 3.8 & 1.0 & 246 \\
+Few-shot & Fixed & 2 & 18 & 26.4 & 26.6 & 3.8 & 2.0 & 266 \\
+Few-shot & Fixed & 4 & 18 & 26.4 & 27.2 & 3.3 & 4.0 & 305 \\
+Few-shot & Fixed & 8 & 18 & 26.6 & 28.0 & 2.9 & 8.0 & 385 \\
+Few-shot & Per-Class & 1 & 18 & 25.0 & 25.0 & 2.8 & 28.0 & 796 \\
+Few-shot & Per-Class & 2 & 18 & 25.4 & 25.5 & 2.3 & 55.0 & 1,351 \\
+Few-shot & Per-Class & 4 & 18 & 24.8 & 25.8 & 1.9 & 107.0 & 2,422 \\
+Few-shot & Per-Class & 8 & 18 & 24.8 & 26.8 & 1.7 & 203.0 & 4,365 \\
+CICLe & Fixed & 1 & 18 & 25.5 & 25.7 & 2.8 & 1.0 & 233 \\
+CICLe & Fixed & 2 & 18 & 26.8 & 27.3 & 3.0 & 2.0 & 253 \\
+CICLe & Fixed & 4 & 18 & 26.8 & 28.2 & 2.6 & 4.0 & 293 \\
+CICLe & Fixed & 8 & 18 & 27.3 & 29.1 & 2.2 & 8.0 & 373 \\
+CICLe & Per-Class & 1 & 18 & 26.0 & 26.4 & 2.2 & 22.1 & 665 \\
+CICLe & Per-Class & 2 & 18 & 26.4 & 26.8 & 1.7 & 43.3 & 1,102 \\
+CICLe & Per-Class & 4 & 18 & 26.0 & 27.2 & 1.6 & 83.7 & 1,942 \\
+CICLe & Per-Class & 8 & 18 & 25.3 & 27.8 & 1.5 & 157.0 & 3,443 \\
+\midrule
+Top-$m$ & Fixed & 1 & 18 & 22.7 & 24.5 & 2.9 & 1.0 & 232 \\
+Top-$m$ & Fixed & 4 & 18 & 24.6 & 27.0 & 2.8 & 4.0 & 292 \\
+Top-$m$ & Per-Class & 1 & 18 & 23.9 & 25.7 & 2.4 & 22.0 & 664 \\
+Top-$m$ & Per-Class & 4 & 18 & 23.0 & 26.0 & 1.9 & 88.0 & 2,007 \\
+Prob. mass & Fixed & 1 & 18 & 22.9 & 25.0 & 2.5 & 1.0 & 226 \\
+Prob. mass & Fixed & 4 & 18 & 24.9 & 27.6 & 2.5 & 4.0 & 286 \\
+Prob. mass & Per-Class & 1 & 18 & 24.3 & 26.2 & 2.0 & 18.8 & 592 \\
+Prob. mass & Per-Class & 4 & 18 & 23.8 & 27.0 & 1.6 & 75.2 & 1,740 \\
+\bottomrule
+\end{tabular}
