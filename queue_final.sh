@@ -19,4 +19,7 @@ $PY run_grid.py --datasets sst,semeval-18 $G $S --shots 1,4 --relabel --methods 
 # Ohsumed Per-Class k=1, remaining seeds
 $PY run_grid.py --datasets ohsumed $G --seeds 43,44 --shots 1 --variants pc --methods fewshot,cicle >> logs_additions.out 2>&1
 
+# alpha sweep on the four models the ablation did not cover
+$PY run_grid.py --models ministral-3b,qwen-2.5-3b,mistral-7b-v0.3,qwen-2.5-7b $G $S --shots 1,4 --methods cicle --alphas 0.01,0.1,0.2 >> logs_additions.out 2>&1
+
 $PY run_grid.py --models qwen-2.5-32b --gpus 0+1+2+3 --seeds 43,44 --shots 1,4 --methods zeroshot,fewshot,cicle >> logs_large_32b.out 2>&1
