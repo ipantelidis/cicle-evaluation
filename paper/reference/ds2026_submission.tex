@@ -1,0 +1,704 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{orcidlink}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
+%
+\begin{document}
+%
+\title{Evaluating Conformal In-Context Learning Across Tasks and Models}
+%
+\titlerunning{Evaluating Conformal In-Context Learning}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Ippokratis Pantelidis\orcidlink{0009-0006-9528-5505}\inst{1} \and
+Korbinian Randl\orcidlink{0000-0002-7938-2747}\inst{1} \and
+John Pavlopoulos\orcidlink{0000-0001-9188-7425}\inst{1,2,3} \and \\
+Aron Henriksson\orcidlink{0000-0001-9731-1048}\inst{1}}
+% %
+\authorrunning{I. Pantelidis et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Department of Computer and Systems Sciences, Stockholm University, Sweden \and Department of Informatics, Athens University of Economics and Business, Greece \and
+Archimedes, Athena Research Centre, Greece\\
+\email{ippokratispantelidis@gmail.com, korbinian.randl@dsv.su.se, annis@aueb.gr, aronhen@dsv.su.se}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Large language models (LLMs) excel at in-context learning for text
+classification, but their performance is highly sensitive to how
+few-shot examples are selected and presented. Conformal In-Context
+Learning (CICLe) addresses this by pairing a lightweight base classifier with conformal prediction to adaptively narrow the candidate label set before few-shot prompting, but has so far only been evaluated on a single benchmark, leaving open when and why it helps. We present a large-scale evaluation across four real-world text classification benchmarks, varying widely in class cardinality and
+imbalance, plus a synthetic extension where the correct label cannot be
+guessed from the words used, using LLMs from 3B to 70B parameters across
+the Llama, Qwen, and Mistral families. The results show that CICLe's benefit is highly dataset dependent: gains over standard few-shot prompting are low on balanced, lexically-grounded data, but consistent on imbalanced data. Class imbalance, rather than class count, is hence the more reliable predictor of CICLe success. Experiments on synthetic data reveal a second, independent route to the same benefit: removing the lexical shortcut that few-shot retrieval can otherwise exploit produces a CICLe advantage even at near-perfect class balance, exceeding any effect observed on real-world data. Our experiments show that CICLe with a 3B-parameter LLM consistently outperforms zero-shot classification with larger LLMs, even outperforming models  an order of magnitude larger on two out of four benchmarks. These results identify class imbalance and the absence of lexical grounding as two independent conditions for CICLe's advantage, positioning it as a data-efficient strategy for deploying smaller LLMs.
+
+\keywords{Large Language Models \and In-Context Learning \and Conformal Prediction \and Text Classification \and Resource-Efficient NLP}
+\end{abstract}
+%
+%
+\section{Introduction}
+%
+In-context learning enables large language models (LLMs) to perform text
+classification by conditioning on a small number of labeled examples placed
+directly in the prompt, without updating model weights~\cite{brown2020language}. The convenience of few-shot classification, however, comes with a reliability problem: classification accuracy can depend strongly on which examples are selected and in what order they appear in the prompt. Replacing a well-chosen set of few-shot examples with a poor one can shift classification accuracy by as much as switching to a model one order of magnitude larger or smaller~\cite{liu2022makes,lu2022fantastically}. Such sensitivity is not merely a benchmarking concern. In practical settings, a classifier whose predictions depend heavily on prompt design is difficult to trust.
+
+Conformal In-Context Learning (CICLe)~\cite{randl2024cicle} was proposed to address this instability by narrowing the classification decision before querying the LLM. A lightweight base classifier is calibrated using Conformal Prediction (CP)~\cite{vovk2005algorithmic} to produce a set of candidate labels that contains the true class with a chosen confidence level. When this set contains more than one label, the LLM makes the final decision using few-shot examples drawn only from the remaining candidate classes. By reducing the label space presented to the LLM, CICLe has shown promising gains in both accuracy and efficiency.
+
+So far, however, CICLe has been evaluated only on a single task: food-safety risk
+classification from recall notices~\cite{randl2024cicle}. It therefore remains unclear whether its benefits reflect a general property of conformal label narrowing or specific characteristics of that one dataset. In particular, we do not yet know whether CICLe is robust across classification domains, model families, or model sizes, nor which design choices--such as the embedding model, base
+classifier, number of shots, or conformal miscoverage level--are most important. This limits its practical usefulness: without broader evidence, practitioners have little basis for deciding whether CICLe is worth adopting for a new classification problem.
+
+We close this gap with a large-scale study of \emph{when} and \emph{why} CICLe improves in-context classification. We evaluate CICLe on four text classification benchmarks spanning topic, sentiment, and emotion classification, selected to vary in class cardinality, class imbalance, and input length. We test nine LLMs ranging from 3B to 70B parameters across the Llama, Qwen, and Mistral families. Our results show that CICLe's accuracy gains are dataset dependent: they are negligible on simple, balanced tasks, but grow substantially as class imbalance increases. We therefore identify class imbalance, rather than class count alone, as the main condition under which CICLe is beneficial. On two of these benchmarks, these gains translate into substantial efficiency benefits: a 3B model paired with CICLe matches or exceeds the zero-shot accuracy of models an order of magnitude larger, outperforming a 70B model on one dataset. Finally, we probe the limits of this finding through a synthetic extension that removes all lexical signal from the class labels and shows that CICLe's advantage becomes even larger.
+%
+%
+\section{Related Work}
+%
+\textbf{Few-shot prompting} has reshaped how LLMs are applied to text classification, letting models perform new tasks from only a handful of labeled examples provided in natural language prompts~\cite{brown2020language}. This in-context learning paradigm bypasses the need for task-specific fine-tuning and has been applied successfully to a variety of NLP tasks~\cite{gao2021making}. However,
+performance depends heavily on the choice and ordering of examples~\cite{lu2022fantastically}, motivating strategies such as
+similarity-based retrieval~\cite{rubin2022learning} to improve
+reliability. LLM prompting is powerful in low-data settings, where it can achieve competitive performance with only one or two well-chosen samples per class ~\cite{brown2020language,edwards2024language}. Nevertheless, several studies show that fine-tuning smaller models still achieves superior performance on many text classification tasks if sufficient training data is available~\cite{bucher2024fine,edwards2024language}.
+While this suggests that LLMs are not yet universally state-of-the-art for
+classification, fine-tuning specifically for multi-class tasks requires substantial amounts of data~\cite{edwards2024language}, which can be prohibitively expensive~\cite{edwards2024language,snow2008cheap}.
+This also naturally extends to highly imbalanced data, where the support of training often remains low for specific classes.
+
+\textbf{Conformal prediction~(CP)}~\cite{vovk2005algorithmic} provides a
+statistical framework for associating predictions with calibrated
+confidence sets, offering formal guarantees of coverage. In essence, CP
+estimates how uncertain a model is by constructing a set of plausible
+labels for each prediction, such that the true label lies within this
+set with a predefined probability. This allows CP-based methods to
+quantify prediction reliability and control error rates in a principled
+way. Building on this idea, \textbf{CICLe}~\cite{randl2024cicle} integrates CP with a base classifier to guide the selection of candidate classes for prompting, consulting the LLM only when needed. Initial results on food hazard classification
+showed that CICLe can outperform traditional classifiers and direct
+prompting while substantially lowering the computational cost. However,
+evaluation has so far been limited to a single dataset, leaving open
+questions about CICLe's generalizability and the conditions under which
+it provides the greatest benefits.
+
+\textbf{Efficient and sustainable NLP} has become an increasingly
+important goal as LLMs grow in size since the cost of querying them at
+scale is now a practical concern in its own right, motivating a broader
+effort toward smaller models, retrieval, and
+compression~\cite{henderson2020towards,schick2021s,strubell2019energy}.
+Most of this work targets fine-tuning or model compression rather than
+in-context classification, and is complementary to the setting we
+study; closer to it, one line of
+work~\cite{purohit2025sampleefficientdemonstrationselection} frames
+example selection as a best-arm-identification problem, at a
+per-query search cost CICLe's lightweight base classifier avoids
+entirely. Our evaluation sits at the intersection of these two threads,
+the example-selection literature above and this efficiency
+literature, asking under which dataset conditions a cheap classifier
+paired with a small LLM can substitute a larger model's judgment,
+rather than treating model size and prompting strategy as independent
+design choices.
+%
+\section{Experimental Setup}
+\label{sec:exp-setup}
+%
+This section details the experimental setup used to evaluate CICLe,
+covering the benchmarks, models, and protocol underlying our results.
+%
+\subsection{Conformal In-Context Learning}
+%
+We adopt Conformal In-Context Learning (CICLe) exactly as
+proposed in \cite{randl2024cicle}. A base classifier is first trained on
+text embeddings and calibrated with class-conditional CP~\cite{vovk2005algorithmic}. For each test instance $x$, this
+produces a set of candidate classes $\mathcal{C}_{\alpha,x}$ that is guaranteed to
+contain the true label with a probability of at least $1-\alpha$. When this
+set contains only one class, that label is returned directly,
+without calling an LLM. Otherwise, an LLM is prompted to choose only among the classes in $\mathcal{C}_{\alpha,x}$, using the $k$ most similar examples belonging to these classes retrieved from the training pool (more details in \S\ref{sec:protocol}). We refer to \cite{randl2024cicle} for the full
+derivation, and focus instead, in the remainder of this section, on how
+we instantiate and vary this pipeline across datasets and models.
+%
+\subsection{Datasets}
+%
+We evaluate on four English text classification benchmarks, selected to
+vary widely in domain, class cardinality, and class imbalance
+(Table~\ref{tab:datasets}). For every dataset we draw a stratified
+subsample of 2,000 training and 1,000 test instances, holding out a
+further 20\% of the training subsample for conformal calibration.
+Imbalance is reported as the ratio between the largest and smallest
+class in the full training set, prior to subsampling. A synthetic multi-hop reasoning task is introduced in Section~\ref{sec:extensions} together with the stress tests it supports.
+%
+\begin{table}
+\centering
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+Dataset & Domain & Classes & Imbalance & Mean input length \\
+\hline
+SST-5~\cite{socher2013recursive} & Sentiment (reviews) & 5 & 2.1$\times$ & 24 tokens \\
+Yahoo Answers~\cite{zhang2015character} & Topic (Q\&A) & 10 & 1.0$\times$ & 51 tokens \\
+SemEval-18 Emoji~\cite{barbieri2018semeval} & Affect (tweets) & 20 & 8.7$\times$ & 21 tokens \\
+GoEmotions~\cite{demszky2020goemotions} & Emotion (Reddit) & 28 & 184.7$\times$ & 17 tokens \\
+\hline
+\end{tabular}
+\smallskip
+\caption{Text classification benchmarks. \emph{Imbalance} is the ratio
+between the largest and smallest class in the full training set.
+\emph{Mean input length} is the average tokenised length of the input
+text, measured across all completed experiment configurations.}
+\label{tab:datasets}
+\end{table}
+%
+
+%
+\subsection{Models}
+%
+We evaluate nine LLMs spanning three model families and an order of
+magnitude in parameter count: Llama-3.2-3B~\cite{grattafiori2024llama3},
+Ministral-3B~\cite{mistralai2024ministral}, Qwen2.5-3B~\cite{qwen2024qwen25},
+Mistral-7B-v0.3~\cite{jiang2023mistral7b}, Qwen2.5-7B~\cite{qwen2024qwen25},
+and Llama-3.1-8B~\cite{grattafiori2024llama3} are used throughout, both as
+CICLe's prompted model and as standard few-shot and zero-shot baselines;
+Llama-3.1-70B~\cite{grattafiori2024llama3}, Qwen2.5-32B~\cite{qwen2024qwen25},
+and Mistral-Nemo-12B~\cite{mistralai2024nemo} are additionally evaluated
+in a zero-shot setting, as fixed reference points for what larger models achieve without few-shot examples.
+%
+\subsection{Evaluation Protocol}\label{sec:protocol}
+%
+For every dataset and model, we vary four factors:
+%
+\begin{itemize}
+    \item \textbf{Base classifier}: logistic regression or an SVM,
+    wrapped with conformal calibration via
+    \texttt{crepes}\footnote{\url{https://github.com/henrikbostrom/crepes}};
+    \item \textbf{Embedding}: the base classifier is trained on one of
+    three text representations, TF-IDF, \texttt{MiniLM}\footnote{\url{https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2}} or \texttt{Contriever}\footnote{\url{https://huggingface.co/facebook/contriever}}, to test whether CICLe's behavior depends on embedding
+    quality;
+    \item \textbf{Shots}: the number of few-shot examples $k \in \{1,2,4,8\}$;
+    \item \textbf{Confidence}: the conformal miscoverage level
+    $\alpha \in \{0.01, 0.05, 0.10, 0.20\}$ at $k{=}2$, with $\alpha{=}0.05$
+    fixed at the remaining values of $k$ to limit the grid while still
+    covering its main axis of variation.
+\end{itemize}
+%
+For each configuration, we compare CICLe against standard few-shot prompting
+at the same $k$, under two example-selection rules applied
+identically to both: \textbf{Fixed}, which retrieves the $k$ most similar
+training examples globally regardless of class, and \textbf{Per-Class
+(PC)}, which retrieves $k$ examples for each class still eligible, so the
+few-shot example budget scales with the number of eligible classes. We
+also report zero-shot prompting with larger models.
+%
+\subsection{Metrics and Implementation}
+%
+We report macro $F_1$ as our primary metric, given the class imbalance
+present in several benchmarks (Table~\ref{tab:datasets}). All experiments
+were run on a single shared server with 8 NVIDIA A5500 GPUs (24\,GB
+each), with every model run in bf16 precision via the
+\texttt{transformers} text-generation pipeline. Code is available at
+\url{https://github.com/ipantelidis/cicle-evaluation}.
+%
+%
+\section{Results}
+\label{sec:results}
+%
+This section presents our main results, examining not only when and why
+CICLe outperforms standard few-shot prompting, but which of its
+components matter and what that advantage is worth in practice.
+%
+\subsection{CICLe vs. Standard Few-Shot Prompting}
+\label{sec:results-main}
+
+Figure~\ref{fig:comparability-main} compares the performance of CICLe vs. vanilla few-shot prompting (both \emph{Fixed} and \emph{PC}), as well as the number of few-shot examples used to reach the \emph{PC} performance. For the \textbf{Fixed} scenario, we observe comparable performance, with CICLe sitting slightly above few-shot prompting on average: on SemEval-18 and GoEmotions, CICLe leads at every $k$; on SST-5, few-shot leads at $k \in \{1,2\}$ before CICLe takes over from $k{=}4$ onward; on Yahoo Answers, the pattern reverses, with CICLe leading only at $k{=}1$ and few-shot for $k{\ge}2$.
+
+For the original \textbf{PC} setup, CICLe's adaptive set size leads to consistent performance gains at a lower example budget over all datasets at $k \ge 2$. For example, at $k{=}8$ on GoEmotions, CICLe PC uses an average of 157 examples, drawn
+only from the classes the conformal step retains, compared to 224 for
+few-shot PC, which must draw from all 28 classes, while improving performance by more than one percentage point of macro $F_1$ on average.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.49\textwidth]{figures/comparability_yahoo_answers.pdf}
+    \includegraphics[width=0.49\textwidth]{figures/comparability_sst.pdf}\\
+    \includegraphics[width=0.49\textwidth]{figures/comparability_semeval_18.pdf}
+    \includegraphics[width=0.49\textwidth]{figures/comparability_go_emotions.pdf}
+    \caption{Macro $F_1$ (\%) vs.\ $k$, across
+    all four benchmarks we test. Error bars are 95\% confidence
+    intervals over different hyperparameter choices (see \S\ref{sec:protocol}); bars (right axis) show the mean number of examples for the two
+    Per-Class variants.}
+    \label{fig:comparability-main}
+\end{figure}
+
+\subsection{Class Imbalance Predicts CICLe's Benefit}
+\label{sec:results-complexity}
+
+Section~\ref{sec:results-main} showed CICLe's advantage across our four
+benchmarks; in the following we test what determines the size of this advantage. For
+every dataset, we compute a single paired statistic: the difference in
+macro $F_1$ between CICLe Fixed and few-shot Fixed, averaged over every
+matched (model, embedding, $k$) configuration that the two methods
+share. Figure~\ref{fig:complexity} shows a clear relationship of this difference against each dataset's class imbalance: CICLe's advantage is indistinguishable from zero on the two most balanced datasets (Yahoo Answers, SST-5) and grows into a reliable, sizable effect on the two most imbalanced (SemEval-18, GoEmotions). Imbalance also orders these benchmarks more cleanly than raw class count does:
+SST-5 has fewer classes than Yahoo Answers but a larger imbalance ratio,
+and a correspondingly larger effect. This suggests CICLe's conformal narrowing step helps most not simply when there are many classes to prune, but when those classes are unevenly distributed.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.70\textwidth]{figures/complexity_vs_benefit.pdf}
+    \caption{CICLe's paired macro $F_1$ advantage over few-shot prompting
+    (Fixed variant, matched $k$), against each dataset's class imbalance
+    ratio. Error bars are 95\% confidence intervals of the paired delta.}
+    \label{fig:complexity}
+\end{figure}
+
+\subsection{Which CICLe Components Matter?}
+\label{sec:results-components}
+
+CICLe leaves several design choices open: an embedding space, a base
+classifier, the number of shots $k$, and the conformal miscoverage level
+$\alpha$. Restricting the comparison to the Fixed variant for consistentcy, we find a clear split: $k$ and
+$\alpha$ show a consistent direction of effect across every benchmark,
+while the embedding and classifier do not.
+
+The base classifier barely matters: logistic regression and SVM are
+within 0.2pp of each other on three of four benchmarks, and 0.79pp apart
+on the fourth (Yahoo Answers). The embedding choice matters more, but
+with no consistent winner (Figure~\ref{fig:components}): MiniLM leads on
+Yahoo Answers, Contriever on SST-5, and SemEval-18 and GoEmotions are
+close to ties. TF-IDF is the weakest embedding on three of four
+benchmarks, consistent with it being the only one unable to capture
+synonymy or paraphrasing, but it is essentially tied with Contriever on
+GoEmotions. We take this as evidence that CICLe's benefit comes from the
+conformal narrowing mechanism itself rather than from any particular
+embedding or classifier choice, with the best configuration remaining
+task dependent.
+
+However, $k$ and $\alpha$ behave differently, each improving accuracy in a
+consistent direction rather than at a benchmark-specific optimum.
+Accuracy increases monotonically with $k$ on all four benchmarks
+(Figure~\ref{fig:comparability-main}). Loosening $\alpha$, which shrinks
+the CP set, improves accuracy on three of four
+benchmarks (Figure~\ref{fig:alpha}: SemEval-18 and GoEmotions most
+clearly, Yahoo Answers peaking at $\alpha{=}0.10$, SST-5 essentially
+flat), at the cost of the weaker coverage guarantee a larger $\alpha$
+implies. Appendix~\ref{app:components-by-model} reports a further
+breakdown by model: CICLe's benefit over few-shot prompting is not just
+dataset-dependent but model-dependent in a way these per-dataset
+averages obscure.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/component_analysis.pdf}
+    \caption{CICLe's Macro-$F_1$ (Fixed variant) by embedding (left) and
+    base classifier (right), averaged over models, $k$, and $\alpha$.
+    Error bars are 95\% confidence intervals.}
+    \label{fig:components}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/alpha_curves.pdf}
+    \caption{CICLe's Macro-$F_1$ (Fixed variant, $k{=}2$) vs.\ the
+    conformal miscoverage level $\alpha$.}
+    \label{fig:alpha}
+\end{figure}
+
+
+\subsection{Small Model + CICLe vs. Zero-Shot with a Larger Model}
+\label{sec:results-efficiency}
+
+The preceding sections establish \emph{when} CICLe helps; we now quantify these gains in terms of deployment. For each benchmark, we take the best macro $F_1$ achieved by any 3B model paired with CICLe (Fixed variant, any embedding, classifier, $k$, and $\alpha$) and compare it against the zero-shot performance of every larger model we evaluate, up to 70B parameters. Figure~\ref{fig:small-vs-large} shows the result. On SemEval-18, the best 3B+CICLe configuration exceeds every larger zero-shot model we test, including the 70B model: a small model paired with CICLe outperforms models up to twenty times its size, simply prompted directly. SST-5 shows a similar pattern, exceeding every larger model except the 32B one. On Yahoo Answers and GoEmotions, 3B+CICLe closes most of the gap with mid-sized (7--12B) zero-shot models, but the 32B and 70B models pull back ahead. Taken together, two of four benchmarks show a 3B model with CICLe matching or exceeding a zero-shot model at least an order of magnitude larger; on SemEval-18 this holds against every larger model we test.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.80\textwidth]{figures/small_vs_large.pdf}
+    \caption{Zero-shot macro $F_1$ as a function of model size (blue), against
+    the best macro $F_1$ achieved by any 3B model paired with CICLe (red
+    dashed line). Shaded regions mark the zero-shot model sizes that
+    3B+CICLe matches or exceeds.}
+    \label{fig:small-vs-large}
+\end{figure}
+%
+%
+%\section{Extended Analyses}
+\section{A Synthetic Multi-hop Reasoning Benchmark}
+\label{sec:extensions}
+
+The four benchmarks in Section~\ref{sec:exp-setup} are naturally occurring
+text, where class count, vocabulary, and label frequency are confounded
+by construction. To decouple these factors and investigate the
+performance of CICLe on data that is guaranteed to be previously unseen
+by the LLMs, this section reports experiments on a synthetic multi-hop
+reasoning benchmark with no exploitable lexical signal.
+
+\subsection{Motivation}
+A synthetic benchmark lets us decouple two things that are entangled in
+every real-world dataset we test: how many classes there are, and whether
+those classes carry any exploitable lexical signal. GoEmotions and
+SemEval-18 are both high-imbalance, benchmarks with a high numner of classes, but their
+labels (emotions, emojis) are still topically grounded in the surface text
+that expresses them, so a retrieval-based few-shot method can in principle
+succeed by pattern-matching on vocabulary alone. A synthetic benchmark
+also rules out a second, harder-to-control confound: the LLMs we evaluate
+may have already seen our real-world datasets, or text very similar to
+them, during pretraining, making their predictions partly a matter of
+recall rather than in-context reasoning. We construct a benchmark where
+neither shortcut -- lexical pattern-matching or memorization -- is available
+by design, to test whether CICLe's benefit is contingent on either or
+holds independently of both.
+
+\subsection{Construction}
+Each example is a short synthetic passage encoding a small first-order-logic
+deduction: a set of rules of the form ``Every \textsc{x} thing is
+\textsc{y}'' and ``If something is \textsc{x}, then it is \textsc{y}'',
+a handful of base facts (``\textsc{z} is \textsc{w}''), and a yes/no
+question about whether a given entity has a given property. All entity
+and predicate names are invented nonsense words, so the only way to answer
+the embedded question is to trace the chain of rules; no real-world
+knowledge or vocabulary cue can substitute for doing so. Critically, the
+\emph{label} we classify is not the yes/no answer itself but the number
+of reasoning hops required to derive it, an integer from 1 to 12, turning
+logical deduction depth into a 12-way classification problem with no
+lexical correlate. We generate 3,000 training and 1,500 test passages and
+subsample to the same 2,000/1,000 split used throughout this paper,
+stratified by hop count, which leaves the resulting class distribution
+close to balanced (227--271 examples per class in the raw pool, an
+imbalance ratio of 1.2$\times$, comparable to SST-5). As a sanity check on
+task difficulty, a fully supervised TF-IDF and logistic regression
+baseline, trained directly on all 2,000 labeled examples, reaches only
+11.2\% accuracy against an 8.3\% random-guess floor for 12 balanced
+classes: hop count is genuinely difficult to recover from surface text by
+design. Beyond this configuration, we also generate and evaluate
+several additional variants of the same synthetic generator, independently
+varying class count, imbalance, and passage length;
+Appendix~\ref{app:fol-ablation} reports how CICLe's advantage changes
+across them.
+
+\subsection{Analysis}
+Figure~\ref{fig:fol-comparability} shows the same comparability
+plot as Section~\ref{sec:results-main}, computed for this benchmark.
+Strikingly, we find that for this task a too high number of few-shot samples seems to be counterproductive, independent of the prompting method (few-shot or CICLe). However, for both tested paradigms (Fixed and PC) we see CICLe clearly outperforming naive few-shot prompting. As also seen earlier, CICLe PC clearly reduces the number of examples in the prompt compared to naive few-shot prompting by more than half (96 examples vs. 47.1 examples). At $k{=}8$, this is also where Few-shot PC's accuracy is lowest (7.20\%) and CICLe Fixed's is highest (12.43\%), with CICLe PC in between (10.91\%); we note this as a task-specific pattern rather than a general one, since it does not appear on any of the four real-world benchmarks.
+
+We attribute this reversal to the absence of lexical grounding. On
+benchmarks where class identity correlates with surface vocabulary,
+showing the LLM more examples per class (Few-shot PC's design) genuinely
+helps it pattern-match. Here, every passage is built from the same kind
+of nonsense-word rule chains regardless of its hop count, so the 96
+few-shot examples at $k{=}8$ are not 96 informative examples but 96
+structurally similar distractors, diluting whatever signal is present and
+pushing relevant content toward the middle of a very long prompt. CICLe
+avoids this failure mode by construction: its conformal base classifier,
+trained on dense embeddings rather than the LLM's own in-context
+pattern-matching, can still extract a weak but real correlate of hop
+count (most plausibly, passage length or clause count) and use it to
+restrict the candidate set \emph{before} any few-shot examples are retrieved,
+capping the per-class multiplication that breaks Few-shot PC.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/comparability_fol_reasoning.pdf}
+    \caption{Macro $F_1$ vs.\ $k$ on FOL-Reasoning; Unlike in the previous examples, Fixed outperforms PC. We argue that this suggests more few-shot examples can hinder the LLM's ability to detect the underlying pattern on this dataset. However, the consistent advantage of CICLe across both paradigms indicates that it provides higher-quality few-shot examples.}
+    \label{fig:fol-comparability}
+\end{figure}
+
+\section{Conclusion}
+%
+This paper presented a large-scale empirical study of CICLe, asking not
+only whether conformal label narrowing outperforms standard few-shot prompting, but when
+and why. Across four real-world text-classification benchmarks, CICLe's
+advantage over few-shot prompting is not uniform: it is indistinguishable
+from zero on balanced, lexically-grounded data (Yahoo Answers, SST-5) and
+grows into a reliable, sizable effect as class imbalance increases
+(SemEval-18, GoEmotions). Experiments on synthetic data, designed so that class
+identity carries no lexical signal at all, shows that imbalance is not
+the only route to that advantage: even at near-perfect class balance -- removing the lexical shortcut that real-world few-shot retrieval can
+otherwise exploit -- still produces a reliable CICLe benefit. The two
+mechanisms appear to be independent rather than additive: within this
+synthetic setting, stacking extreme class imbalance on top of the
+missing lexical signal (Appendix~\ref{app:fol-ablation}) does not
+compound the benefit beyond what either factor produces alone. CICLe's
+Per-Class retrieval variant, in particular, outperforms standard
+few-shot prompting in the vast majority of configurations we test,
+while drawing on a substantially smaller few-shot example budget.
+
+These findings translate into a practical rule for deployment: CICLe is worth the added complexity of a conformal calibration step when a classification task has pronounced class imbalance or classes
+that are not easily distinguished from surface vocabulary alone; on tasks with neither property, standard few-shot prompting is a simpler
+choice that performs comparably. Where CICLe is adopted, the Per-Class retrieval rule is the preferred variant since the conformal step's narrowing is precisely what keeps its larger per-class example budget from growing as fast as that of standard few-shot prompting. Among CICLe's design choices (Section~\ref{sec:results-components}), the base classifier can be picked freely, since logistic regression and SVM are
+nearly interchangeable, but the embedding space cannot: no single
+embedding wins across benchmarks, making it worthwhile to select it per task, with TF-IDF the consistently weaker
+default to avoid. The number of shots $k$ and the miscoverage level
+$\alpha$ are more forgiving, since accuracy improves consistently with
+more few-shot examples and with a looser $\alpha$ across every benchmark we test, rather than requiring per-task tuning.
+
+These results come with caveats that bound their scope. The positive
+average effect we report masks model-level heterogeneity
+(Appendix~\ref{app:components-by-model}): while CICLe improves on naive
+few-shot prompting in 20 out of 24 LLM/dataset combinations, three of
+the six models we evaluate have at least one benchmark where it provides
+no benefit or actively hurts. This indicates that the choice of LLM
+should be evaluated per task. Finally, the configurations we report as
+``best'' were selected from a sweep over models, embeddings,
+classifiers, and $\alpha$ values that a first-time deployment does not
+get for free, and this paper does not yet offer a principled,
+data-driven rule for choosing $\alpha$ without running a comparable
+sweep; developing one is a natural next step, alongside an extension of CICLe to image classification, for example
+on CIFAR-100 and Food-101.
+%
+%
+\begin{credits}
+\subsubsection{\ackname}
+This work was supported by Stockholm University, the Athens University
+of Economics and Business, and the Athena Research Centre.
+
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are
+relevant to the content of this article.
+\end{credits}
+
+%
+% ---- Bibliography ----
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{splncs04}
+\bibliography{mybibliography}
+%
+\appendix
+\section{Component Sensitivity by Model}
+\label{app:components-by-model}
+
+Section~\ref{sec:results-components} averages CICLe's advantage over
+few-shot prompting across all six models we evaluate. That average is
+reliably positive, but it masks substantial heterogeneity across models.
+Table~\ref{tab:model-heterogeneity} reports the same paired delta used
+throughout this paper (CICLe Fixed minus few-shot Fixed, matched by
+embedding and $k$), broken down by model, for each of the four core
+benchmarks. Three models, Llama-3.1-8B, Llama-3.2-3B, and Mistral-7B-v0.3,
+show a positive CICLe effect on every single benchmark we test. The other
+three, Ministral-3B, Qwen-2.5-7B, and Qwen-2.5-3B, each have at least one
+benchmark where CICLe provides no benefit or actively hurts: Ministral-3B
+on Yahoo Answers ($-2.07$pp) and SST-5 ($-1.62$pp), Qwen-2.5-7B on Yahoo
+Answers ($-2.95$pp), and Qwen-2.5-3B on SST-5 ($-1.20$pp). This is not a
+simple model-size effect: Llama-3.2-3B is consistently positive at the
+same 3B scale where Ministral-3B and Qwen-2.5-3B are not. We do not have
+a mechanistic explanation for why these particular models resist CICLe's
+benefit on these particular benchmarks, but the pattern is consistent
+enough, across two different benchmarks and three different model
+families, that we report it as a genuine caveat: the positive average
+effect documented in Sections~\ref{sec:results-main}
+and~\ref{sec:results-complexity} does not guarantee a positive effect for
+every model a practitioner might choose to deploy.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+Model & Yahoo & SST-5 & SemEval-18 & GoEmotions \\
+\hline
+Llama-3.1-8B    & $+0.38$ & $+1.13$ & $+0.24$ & $+1.11$ \\
+Llama-3.2-3B    & $+1.42$ & $+0.87$ & $+0.35$ & $+1.58$ \\
+Mistral-7B-v0.3 & $+0.35$ & $+0.75$ & $+1.00$ & $+0.99$ \\
+Ministral-3B    & $-2.07$ & $-1.62$ & $+0.63$ & $-0.20$ \\
+Qwen-2.5-7B     & $-2.95$ & $+0.53$ & $+0.55$ & $+0.88$ \\
+Qwen-2.5-3B     & $+1.81$ & $-1.20$ & $+0.19$ & $+1.53$ \\
+\hline
+\end{tabular}
+\smallskip
+\caption{CICLe's paired macro $F_1$ advantage over few-shot prompting
+(Fixed variant), in percentage points, by model and benchmark. Three
+models (top) are positive everywhere; three (bottom) each have at least
+one negative benchmark.}
+\label{tab:model-heterogeneity}
+\end{table}
+
+\section{FOL-Reasoning Ablation: Class Count, Imbalance, and Passage Length}
+\label{app:fol-ablation}
+
+Section~\ref{sec:extensions} reports CICLe's advantage on a single configuration
+of the FOL-Reasoning benchmark: 12 classes, near-perfect balance, and one
+fixed passage length. To test how specific that finding is, we generate
+seven additional configurations, each varying one property of the
+synthetic generator independently while holding the rest close to the
+main configuration's defaults: three vary class count alone (4, 8, 16
+classes, all near-balanced), two vary class imbalance alone (12 classes,
+8.4$\times$ and 112.4$\times$), two vary mean passage length alone (12
+classes, near-balanced, 63 and 155 mean words), and one combines the most
+extreme settings (16 classes, 184.4$\times$ imbalance). For each, we
+evaluate CICLe and few-shot prompting (Fixed variant) with two models
+(Llama-3.1-8B, Llama-3.2-3B), Contriever embeddings, a logistic-regression
+base classifier, and $\alpha{=}0.05$, across $k \in \{1,2,4,8\}$, and
+compute the same paired delta used throughout this paper. Table~\ref{tab:fol-ablation}
+reports the result for every configuration.
+
+CICLe's advantage holds across every class count we test (4, 8, and 16
+classes, $+1.80$pp to $+3.57$pp), though the smallest configuration's
+confidence interval is wide enough to include zero ($n{=}8$ paired
+comparisons). Passage length shows the clearest, most consistent effect:
+the advantage is large on short passages ($+2.85$pp) and shrinks to a
+small but still positive effect on long ones ($+0.58$pp), suggesting that
+longer inputs dampen CICLe's benefit independently of class count or
+imbalance. Imbalance behaves differently here than in
+Section~\ref{sec:results-complexity}: moving from medium ($8.4\times$,
+$+1.84$pp) to high ($112.4\times$, $+0.62$pp, CI including zero)
+imbalance does not increase CICLe's benefit, and if anything shrinks it.
+Unlike the real-world benchmarks, where class identity correlates with
+surface vocabulary, FOL-Reasoning's labels carry no lexical signal at any
+imbalance level, so there is no vocabulary-level shortcut for greater
+imbalance to suppress further here; imbalance and the absence of lexical
+grounding appear to be independent mechanisms rather than additive ones.
+The extreme-combination configuration (16 classes, $184.4\times$
+imbalance) settles to a moderate $+1.42$pp, between the individual
+class-count and high-imbalance effects rather than compounding them.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+Configuration & Classes & Imbalance & Mean words & CICLe $\Delta$ (pp) \\
+\hline
+classes-4        & 4  & 1.1$\times$   & 66  & $+1.80^{*}$ \\
+classes-8        & 8  & 1.1$\times$   & 80  & $+3.57$ \\
+classes-16       & 16 & 1.3$\times$   & 108 & $+1.96$ \\
+imbalance-med    & 12 & 8.4$\times$   & 79  & $+1.84$ \\
+imbalance-high   & 12 & 112.4$\times$ & 68  & $+0.62^{*}$ \\
+length-short     & 12 & 1.2$\times$   & 63  & $+2.85$ \\
+length-long      & 12 & 1.2$\times$   & 155 & $+0.58$ \\
+extreme-combo    & 16 & 184.4$\times$ & 71  & $+1.42$ \\
+\hline
+\end{tabular}
+\smallskip
+\caption{CICLe's paired macro $F_1$ advantage over few-shot prompting
+(Fixed variant), across eight FOL-Reasoning configurations that each
+vary one property of the synthetic generator independently. Two models,
+Contriever embeddings, a logistic-regression base classifier,
+$\alpha{=}0.05$, $k\in\{1,2,4,8\}$; $n{=}8$ paired comparisons per row.
+$^{*}$95\% CI includes zero.}
+\label{tab:fol-ablation}
+\end{table}
+
+\end{document}
+
+
+% \subsection{Generalization to Image Classification}
+% \label{sec:vision}
+
+% \subsubsection{Motivation.}
+% The FOL-Reasoning extension holds the input modality fixed (text) while
+% removing lexical grounding from the label. A complementary question is
+% whether CICLe's conformal-narrowing mechanism is specific to text at all,
+% or whether it transfers to a setting where the base classifier, the
+% few-shot example retrieval, and the in-context examples are all images
+% rather than passages. We adapt CICLe to image classification by replacing
+% text embeddings with CLIP image embeddings and prompting a vision-language
+% model (VLM) with retrieved (image, label) few-shot examples in place of
+% (text, label) pairs; the conformal calibration step, the Fixed/PC
+% retrieval rules, and the empty/singleton/multi-class fallback logic are
+% otherwise unchanged from the text pipeline (Section~\ref{sec:background}).
+
+% \subsubsection{Setup.}
+% We evaluate on CIFAR-100 (100 classes, low-resolution natural images) and
+% Food-101 (101 classes, food photographs), using LLaVA-1.5-7B and
+% Qwen2-VL-7B as the two VLMs, with CLIP ViT-B/32 as the shared embedding
+% space for both the conformal base classifier and few-shot example retrieval.
+% Both benchmarks have two orders of magnitude more classes than any text
+% benchmark in our main suite, which lets us ask whether the
+% imbalance/cardinality pattern from Section~\ref{sec:results-complexity}
+% extends to a regime with many more classes than we test in text. Because
+% each additional few-shot example is a full image rather than a short text
+% span, the per-example cost of the PC variant is substantially higher in
+% this setting; we therefore restrict the shots grid to $k \in \{1, 4\}$
+% rather than $\{1,2,4,8\}$, keeping the rest of the protocol identical to
+% the text experiments.
+
+% \subsubsection{Status.}
+% Experiments are ongoing at the time of writing; we report preliminary
+% results from \nicefrac{76}{104} completed configurations in this draft
+% and will complete the full grid before camera-ready.
+% \textit{[Placeholder: full comparability plot and complexity-vs-benefit
+% point for both vision benchmarks, in the same style as
+% Figures~\ref{fig:comparability-main} and~\ref{fig:complexity}, to be
+% inserted once both benchmarks reach 100\%.]}
+
+% \subsection{What the Conformal Step Actually Saves}
+% \label{sec:mechanism}
+
+% The efficiency argument for CICLe rests on the conformal step doing two
+% things: avoiding the LLM altogether, and otherwise shrinking
+% the prompt it processes. We examine both directly, using the
+% per-instance conformal set sizes and token counts logged during every
+% CICLe run, rather than inferring them from macro $F_1$ as in
+% Section~\ref{sec:results}. Both turn out to be less straightforward than
+% the accuracy results suggest: the benchmarks that save the most in
+% Section~\ref{sec:results-complexity} save the least here, and a smaller
+% candidate set does not always mean a smaller prompt.
+
+% \subsubsection{How often is the LLM avoided entirely?}
+% Figure~\ref{fig:mechanism}(a) plots the fraction of test instances whose
+% conformal set has size $\leq 1$, and therefore never reach the LLM, as a
+% function of the miscoverage level $\alpha$ (CICLe Fixed, $k{=}2$,
+% averaged over every model, embedding, and classifier). The four
+% benchmarks split sharply into two groups. On Yahoo Answers, loosening
+% $\alpha$ from 0.01 to 0.20 raises this fraction from 0\% to 20.6\%: one in
+% five test instances is resolved by the base classifier alone, with no LLM
+% call at all. SST-5 shows a smaller but real effect (up to 3.7\%). On
+% GoEmotions and SemEval-18, the fraction never exceeds 0.5\% at any
+% $\alpha$ we test: with 28 and 20 classes respectively, the conformal set
+% essentially never collapses to a single class, so this particular saving,
+% unlike the benefit documented in Section~\ref{sec:results-complexity}, is
+% largest precisely on the benchmarks where CICLe's accuracy advantage is
+% smallest. The two efficiency mechanisms are complementary rather than
+% redundant: low-cardinality benchmarks save by skipping the LLM outright,
+% while high-cardinality benchmarks can mostly save through the
+% narrower prompts we examine next.
+
+% \subsubsection{Does a smaller candidate set mean a shorter prompt?}
+% For the instances that do reach the LLM, CICLe's Per-Class retrieval
+% draws few-shot examples only from classes still in contention, rather than
+% from all of them. Figure~\ref{fig:mechanism}(b) compares this against
+% few-shot PC at $k{=}8$ along two axes: the reduction in the number of
+% few-shot examples retrieved, and the reduction in actual prompt length in
+% tokens, plotted against a $y{=}x$ reference line so benchmarks where
+% token savings track example savings fall on the line, and benchmarks
+% where they don't fall below it. The few-shot example-count reduction is
+% consistently positive: CICLe PC retrieves 15--32\% fewer few-shot examples
+% than few-shot PC on every benchmark. The token-count reduction is not.
+% On Yahoo Answers and SST-5, it tracks the example saving closely (11\%
+% and 22\% respectively). On GoEmotions and
+% SemEval-18, it is slightly negative ($-3\%$ and $-15\%$): CICLe PC's
+% prompt is, on average, \emph{longer} than few-shot PC's despite using
+% fewer examples. The reconciling statistic is tokens-per-example: 21 vs.\
+% 15 on GoEmotions, 26 vs.\ 19 on SemEval-18 (CICLe PC vs.\ few-shot PC).
+% Restricting retrieval to the classes the conformal step retains evidently
+% changes \emph{which} training examples are the nearest match, not only
+% how many are retrieved, and on these two benchmarks the restricted pool
+% happens to surface longer examples. We report this as a genuine limit on
+% the efficiency story: the few-shot example-count saving CICLe is designed to
+% deliver does not always translate one-to-one into a token-level, and
+% therefore latency or cost, saving.
+
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=\textwidth]{plots/mechanism_stats.png}
+%     \caption{(a) Fraction of test instances resolved without an LLM
+%     call, vs.\ the conformal miscoverage level $\alpha$. (b) CICLe PC's
+%     reduction in few-shot example count vs.\ its reduction in actual prompt
+%     tokens, relative to few-shot PC, at $k{=}8$; the dashed line marks
+%     where the two reductions would be equal. The two benchmarks with the
+%     most classes (GoEmotions, SemEval-18) save the most in absolute
+%     accuracy (Section~\ref{sec:results-complexity}) but the least, or
+%     negatively, in token cost.}
+%     \label{fig:mechanism}
+% \end{figure}
+%
+%
