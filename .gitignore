@@ -1,3 +1,12 @@
 .venv
 __pycache__/
 *.log
+
+20-newsgroups
+cifar100
+food101
+ohsumed
+cache/
+logs/
+results/
+logs_*.out
