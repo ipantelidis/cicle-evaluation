@@ -83,6 +83,7 @@ def main():
     p.add_argument("--classifiers", type=csv(str), default=["lr", "svm"])
     p.add_argument("--seeds", type=csv(int), default=[42, 43, 44])
     p.add_argument("--imbalance", type=float, default=1.0)
+    p.add_argument("--n-train", type=int, default=2000)
     p.add_argument("--finetune", default=None, help="encoder to fine-tune, e.g. FacebookAI/roberta-base")
     p.add_argument("--gpu", default=None, help="sets CUDA_VISIBLE_DEVICES")
     p.add_argument("--out-dir", default=os.path.join(BASE_DIR, "results"))
@@ -92,7 +93,7 @@ def main():
         os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
     for dataset, seed in itertools.product(args.datasets, args.seeds):
-        data = Data(dataset, seed, imbalance=args.imbalance)
+        data = Data(dataset, seed, n_train=args.n_train, imbalance=args.imbalance)
         if args.finetune:
             settings = [(args.finetune.split("/")[-1], None)]
         else:
@@ -116,7 +117,7 @@ def main():
             metrics = compute_metrics(records, list(data.classes))
             cfg = {"dataset": data.tag, "model": "none",
                    "method": "finetuned" if args.finetune else "base", "emb": emb,
-                   "clf": clf, "seed": seed, "imbalance": data.imbalance,
+                   "clf": clf, "seed": seed, "imbalance": data.imbalance, "n_train": data.n_train,
                    "legacy_prompt": False, "n_test": len(records)}
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w") as f:

@@ -67,7 +67,11 @@ EMBEDDINGS = ["tfidf", "minilm", "contriever"]
 #          average budget as cicle, but not adaptive per instance)
 #   mass   most probable classes until their uncalibrated probabilities sum to
 #          1 - alpha (adaptive, but without conformal calibration)
-NARROWING = ["cicle", "topk", "mass"]
+#   marginal  conformal set with standard (marginal) instead of class-conditional
+#          calibration, isolating the effect of calibrating per class
+#   oracle the true label plus random other classes, at the mean conformal set
+#          size: the ceiling for what narrowing at that budget could achieve
+NARROWING = ["cicle", "topk", "mass", "marginal", "oracle"]
 CLASSIFIERS = ["lr", "svm"]
 
 
@@ -192,10 +196,11 @@ DATASETS = {
 }
 
 
-def dataset_tag(dataset, imbalance=1.0, relabel=False):
+def dataset_tag(dataset, imbalance=1.0, relabel=False, n_train=2000):
     """Name of the results directory for a dataset variant."""
     tag = dataset if imbalance <= 1 else f"{dataset}-imb{imbalance:g}"
-    return tag + ("-relabel" if relabel else "")
+    tag += "-relabel" if relabel else ""
+    return tag if n_train == 2000 else f"{tag}-n{n_train}"
 
 
 def nonsense_words(n, seed=0):
@@ -219,10 +224,11 @@ class Data:
     test sample is left untouched, so results stay paired with imbalance=1."""
 
     def __init__(self, dataset, seed, n_train=2000, n_test=1000, imbalance=1.0, relabel=False):
+        self.n_train = n_train
         import pandas as pd
         from sklearn.model_selection import train_test_split
         self.dataset, self.seed, self.imbalance = dataset, seed, imbalance
-        self.tag = dataset_tag(dataset, imbalance, relabel)
+        self.tag = dataset_tag(dataset, imbalance, relabel, n_train)
         train_df, test_df = DATASETS[dataset]["loader"]()
         train_df = train_df[train_df["text"].str.strip().astype(bool)]
         test_df = test_df[test_df["text"].str.strip().astype(bool)]
@@ -295,9 +301,9 @@ class Data:
         return out
 
     # -- conformal base classifier ------------------------------------------
-    def base_classifier(self, emb, clf):
-        if (emb, clf) in self._sets:
-            return self._sets[(emb, clf)]
+    def base_classifier(self, emb, clf, class_cond=True):
+        if (emb, clf, class_cond) in self._sets:
+            return self._sets[(emb, clf, class_cond)]
         from crepes import WrapClassifier
         from sklearn.linear_model import LogisticRegression
         from sklearn.svm import SVC
@@ -305,16 +311,16 @@ class Data:
         learner = LogisticRegression() if clf == "lr" else SVC(probability=True, random_state=0)
         wrapped = WrapClassifier(learner)
         wrapped.fit(E_train, [self.label2id[y] for y in self.y_train])
-        wrapped.calibrate(E_dev, [self.label2id[y] for y in self.y_dev], class_cond=True)
-        self._sets[(emb, clf)] = wrapped
+        wrapped.calibrate(E_dev, [self.label2id[y] for y in self.y_dev], class_cond=class_cond)
+        self._sets[(emb, clf, class_cond)] = wrapped
         return wrapped
 
-    def prediction_sets(self, emb, clf, alpha):
+    def prediction_sets(self, emb, clf, alpha, class_cond=True):
         """Per-test-instance conformal prediction sets (arrays of label strings)
         and the base classifier's own point predictions."""
-        key = (emb, clf, alpha)
+        key = (emb, clf, alpha, class_cond)
         if key not in self._pred_sets:
-            wrapped = self.base_classifier(emb, clf)
+            wrapped = self.base_classifier(emb, clf, class_cond)
             E_test = self.embeddings(emb)[2]
             # crepes smooths p-values with random tie-breaking; seeding it makes
             # every configuration sharing (emb, clf, alpha) see the same sets
@@ -328,6 +334,17 @@ class Data:
         conformal, point = self.prediction_sets(emb, clf, alpha)
         if method == "cicle":
             return conformal, point
+        if method == "marginal":
+            return self.prediction_sets(emb, clf, alpha, class_cond=False)
+        if method == "oracle":
+            rng = np.random.default_rng(self.seed)
+            m = max(1, int(round(np.mean([len(s) for s in conformal]))))
+            sets = []
+            for y in self.y_test:
+                others = self.classes[self.classes != y]
+                chosen = rng.choice(others, size=min(m - 1, len(others)), replace=False)
+                sets.append(np.sort(np.append(chosen, y)))
+            return sets, point
         proba = self.base_classifier(emb, clf).predict_proba(self.embeddings(emb)[2])
         ranked = np.argsort(-proba, axis=1)
         if method == "topk":
@@ -599,7 +616,7 @@ def run_config(cfg, data, llm, legacy=False, limit=None, batched=True):
         if narrowing:
             rec["pred_in_set"] = pred in rec["conformal_set"]
 
-    return {"config": {**cfg, "seed": data.seed, "imbalance": data.imbalance,
+    return {"config": {**cfg, "seed": data.seed, "imbalance": data.imbalance, "n_train": data.n_train,
                        "label_map": getattr(data, "label_map", None),
                        "legacy_prompt": legacy, "n_test": n},
             "example_prompt": prompts[0] if prompts else None,
@@ -650,7 +667,7 @@ def expand_configs(args):
             else:
                 for clf, alpha in itertools.product(args.classifiers, args.alphas):
                     configs.append({**base, "clf": clf, "alpha": alpha})
-    tag = dataset_tag(args.dataset, args.imbalance, args.relabel)
+    tag = dataset_tag(args.dataset, args.imbalance, args.relabel, args.n_train)
     return [{"dataset": tag, "model": args.model, **c} for c in configs]
 
 
@@ -661,7 +678,7 @@ def parse_args():
     p.add_argument("--dataset", required=True, choices=sorted(DATASETS))
     p.add_argument("--model", required=True, choices=sorted(MODELS))
     p.add_argument("--methods", type=csv(str), default=["fewshot", "cicle"],
-                   help="comma-separated subset of zeroshot,fewshot,cicle,topk,mass")
+                   help="comma-separated subset of zeroshot,fewshot,cicle,topk,mass,marginal,oracle")
     p.add_argument("--variants", type=csv(str), default=["fixed", "pc"])
     p.add_argument("--embeddings", type=csv(str), default=["minilm"])
     p.add_argument("--classifiers", type=csv(str), default=["lr"])
@@ -671,6 +688,9 @@ def parse_args():
     p.add_argument("--imbalance", type=float, default=1.0,
                    help="resample the training pool to this largest/smallest class ratio; "
                         "results go to <dataset>-imb<ratio>/")
+    p.add_argument("--n-train", type=int, default=2000,
+                   help="size of the labelled pool (train + calibration); results go to "
+                        "<dataset>-n<size>/ when not 2000")
     p.add_argument("--relabel", action="store_true",
                    help="replace every label name with a nonsense word; "
                         "results go to <dataset>-relabel/")
@@ -707,7 +727,8 @@ def main():
     # compute every embedding before the LLM takes the GPU:
     datasets = {}
     for seed in sorted({s for s, _, _ in todo}):
-        datasets[seed] = Data(args.dataset, seed, imbalance=args.imbalance, relabel=args.relabel)
+        datasets[seed] = Data(args.dataset, seed, n_train=args.n_train,
+                              imbalance=args.imbalance, relabel=args.relabel)
         for emb in sorted({c["emb"] for s, c, _ in todo if s == seed and "emb" in c}):
             datasets[seed].embeddings(emb)
 

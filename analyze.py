@@ -28,8 +28,11 @@ from collections import defaultdict
 import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-METHOD_ORDER = ["base", "finetuned", "zeroshot", "fewshot", "cicle", "topk", "mass"]
-NARROWING = ["cicle", "topk", "mass"]
+METHOD_ORDER = ["base", "finetuned", "zeroshot", "fewshot", "cicle", "topk", "mass",
+                "marginal", "oracle"]
+NARROWING = ["cicle", "topk", "mass", "marginal", "oracle"]
+CORE_MODELS = ["llama-3.2-3b", "ministral-3b", "qwen-2.5-3b",
+               "mistral-7b-v0.3", "qwen-2.5-7b", "llama-3.1-8b"]
 
 
 def macro_f1(gold, pred, n_classes):
@@ -162,6 +165,8 @@ def main():
     p.add_argument("--emb", default="minilm")
     p.add_argument("--clf", default="lr")
     p.add_argument("--alpha", type=float, default=0.05)
+    p.add_argument("--models", type=lambda s: s.split(","), default=CORE_MODELS,
+                   help="LLMs included in the tables (default: the six small models)")
     args = p.parse_args()
     rng = np.random.default_rng(0)
 
@@ -171,8 +176,10 @@ def main():
     for dataset in datasets:
         every_run = load(args.results_dir, dataset)
         runs = {k: v for k, v in every_run.items()
-                if k[4] in (None, args.emb) and k[5] in (None, args.clf)
-                and k[6] in (None, args.alpha)}
+                if k[3] in args.models + ["none"]
+                and (k[0] in ("base", "finetuned") or
+                     (k[4] in (None, args.emb) and k[5] in (None, args.clf)
+                      and k[6] in (None, args.alpha)))}
         if not runs:
             continue
         models = sorted({k[3] for k in runs} - {"none"})
@@ -180,7 +187,7 @@ def main():
         print(f"\n===== {dataset}: {len(runs)} runs, {len(models)} models, seeds {seeds}")
         summary_table(runs)
         narrowing_table(runs)
-        for other in ("fewshot", "topk", "mass"):
+        for other in ("fewshot", "topk", "mass", "marginal", "oracle"):
             for variant in ("fixed", "pc"):
                 res = paired_test(runs, other, variant, args.bootstrap, rng)
                 if res:
