@@ -196,11 +196,14 @@ DATASETS = {
 }
 
 
-def dataset_tag(dataset, imbalance=1.0, relabel=False, n_train=2000):
-    """Name of the results directory for a dataset variant."""
+def dataset_tag(dataset, imbalance=1.0, relabel=False, n_train=2000, prompt="default",
+                retrieval="similar"):
+    """Name of the results directory for a dataset / protocol variant."""
     tag = dataset if imbalance <= 1 else f"{dataset}-imb{imbalance:g}"
     tag += "-relabel" if relabel else ""
-    return tag if n_train == 2000 else f"{tag}-n{n_train}"
+    tag += "" if n_train == 2000 else f"-n{n_train}"
+    tag += "" if prompt == "default" else f"-{prompt}prompt"
+    return tag + ("" if retrieval == "similar" else f"-{retrieval}")
 
 
 def nonsense_words(n, seed=0):
@@ -357,11 +360,21 @@ class Data:
         return [self.classes[np.sort(r[:n])] for r, n in zip(ranked, sizes)], point
 
     # -- few-shot example retrieval -----------------------------------------
-    def retrieve(self, emb, test_idx, allowed, k, variant):
+    def retrieve(self, emb, test_idx, allowed, k, variant, random=False):
         """Indices into the training set of the retrieved examples, most
         similar first. `allowed` restricts retrieval to those classes.
-        fixed: the k most similar examples overall; pc: k per class."""
+        fixed: the k most similar examples overall; pc: k per class.
+        random=True draws the examples at random instead (seeded per instance)."""
         E_train, _, E_test = self.embeddings(emb)
+        if random:
+            rng = np.random.default_rng([self.seed, test_idx])
+            if variant == "fixed":
+                cand = np.flatnonzero(np.isin(self.y_train, list(allowed)))
+                return rng.choice(cand, size=min(k, len(cand)), replace=False)
+            chosen = [rng.choice(c, size=min(k, len(c)), replace=False)
+                      for y in allowed for c in [np.flatnonzero(self.y_train == y)]]
+            chosen = np.concatenate(chosen).astype(int)
+            return rng.permutation(chosen)
         sim = _cosine(E_test[test_idx], E_train)
         if variant == "fixed":
             cand = np.flatnonzero(np.isin(self.y_train, list(allowed)))
@@ -411,6 +424,20 @@ def _dense_encoder(emb):
 # ---------------------------------------------------------------------------
 def _quote(s):
     return s.replace('"', "'")
+
+
+def build_alt_prompt(task, text, examples, candidates):
+    """A second template for the prompt-robustness check: different wording
+    and layout, labels in the (shuffled) order given, and examples in the
+    order given (the caller passes the most similar example last)."""
+    sep = "; " if any("," in str(c) for c in candidates) else ", "
+    lines = [f"{task} Choose exactly one of these labels: {sep.join(candidates)}."]
+    if examples:
+        lines.append("Labelled examples:")
+        for x, y in examples:
+            lines.append(f"Text: {_quote(x)}\nLabel: {y}")
+    lines.append(f"Now label this text. Answer with the label only.\nText: {_quote(text)}\nLabel:")
+    return "\n\n".join(lines)
 
 
 def build_prompt(task, text, examples, candidates):
@@ -594,11 +621,16 @@ def run_config(cfg, data, llm, legacy=False, limit=None, batched=True):
             candidates = ps
         shots = []
         if method != "zeroshot":
-            shots = data.retrieve(cfg["emb"], i, candidates, cfg["k"], cfg["variant"])
+            shots = data.retrieve(cfg["emb"], i, candidates, cfg["k"], cfg["variant"],
+                                  random=cfg.get("retrieval") == "random")
         examples = [(data.X_train[j], data.y_train[j]) for j in shots]
         rec["shots"] = [int(j) for j in shots]
         if legacy:
             prompts.append(build_legacy_prompt(task, data.X_test[i], examples, candidates, method))
+        elif cfg.get("prompt") == "alt":
+            rng = np.random.default_rng([data.seed, i])
+            shuffled = [candidates[j] for j in rng.permutation(len(candidates))]
+            prompts.append(build_alt_prompt(task, data.X_test[i], examples[::-1], shuffled))
         else:
             prompts.append(build_prompt(task, data.X_test[i], examples, candidates))
         prompt_rows.append(len(records))
@@ -667,8 +699,10 @@ def expand_configs(args):
             else:
                 for clf, alpha in itertools.product(args.classifiers, args.alphas):
                     configs.append({**base, "clf": clf, "alpha": alpha})
-    tag = dataset_tag(args.dataset, args.imbalance, args.relabel, args.n_train)
-    return [{"dataset": tag, "model": args.model, **c} for c in configs]
+    tag = dataset_tag(args.dataset, args.imbalance, args.relabel, args.n_train,
+                      args.prompt, args.retrieval)
+    return [{"dataset": tag, "model": args.model, "prompt": args.prompt,
+             "retrieval": args.retrieval, **c} for c in configs]
 
 
 def parse_args():
@@ -691,6 +725,12 @@ def parse_args():
     p.add_argument("--n-train", type=int, default=2000,
                    help="size of the labelled pool (train + calibration); results go to "
                         "<dataset>-n<size>/ when not 2000")
+    p.add_argument("--prompt", choices=["default", "alt"], default="default",
+                   help="alt: second template, labels in random order, most similar example "
+                        "last; results go to <dataset>-altprompt/")
+    p.add_argument("--retrieval", choices=["similar", "random"], default="similar",
+                   help="random: examples drawn at random from the allowed classes; "
+                        "results go to <dataset>-random/")
     p.add_argument("--relabel", action="store_true",
                    help="replace every label name with a nonsense word; "
                         "results go to <dataset>-relabel/")
