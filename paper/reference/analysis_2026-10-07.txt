@@ -1,0 +1,343 @@
+===== go-emotions: 627 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12      9.44  42.25     0.0%    0.0       0
+  zeroshot -        0    18     24.86  24.17     3.0%    0.0     220
+  fewshot  fixed    1    18     24.60  24.56     3.8%    1.0     246
+  fewshot  fixed    4    18     26.45  27.16     3.3%    4.0     305
+  fewshot  pc       1    18     25.00  25.01     2.8%   28.0     796
+  fewshot  pc       4    18     24.78  25.82     1.9%  107.0    2422
+  cicle    fixed    0    18     26.20  25.59     2.1%    0.0     207
+  cicle    fixed    1    18     25.52  25.74     2.8%    1.0     233
+  cicle    fixed    4    18     26.76  28.19     2.6%    4.0     293
+  cicle    pc       1    18     25.95  26.38     2.2%   22.1     665
+  cicle    pc       4    18     26.03  27.21     1.6%   83.7    1942
+  candidate sets [cicle]: coverage 95.4%, mean size 22.10, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 98.8%, mean size 22.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 97.9%, mean size 18.80, LLM skipped 0.0%
+  candidate sets [marginal]: coverage 95.1%, mean size 14.35, LLM skipped 0.1%
+  candidate sets [oracle]: coverage 100.0%, mean size 22.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.59 pp [95% CI +0.19, +1.08], p = 0.006, 72 pairs
+  CICLe - fewshot (pc   ): +0.92 pp [95% CI +0.51, +1.37], p = 0.000, 72 pairs
+  CICLe - topk    (fixed): +2.51 pp [95% CI +1.54, +3.22], p = 0.000, 36 pairs
+  CICLe - topk    (pc   ): +2.54 pp [95% CI +1.34, +3.41], p = 0.000, 36 pairs
+  CICLe - mass    (fixed): +2.26 pp [95% CI +1.23, +3.01], p = 0.000, 36 pairs
+  CICLe - mass    (pc   ): +1.91 pp [95% CI +0.72, +2.75], p = 0.002, 36 pairs
+  CICLe - marginal (fixed): +1.92 pp [95% CI +0.79, +2.76], p = 0.002, 36 pairs
+  CICLe - marginal (pc   ): +1.28 pp [95% CI +0.02, +2.25], p = 0.046, 36 pairs
+  CICLe - oracle  (fixed): -2.49 pp [95% CI -3.04, -1.74], p = 0.000, 36 pairs
+  CICLe - oracle  (pc   ): -2.35 pp [95% CI -2.99, -1.68], p = 0.000, 36 pairs
+===== go-emotions-relabel: 162 runs, 6 models, seeds [42, 43, 44]
+  fewshot  fixed    1    18      7.97  10.83     0.7%    1.0     286
+  fewshot  fixed    4    18     11.80  16.66     1.3%    4.0     351
+  fewshot  pc       1    18     10.61  12.44     0.5%   28.0     874
+  fewshot  pc       4    18     14.37  18.10     0.5%  107.0    2609
+  cicle    fixed    0    18      2.05   3.53     1.1%    0.0     238
+  cicle    fixed    1    18      8.82  11.61     1.0%    1.0     266
+  cicle    fixed    4    18     12.27  17.33     1.1%    4.0     330
+  cicle    pc       1    18     11.67  13.97     0.6%   22.1     727
+  cicle    pc       4    18     15.27  19.77     0.6%   83.8    2091
+  candidate sets [cicle]: coverage 95.5%, mean size 22.13, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.66 pp [95% CI +0.30, +0.98], p = 0.002, 36 pairs
+  CICLe - fewshot (pc   ): +0.98 pp [95% CI +0.67, +1.37], p = 0.000, 36 pairs
+===== ohsumed: 267 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     32.80  54.08     0.0%    0.0       0
+  zeroshot -        0    18     35.90  43.21     5.2%    0.0     579
+  fewshot  fixed    1    18     46.66  52.65     5.3%    1.0     897
+  fewshot  fixed    4    18     50.35  57.12     3.9%    4.0    1826
+  fewshot  pc       1    18     44.59  50.47     6.4%   23.0    7518
+  cicle    fixed    0    18     40.17  48.63     1.3%    0.0     509
+  cicle    fixed    1    18     47.65  55.24     1.8%    1.0     828
+  cicle    fixed    4    18     51.67  59.45     1.3%    4.0    1756
+  cicle    pc       1    18     49.81  57.26     1.5%   12.3    4159
+  candidate sets [cicle]: coverage 96.4%, mean size 12.27, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 98.8%, mean size 12.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 99.4%, mean size 13.95, LLM skipped 0.5%
+  candidate sets [marginal]: coverage 95.2%, mean size 4.81, LLM skipped 7.4%
+  CICLe - fewshot (fixed): +1.15 pp [95% CI +0.57, +1.85], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +5.21 pp [95% CI +4.43, +6.08], p = 0.000, 18 pairs
+  CICLe - topk    (fixed): +1.08 pp [95% CI +0.28, +1.80], p = 0.002, 36 pairs
+  CICLe - mass    (fixed): +1.52 pp [95% CI +0.87, +2.21], p = 0.000, 36 pairs
+  CICLe - marginal (fixed): +2.88 pp [95% CI +1.94, +4.05], p = 0.000, 36 pairs
+===== semeval-18: 555 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12      6.51  24.46     0.0%    0.0       0
+  zeroshot -        0    18     12.21  19.66     5.1%    0.0     236
+  fewshot  fixed    1    18     14.35  19.95     7.6%    1.0     266
+  fewshot  fixed    4    18     15.29  21.07     6.0%    4.0     338
+  fewshot  pc       1    18     15.16  20.71     4.4%   20.0     731
+  fewshot  pc       4    18     15.38  21.94     2.9%   80.0    2209
+  cicle    fixed    0    18     13.03  19.63     5.0%    0.0     225
+  cicle    fixed    1    18     14.71  19.93     7.2%    1.0     255
+  cicle    fixed    4    18     15.89  21.23     5.5%    4.0     328
+  cicle    pc       1    18     15.75  20.81     4.3%   17.1     648
+  cicle    pc       4    18     15.72  21.91     2.6%   68.5    1911
+  candidate sets [cicle]: coverage 94.4%, mean size 17.12, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 97.1%, mean size 17.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 97.2%, mean size 16.87, LLM skipped 0.0%
+  candidate sets [oracle]: coverage 100.0%, mean size 17.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.52 pp [95% CI +0.29, +0.72], p = 0.000, 72 pairs
+  CICLe - fewshot (pc   ): +0.46 pp [95% CI +0.21, +0.69], p = 0.002, 72 pairs
+  CICLe - topk    (fixed): +0.04 pp [95% CI -0.23, +0.34], p = 0.774, 36 pairs
+  CICLe - topk    (pc   ): +0.01 pp [95% CI -0.30, +0.34], p = 0.916, 36 pairs
+  CICLe - mass    (fixed): +0.01 pp [95% CI -0.27, +0.29], p = 0.990, 36 pairs
+  CICLe - mass    (pc   ): +0.02 pp [95% CI -0.28, +0.31], p = 0.926, 36 pairs
+  CICLe - oracle  (fixed): -1.13 pp [95% CI -1.53, -0.76], p = 0.000, 36 pairs
+  CICLe - oracle  (pc   ): -1.32 pp [95% CI -1.71, -0.94], p = 0.000, 36 pairs
+===== semeval-18-relabel: 144 runs, 6 models, seeds [42, 43, 44]
+  fewshot  fixed    1    18      6.28   8.42     6.0%    1.0     267
+  fewshot  fixed    4    18      8.35  11.30     5.3%    4.0     340
+  fewshot  pc       1    18      7.69   9.68     2.1%   20.0     732
+  fewshot  pc       4    18     10.46  13.61     0.2%   80.0    2212
+  cicle    fixed    1    18      7.05   9.18     4.5%    1.0     257
+  cicle    fixed    4    18      9.16  12.09     4.3%    4.0     330
+  cicle    pc       1    18      8.29  10.38     1.9%   17.2     651
+  cicle    pc       4    18     11.30  14.38     0.1%   68.6    1921
+  candidate sets [cicle]: coverage 94.4%, mean size 17.16, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.79 pp [95% CI +0.57, +1.06], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +0.72 pp [95% CI +0.43, +1.00], p = 0.000, 36 pairs
+===== sst: 627 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     27.71  37.77     0.0%    0.0       0
+  zeroshot -        0    18     40.35  44.71     0.0%    0.0     184
+  fewshot  fixed    1    18     40.59  42.82     0.0%    1.0     217
+  fewshot  fixed    4    18     44.11  46.23     0.0%    4.0     298
+  fewshot  pc       1    18     44.87  47.27     0.0%    5.0     327
+  fewshot  pc       4    18     46.60  48.37     0.0%   20.0     746
+  cicle    fixed    0    18     45.11  47.07     0.1%    0.0     181
+  cicle    fixed    1    18     43.04  44.42     0.0%    1.0     214
+  cicle    fixed    4    18     45.75  47.40     0.0%    4.0     295
+  cicle    pc       1    18     46.23  47.99     0.0%    3.9     292
+  cicle    pc       4    18     47.51  49.13     0.0%   15.5     615
+  candidate sets [cicle]: coverage 95.4%, mean size 3.86, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 95.5%, mean size 4.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 99.2%, mean size 4.50, LLM skipped 0.0%
+  candidate sets [marginal]: coverage 93.9%, mean size 3.67, LLM skipped 0.1%
+  candidate sets [oracle]: coverage 100.0%, mean size 4.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +1.77 pp [95% CI +1.14, +2.39], p = 0.000, 72 pairs
+  CICLe - fewshot (pc   ): +1.07 pp [95% CI +0.42, +1.71], p = 0.002, 72 pairs
+  CICLe - topk    (fixed): -0.14 pp [95% CI -0.82, +0.63], p = 0.744, 36 pairs
+  CICLe - topk    (pc   ): +0.32 pp [95% CI -0.45, +1.11], p = 0.420, 36 pairs
+  CICLe - mass    (fixed): +1.07 pp [95% CI +0.45, +1.68], p = 0.000, 36 pairs
+  CICLe - mass    (pc   ): +0.71 pp [95% CI +0.07, +1.33], p = 0.040, 36 pairs
+  CICLe - marginal (fixed): -0.56 pp [95% CI -1.15, +0.05], p = 0.078, 36 pairs
+  CICLe - marginal (pc   ): -0.03 pp [95% CI -0.67, +0.70], p = 0.906, 36 pairs
+  CICLe - oracle  (fixed): -7.11 pp [95% CI -8.07, -6.19], p = 0.000, 36 pairs
+  CICLe - oracle  (pc   ): -7.60 pp [95% CI -8.55, -6.64], p = 0.000, 36 pairs
+===== sst-imb10: 375 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     15.95  26.37     0.0%    0.0       0
+  fewshot  fixed    1    18     40.01  42.36     0.0%    1.0     217
+  fewshot  fixed    4    18     42.37  44.78     0.0%    4.0     297
+  fewshot  pc       1    18     44.58  46.97     0.0%    5.0     326
+  fewshot  pc       4    18     44.64  46.55     0.0%   20.0     740
+  cicle    fixed    1    18     42.72  44.63     0.0%    1.0     214
+  cicle    fixed    4    18     44.33  46.45     0.0%    4.0     294
+  cicle    pc       1    18     46.35  48.48     0.0%    4.1     298
+  cicle    pc       4    18     46.51  48.27     0.0%   16.2     633
+  candidate sets [cicle]: coverage 96.5%, mean size 4.04, LLM skipped 0.7%
+  candidate sets [topk ]: coverage 89.4%, mean size 4.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 92.2%, mean size 4.13, LLM skipped 0.4%
+  candidate sets [marginal]: coverage 82.6%, mean size 3.55, LLM skipped 4.0%
+  CICLe - fewshot (fixed): +2.33 pp [95% CI +1.68, +3.06], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +1.82 pp [95% CI +1.11, +2.49], p = 0.000, 36 pairs
+  CICLe - topk    (fixed): +1.90 pp [95% CI +0.97, +2.78], p = 0.000, 36 pairs
+  CICLe - topk    (pc   ): +2.44 pp [95% CI +1.52, +3.40], p = 0.000, 36 pairs
+  CICLe - mass    (fixed): +1.69 pp [95% CI +0.93, +2.41], p = 0.000, 36 pairs
+  CICLe - mass    (pc   ): +1.85 pp [95% CI +1.06, +2.54], p = 0.000, 36 pairs
+  CICLe - marginal (fixed): +3.22 pp [95% CI +2.34, +3.99], p = 0.000, 36 pairs
+  CICLe - marginal (pc   ): +4.01 pp [95% CI +3.09, +4.90], p = 0.000, 36 pairs
+===== sst-imb100: 375 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12      9.25  20.91     0.0%    0.0       0
+  fewshot  fixed    1    18     37.71  40.92     0.0%    1.0     217
+  fewshot  fixed    4    18     38.22  41.71     0.0%    4.0     298
+  fewshot  pc       1    18     42.13  44.90     0.0%    5.0     329
+  fewshot  pc       4    18     40.79  43.75     0.0%   20.0     749
+  cicle    fixed    1    18     39.28  41.61     0.0%    1.0     216
+  cicle    fixed    4    18     39.68  42.34     0.0%    4.0     297
+  cicle    pc       1    18     43.35  45.67     0.0%    4.4     309
+  cicle    pc       4    18     41.89  44.34     0.0%   17.4     674
+  candidate sets [cicle]: coverage 96.0%, mean size 4.35, LLM skipped 0.1%
+  candidate sets [topk ]: coverage 88.4%, mean size 4.33, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 60.0%, mean size 2.85, LLM skipped 2.3%
+  candidate sets [marginal]: coverage 51.9%, mean size 2.26, LLM skipped 11.3%
+  CICLe - fewshot (fixed): +1.51 pp [95% CI +0.91, +2.15], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +1.16 pp [95% CI +0.53, +1.81], p = 0.000, 36 pairs
+  CICLe - topk    (fixed): +3.35 pp [95% CI +2.60, +4.18], p = 0.000, 36 pairs
+  CICLe - topk    (pc   ): +4.21 pp [95% CI +3.30, +4.98], p = 0.000, 36 pairs
+  CICLe - mass    (fixed): +8.54 pp [95% CI +7.55, +9.50], p = 0.000, 36 pairs
+  CICLe - mass    (pc   ): +10.70 pp [95% CI +9.65, +11.85], p = 0.000, 36 pairs
+  CICLe - marginal (fixed): +10.28 pp [95% CI +9.15, +11.42], p = 0.000, 36 pairs
+  CICLe - marginal (pc   ): +12.92 pp [95% CI +11.78, +14.14], p = 0.000, 36 pairs
+===== sst-n1000: 159 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     24.88  35.44     0.0%    0.0       0
+  fewshot  fixed    1    18     40.03  42.39     0.0%    1.0     217
+  fewshot  fixed    4    18     44.13  46.08     0.0%    4.0     298
+  fewshot  pc       1    18     44.87  47.22     0.0%    5.0     329
+  fewshot  pc       4    18     46.11  47.88     0.0%   20.0     749
+  cicle    fixed    1    18     42.58  44.00     0.0%    1.0     214
+  cicle    fixed    4    18     46.03  47.66     0.0%    4.0     296
+  cicle    pc       1    18     46.01  47.76     0.0%    4.0     297
+  cicle    pc       4    18     46.62  48.18     0.0%   15.9     632
+  candidate sets [cicle]: coverage 95.3%, mean size 3.98, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +2.23 pp [95% CI +1.59, +2.85], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +0.83 pp [95% CI +0.19, +1.51], p = 0.012, 36 pairs
+===== sst-n250: 159 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     18.57  31.69     0.0%    0.0       0
+  fewshot  fixed    1    18     40.18  42.56     0.0%    1.0     217
+  fewshot  fixed    4    18     43.85  45.94     0.0%    4.0     299
+  fewshot  pc       1    18     44.20  46.55     0.0%    5.0     327
+  fewshot  pc       4    18     45.88  47.53     0.0%   20.0     745
+  cicle    fixed    1    18     40.94  42.26     0.0%    1.0     215
+  cicle    fixed    4    18     43.88  45.28     0.0%    4.0     298
+  cicle    pc       1    18     43.84  45.44     0.0%    4.2     305
+  cicle    pc       4    18     44.99  46.26     0.0%   17.0     661
+  candidate sets [cicle]: coverage 92.2%, mean size 4.25, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.39 pp [95% CI -0.30, +1.06], p = 0.262, 36 pairs
+  CICLe - fewshot (pc   ): -0.63 pp [95% CI -1.35, +0.07], p = 0.096, 36 pairs
+===== sst-n500: 159 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     22.31  34.26     0.0%    0.0       0
+  fewshot  fixed    1    18     40.35  42.64     0.0%    1.0     217
+  fewshot  fixed    4    18     43.91  46.08     0.0%    4.0     298
+  fewshot  pc       1    18     45.27  47.75     0.0%    5.0     328
+  fewshot  pc       4    18     47.09  48.96     0.0%   20.0     744
+  cicle    fixed    1    18     42.56  44.14     0.0%    1.0     215
+  cicle    fixed    4    18     45.36  47.32     0.0%    4.0     296
+  cicle    pc       1    18     45.91  48.12     0.0%    4.2     303
+  cicle    pc       4    18     47.65  49.57     0.0%   16.7     649
+  candidate sets [cicle]: coverage 94.4%, mean size 4.17, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +1.83 pp [95% CI +1.14, +2.44], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +0.60 pp [95% CI -0.11, +1.23], p = 0.094, 36 pairs
+===== sst-relabel: 144 runs, 6 models, seeds [42, 43, 44]
+  fewshot  fixed    1    18     24.34  26.47     0.6%    1.0     223
+  fewshot  fixed    4    18     32.08  33.37     0.3%    4.0     307
+  fewshot  pc       1    18     33.29  34.82     0.1%    5.0     337
+  fewshot  pc       4    18     36.77  38.33     0.0%   20.0     771
+  cicle    fixed    1    18     28.43  29.43     0.3%    1.0     219
+  cicle    fixed    4    18     35.48  36.39     0.2%    4.0     303
+  cicle    pc       1    18     35.44  36.39     0.1%    3.9     300
+  cicle    pc       4    18     38.84  39.84     0.0%   15.5     635
+  candidate sets [cicle]: coverage 95.4%, mean size 3.87, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +3.75 pp [95% CI +3.23, +4.29], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +2.10 pp [95% CI +1.49, +2.71], p = 0.000, 36 pairs
+===== yahoo-answers: 627 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     52.45  53.74     0.0%    0.0       0
+  zeroshot -        0    18     55.32  54.61     6.1%    0.0     221
+  fewshot  fixed    1    18     54.79  53.98     4.8%    1.0     285
+  fewshot  fixed    4    18     58.35  57.97     2.8%    4.0     455
+  fewshot  pc       1    18     57.93  57.47     2.9%   10.0     700
+  fewshot  pc       4    18     61.65  61.48     1.6%   40.0    2166
+  cicle    fixed    0    18     56.27  55.82     3.3%    0.0     212
+  cicle    fixed    1    18     54.25  53.74     2.7%    1.0     276
+  cicle    fixed    4    18     58.20  57.91     1.2%    4.0     447
+  cicle    pc       1    18     59.48  59.21     1.3%    5.8     503
+  cicle    pc       4    18     62.74  62.74     0.6%   23.3    1378
+  candidate sets [cicle]: coverage 95.0%, mean size 5.67, LLM skipped 3.4%
+  candidate sets [topk ]: coverage 93.7%, mean size 5.67, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 98.4%, mean size 7.84, LLM skipped 0.1%
+  candidate sets [marginal]: coverage 95.6%, mean size 5.71, LLM skipped 5.1%
+  candidate sets [oracle]: coverage 100.0%, mean size 5.67, LLM skipped 0.0%
+  CICLe - fewshot (fixed): -0.19 pp [95% CI -0.56, +0.20], p = 0.346, 72 pairs
+  CICLe - fewshot (pc   ): +1.40 pp [95% CI +1.05, +1.75], p = 0.000, 72 pairs
+  CICLe - topk    (fixed): +0.37 pp [95% CI -0.05, +0.79], p = 0.092, 36 pairs
+  CICLe - topk    (pc   ): +0.76 pp [95% CI +0.34, +1.17], p = 0.000, 36 pairs
+  CICLe - mass    (fixed): +0.36 pp [95% CI -0.04, +0.74], p = 0.082, 36 pairs
+  CICLe - mass    (pc   ): +1.33 pp [95% CI +0.94, +1.71], p = 0.000, 36 pairs
+  CICLe - marginal (fixed): -0.02 pp [95% CI -0.38, +0.32], p = 0.900, 36 pairs
+  CICLe - marginal (pc   ): +0.35 pp [95% CI +0.02, +0.70], p = 0.034, 36 pairs
+  CICLe - oracle  (fixed): -7.46 pp [95% CI -8.24, -6.74], p = 0.000, 36 pairs
+  CICLe - oracle  (pc   ): -7.07 pp [95% CI -7.76, -6.34], p = 0.000, 36 pairs
+===== yahoo-answers-imb10: 375 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     33.11  38.23     0.0%    0.0       0
+  fewshot  fixed    1    18     54.19  53.42     4.8%    1.0     285
+  fewshot  fixed    4    18     56.39  56.02     2.9%    4.0     452
+  fewshot  pc       1    18     56.84  56.28     3.0%   10.0     710
+  fewshot  pc       4    18     59.41  59.19     1.7%   40.0    2198
+  cicle    fixed    1    18     53.65  53.07     3.0%    1.0     277
+  cicle    fixed    4    18     56.03  55.79     1.7%    4.0     447
+  cicle    pc       1    18     58.15  57.93     1.7%    6.2     539
+  cicle    pc       4    18     60.28  60.28     0.9%   25.0    1509
+  candidate sets [cicle]: coverage 94.9%, mean size 6.21, LLM skipped 0.6%
+  candidate sets [topk ]: coverage 90.5%, mean size 6.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 96.2%, mean size 7.45, LLM skipped 0.5%
+  candidate sets [marginal]: coverage 89.5%, mean size 5.04, LLM skipped 6.9%
+  CICLe - fewshot (fixed): -0.45 pp [95% CI -0.87, -0.03], p = 0.036, 36 pairs
+  CICLe - fewshot (pc   ): +1.09 pp [95% CI +0.69, +1.53], p = 0.000, 36 pairs
+  CICLe - topk    (fixed): +0.58 pp [95% CI +0.04, +1.12], p = 0.038, 36 pairs
+  CICLe - topk    (pc   ): +1.74 pp [95% CI +1.20, +2.26], p = 0.000, 36 pairs
+  CICLe - mass    (fixed): +0.29 pp [95% CI -0.13, +0.71], p = 0.160, 36 pairs
+  CICLe - mass    (pc   ): +1.37 pp [95% CI +0.91, +1.82], p = 0.000, 36 pairs
+  CICLe - marginal (fixed): -0.31 pp [95% CI -0.85, +0.20], p = 0.236, 36 pairs
+  CICLe - marginal (pc   ): +0.56 pp [95% CI +0.08, +1.09], p = 0.030, 36 pairs
+===== yahoo-answers-imb100: 447 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     20.34  28.26     0.0%    0.0       0
+  fewshot  fixed    1    18     52.83  52.16     4.8%    1.0     284
+  fewshot  fixed    4    18     52.55  52.59     3.1%    4.0     449
+  fewshot  pc       1    18     55.06  54.62     3.1%   10.0     748
+  fewshot  pc       4    18     54.63  54.88     1.8%   40.0    2370
+  cicle    fixed    1    18     52.88  52.27     3.8%    1.0     279
+  cicle    fixed    4    18     52.92  53.01     2.3%    4.0     447
+  cicle    pc       1    18     56.03  55.86     2.2%    7.7     635
+  cicle    pc       4    18     55.44  55.98     1.4%   30.9    1918
+  candidate sets [cicle]: coverage 96.7%, mean size 7.73, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 81.6%, mean size 7.67, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 74.2%, mean size 5.88, LLM skipped 1.8%
+  candidate sets [marginal]: coverage 64.8%, mean size 3.80, LLM skipped 10.9%
+  candidate sets [oracle]: coverage 100.0%, mean size 7.67, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.21 pp [95% CI -0.12, +0.61], p = 0.224, 36 pairs
+  CICLe - fewshot (pc   ): +0.89 pp [95% CI +0.52, +1.23], p = 0.000, 36 pairs
+  CICLe - topk    (fixed): +6.52 pp [95% CI +5.80, +7.20], p = 0.000, 36 pairs
+  CICLe - topk    (pc   ): +7.44 pp [95% CI +6.66, +8.12], p = 0.000, 36 pairs
+  CICLe - mass    (fixed): +9.08 pp [95% CI +8.27, +9.78], p = 0.000, 36 pairs
+  CICLe - mass    (pc   ): +9.44 pp [95% CI +8.64, +10.26], p = 0.000, 36 pairs
+  CICLe - marginal (fixed): +10.81 pp [95% CI +9.83, +11.87], p = 0.000, 36 pairs
+  CICLe - marginal (pc   ): +11.94 pp [95% CI +10.93, +12.80], p = 0.000, 36 pairs
+  CICLe - oracle  (fixed): -3.10 pp [95% CI -3.67, -2.53], p = 0.000, 36 pairs
+  CICLe - oracle  (pc   ): -3.31 pp [95% CI -3.90, -2.74], p = 0.000, 36 pairs
+===== yahoo-answers-n1000: 159 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     47.74  49.99     0.0%    0.0       0
+  fewshot  fixed    1    18     54.66  53.87     4.7%    1.0     284
+  fewshot  fixed    4    18     58.38  57.96     2.8%    4.0     451
+  fewshot  pc       1    18     58.16  57.59     2.9%   10.0     711
+  fewshot  pc       4    18     61.17  60.87     1.8%   40.0    2194
+  cicle    fixed    1    18     54.74  54.08     3.1%    1.0     277
+  cicle    fixed    4    18     57.71  57.36     1.4%    4.0     445
+  cicle    pc       1    18     59.42  59.02     1.5%    6.5     542
+  cicle    pc       4    18     62.43  62.23     0.8%   26.0    1516
+  candidate sets [cicle]: coverage 94.7%, mean size 6.46, LLM skipped 0.5%
+  CICLe - fewshot (fixed): -0.29 pp [95% CI -0.73, +0.11], p = 0.174, 36 pairs
+  CICLe - fewshot (pc   ): +1.26 pp [95% CI +0.85, +1.67], p = 0.000, 36 pairs
+===== yahoo-answers-n250: 159 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     36.25  39.89     0.0%    0.0       0
+  fewshot  fixed    1    18     54.50  53.49     5.2%    1.0     284
+  fewshot  fixed    4    18     56.74  56.21     3.7%    4.0     447
+  fewshot  pc       1    18     58.54  57.96     3.3%   10.0     731
+  fewshot  pc       4    18     60.55  60.31     2.1%   40.0    2297
+  cicle    fixed    1    18     54.16  53.18     4.5%    1.0     281
+  cicle    fixed    4    18     56.36  55.78     2.8%    4.0     445
+  cicle    pc       1    18     58.33  57.78     2.8%    8.3     641
+  cicle    pc       4    18     60.50  60.26     1.6%   33.0    1936
+  candidate sets [cicle]: coverage 94.6%, mean size 8.26, LLM skipped 0.0%
+  CICLe - fewshot (fixed): -0.36 pp [95% CI -0.79, +0.09], p = 0.104, 36 pairs
+  CICLe - fewshot (pc   ): -0.13 pp [95% CI -0.59, +0.31], p = 0.566, 36 pairs
+===== yahoo-answers-n500: 159 runs, 6 models, seeds [42, 43, 44]
+  base     -        0    12     41.28  44.13     0.0%    0.0       0
+  fewshot  fixed    1    18     53.99  53.13     5.1%    1.0     285
+  fewshot  fixed    4    18     56.85  56.30     3.4%    4.0     445
+  fewshot  pc       1    18     57.33  56.83     3.2%   10.0     720
+  fewshot  pc       4    18     60.34  60.05     1.9%   40.0    2242
+  cicle    fixed    1    18     54.09  53.33     4.0%    1.0     280
+  cicle    fixed    4    18     56.82  56.30     2.5%    4.0     440
+  cicle    pc       1    18     58.25  57.86     2.2%    7.5     591
+  cicle    pc       4    18     61.19  61.04     1.2%   29.9    1726
+  candidate sets [cicle]: coverage 94.6%, mean size 7.47, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.03 pp [95% CI -0.40, +0.48], p = 0.860, 36 pairs
+  CICLe - fewshot (pc   ): +0.89 pp [95% CI +0.46, +1.31], p = 0.000, 36 pairs
+===== yahoo-answers-relabel: 162 runs, 6 models, seeds [42, 43, 44]
+  fewshot  fixed    1    18     25.27  26.11     0.6%    1.0     300
+  fewshot  fixed    4    18     40.62  41.21     0.4%    4.0     474
+  fewshot  pc       1    18     34.07  35.46     0.2%   10.0     727
+  fewshot  pc       4    18     47.85  49.01     0.0%   40.0    2236
+  cicle    fixed    0    18     18.90  21.28     1.5%    0.0     220
+  cicle    fixed    1    18     34.30  34.52     0.6%    1.0     286
+  cicle    fixed    4    18     44.62  44.75     0.3%    4.0     461
+  cicle    pc       1    18     41.13  41.33     0.2%    5.8     521
+  cicle    pc       4    18     52.03  52.61     0.0%   23.4    1420
+  candidate sets [cicle]: coverage 94.8%, mean size 5.68, LLM skipped 3.4%
+  CICLe - fewshot (fixed): +6.52 pp [95% CI +5.89, +7.06], p = 0.000, 36 pairs
+  CICLe - fewshot (pc   ): +5.62 pp [95% CI +5.03, +6.25], p = 0.000, 36 pairs
