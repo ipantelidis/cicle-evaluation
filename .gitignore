@@ -11,3 +11,4 @@ logs/
 results/
 logs_*.out
 paper/figures/out/
+results_legacy/
