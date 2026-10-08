@@ -1,0 +1,1401 @@
+
+===== go-emotions: 627 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12      9.44  42.25     0.0%    0.0       0
+  finetuned-        0     3     36.98  54.03     0.0%    0.0       0
+  zeroshot -        0    18     24.86  24.17     3.0%    0.0     220
+  fewshot  fixed    1    18     24.60  24.56     3.8%    1.0     246
+  fewshot  fixed    2    18     26.37  26.58     3.8%    2.0     266
+  fewshot  fixed    4    18     26.45  27.16     3.3%    4.0     305
+  fewshot  fixed    8    18     26.56  27.99     2.9%    8.0     385
+  fewshot  pc       1    18     25.00  25.01     2.8%   28.0     796
+  fewshot  pc       2    18     25.42  25.47     2.3%   55.0    1351
+  fewshot  pc       4    18     24.78  25.82     1.9%  107.0    2422
+  fewshot  pc       8    18     24.79  26.83     1.7%  203.0    4365
+  cicle    fixed    0    18     26.20  25.59     2.1%    0.0     207
+  cicle    fixed    1    18     25.52  25.74     2.8%    1.0     233
+  cicle    fixed    2    18     26.77  27.34     3.0%    2.0     253
+  cicle    fixed    4    18     26.76  28.19     2.6%    4.0     293
+  cicle    fixed    8    18     27.27  29.14     2.2%    8.0     373
+  cicle    pc       1    18     25.95  26.38     2.2%   22.1     665
+  cicle    pc       2    18     26.38  26.79     1.7%   43.3    1102
+  cicle    pc       4    18     26.03  27.21     1.6%   83.7    1942
+  cicle    pc       8    18     25.31  27.84     1.5%  157.0    3443
+  topk     fixed    1    18     22.68  24.48     2.9%    1.0     232
+  topk     fixed    4    18     24.58  27.04     2.8%    4.0     292
+  topk     pc       1    18     23.85  25.74     2.4%   22.0     664
+  topk     pc       4    18     23.04  25.98     1.9%   88.0    2007
+  mass     fixed    1    18     22.87  24.97     2.5%    1.0     226
+  mass     fixed    4    18     24.88  27.63     2.5%    4.0     286
+  mass     pc       1    18     24.33  26.24     2.0%   18.8     592
+  mass     pc       4    18     23.83  26.95     1.6%   75.2    1740
+  marginal fixed    1    18     23.52  26.17     1.7%    1.0     217
+  marginal fixed    4    18     24.92  28.70     1.8%    4.0     276
+  marginal pc       1    18     24.81  27.73     1.7%   14.4     490
+  marginal pc       4    18     24.62  28.64     1.3%   57.4    1365
+  oracle   fixed    1    18     28.03  28.06     3.1%    1.0     233
+  oracle   fixed    4    18     29.24  30.29     2.9%    4.0     293
+  oracle   pc       1    18     28.25  28.65     2.4%   22.0     661
+  oracle   pc       4    18     28.43  29.49     1.7%   84.1    1938
+  candidate sets [cicle]: coverage 95.4%, mean size 22.10, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 98.8%, mean size 22.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 97.9%, mean size 18.80, LLM skipped 0.0%
+  candidate sets [marginal]: coverage 95.1%, mean size 14.35, LLM skipped 0.1%
+  candidate sets [oracle]: coverage 100.0%, mean size 22.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.59 pp [95% CI +0.19, +1.06], p = 0.007, 72 pairs
+      llama-3.1-8b     +0.32 pp [95% CI -0.63, +1.16], p = 0.408, 12 pairs
+      llama-3.2-3b     +0.92 pp [95% CI +0.22, +1.60], p = 0.008, 12 pairs
+      ministral-3b     +0.47 pp [95% CI -0.39, +1.59], p = 0.268, 12 pairs
+      mistral-7b-v0.3  +0.73 pp [95% CI +0.08, +1.44], p = 0.036, 12 pairs
+      qwen-2.5-3b      +0.39 pp [95% CI -0.24, +1.03], p = 0.184, 12 pairs
+      qwen-2.5-7b      +0.69 pp [95% CI -0.33, +1.95], p = 0.172, 12 pairs
+  CICLe - fewshot (pc   ): +0.92 pp [95% CI +0.51, +1.39], p = 0.000, 72 pairs
+      llama-3.1-8b     +0.20 pp [95% CI -0.75, +1.14], p = 0.720, 12 pairs
+      llama-3.2-3b     +2.46 pp [95% CI +1.55, +3.63], p = 0.000, 12 pairs
+      ministral-3b     +1.32 pp [95% CI +0.46, +2.21], p = 0.000, 12 pairs
+      mistral-7b-v0.3  +0.15 pp [95% CI -0.64, +1.00], p = 0.648, 12 pairs
+      qwen-2.5-3b      +0.95 pp [95% CI +0.16, +1.70], p = 0.016, 12 pairs
+      qwen-2.5-7b      +0.45 pp [95% CI -0.60, +1.53], p = 0.404, 12 pairs
+  CICLe - topk    (fixed): +2.51 pp [95% CI +1.53, +3.26], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.70 pp [95% CI +0.06, +2.99], p = 0.044, 6 pairs
+      llama-3.2-3b     +2.47 pp [95% CI +1.45, +3.48], p = 0.000, 6 pairs
+      ministral-3b     +2.86 pp [95% CI +1.49, +4.11], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +1.93 pp [95% CI +0.61, +3.24], p = 0.008, 6 pairs
+      qwen-2.5-3b      +2.27 pp [95% CI +0.57, +3.66], p = 0.008, 6 pairs
+      qwen-2.5-7b      +3.85 pp [95% CI +1.86, +5.29], p = 0.000, 6 pairs
+  CICLe - topk    (pc   ): +2.54 pp [95% CI +1.32, +3.40], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.43 pp [95% CI +0.54, +3.59], p = 0.008, 6 pairs
+      llama-3.2-3b     +3.43 pp [95% CI +1.91, +4.82], p = 0.000, 6 pairs
+      ministral-3b     +2.70 pp [95% CI +1.02, +3.80], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +1.68 pp [95% CI +0.14, +3.25], p = 0.040, 6 pairs
+      qwen-2.5-3b      +3.05 pp [95% CI +1.37, +4.23], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.98 pp [95% CI +0.29, +3.29], p = 0.020, 6 pairs
+  CICLe - mass    (fixed): +2.26 pp [95% CI +1.22, +2.98], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.88 pp [95% CI +0.29, +3.16], p = 0.028, 6 pairs
+      llama-3.2-3b     +2.31 pp [95% CI +1.31, +3.28], p = 0.000, 6 pairs
+      ministral-3b     +2.33 pp [95% CI +0.88, +3.51], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +1.92 pp [95% CI +0.42, +3.48], p = 0.012, 6 pairs
+      qwen-2.5-3b      +1.86 pp [95% CI +0.06, +3.34], p = 0.044, 6 pairs
+      qwen-2.5-7b      +3.29 pp [95% CI +1.29, +4.63], p = 0.000, 6 pairs
+  CICLe - mass    (pc   ): +1.91 pp [95% CI +0.69, +2.78], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.24 pp [95% CI +0.29, +3.50], p = 0.020, 6 pairs
+      llama-3.2-3b     +2.79 pp [95% CI +1.11, +4.20], p = 0.000, 6 pairs
+      ministral-3b     +1.89 pp [95% CI +0.23, +3.07], p = 0.032, 6 pairs
+      mistral-7b-v0.3  +0.38 pp [95% CI -1.09, +1.95], p = 0.560, 6 pairs
+      qwen-2.5-3b      +2.39 pp [95% CI +0.45, +3.83], p = 0.008, 6 pairs
+      qwen-2.5-7b      +1.76 pp [95% CI -0.11, +3.17], p = 0.064, 6 pairs
+  CICLe - marginal (fixed): +1.92 pp [95% CI +0.82, +2.71], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.81 pp [95% CI +0.08, +3.18], p = 0.040, 6 pairs
+      llama-3.2-3b     +1.40 pp [95% CI +0.14, +2.62], p = 0.024, 6 pairs
+      ministral-3b     +1.87 pp [95% CI +0.25, +3.33], p = 0.032, 6 pairs
+      mistral-7b-v0.3  +1.57 pp [95% CI +0.01, +3.04], p = 0.044, 6 pairs
+      qwen-2.5-3b      +2.01 pp [95% CI +0.10, +3.32], p = 0.040, 6 pairs
+      qwen-2.5-7b      +2.86 pp [95% CI +0.65, +4.59], p = 0.004, 6 pairs
+  CICLe - marginal (pc   ): +1.28 pp [95% CI +0.06, +2.23], p = 0.037, 36 pairs
+      llama-3.1-8b     +1.54 pp [95% CI -0.54, +3.07], p = 0.180, 6 pairs
+      llama-3.2-3b     +1.66 pp [95% CI +0.14, +2.86], p = 0.036, 6 pairs
+      ministral-3b     +0.99 pp [95% CI -0.83, +2.42], p = 0.356, 6 pairs
+      mistral-7b-v0.3  +0.35 pp [95% CI -1.24, +2.04], p = 0.704, 6 pairs
+      qwen-2.5-3b      +2.45 pp [95% CI +0.62, +3.76], p = 0.004, 6 pairs
+      qwen-2.5-7b      +0.67 pp [95% CI -0.95, +1.85], p = 0.532, 6 pairs
+  CICLe - oracle  (fixed): -2.49 pp [95% CI -3.13, -1.76], p = 0.000, 36 pairs
+      llama-3.1-8b     -3.60 pp [95% CI -5.00, -1.85], p = 0.000, 6 pairs
+      llama-3.2-3b     -2.10 pp [95% CI -3.07, -0.83], p = 0.000, 6 pairs
+      ministral-3b     -2.12 pp [95% CI -3.62, -0.74], p = 0.004, 6 pairs
+      mistral-7b-v0.3  -2.48 pp [95% CI -3.48, -1.35], p = 0.000, 6 pairs
+      qwen-2.5-3b      -2.83 pp [95% CI -4.00, -1.56], p = 0.000, 6 pairs
+      qwen-2.5-7b      -1.82 pp [95% CI -3.38, -0.59], p = 0.004, 6 pairs
+  CICLe - oracle  (pc   ): -2.35 pp [95% CI -2.95, -1.66], p = 0.000, 36 pairs
+      llama-3.1-8b     -4.43 pp [95% CI -5.80, -2.57], p = 0.000, 6 pairs
+      llama-3.2-3b     -1.13 pp [95% CI -2.61, +0.38], p = 0.148, 6 pairs
+      ministral-3b     -1.66 pp [95% CI -3.04, -0.34], p = 0.032, 6 pairs
+      mistral-7b-v0.3  -2.79 pp [95% CI -3.97, -1.57], p = 0.000, 6 pairs
+      qwen-2.5-3b      -1.30 pp [95% CI -2.32, -0.35], p = 0.012, 6 pairs
+      qwen-2.5-7b      -2.78 pp [95% CI -4.12, -1.44], p = 0.000, 6 pairs
+  ablation over 24 shared (variant, k, model, seed) cells:
+    emb        clf   alpha   CICLe  few-shot   diff  coverage  set size  LLM skipped
+    contriever lr     0.05   25.06     22.60  +2.46     95.0%     21.07         0.0%
+    minilm     lr     0.01   22.87     22.39  +0.49     98.8%     26.74         0.0%
+    minilm     lr     0.05   23.30     22.39  +0.92     95.4%     22.10         0.0%
+    minilm     lr     0.10   23.84     22.39  +1.45     90.9%     18.10         0.0%
+    minilm     lr     0.20   25.41     22.39  +3.02     81.0%     13.15         0.0%
+    minilm     svm    0.05   23.65     22.39  +1.26     95.1%     21.75         0.0%
+    tfidf      lr     0.05   23.07     22.50  +0.56     94.5%     23.74         0.0%
+
+===== go-emotions-altprompt: 48 runs, 6 models, seeds [42]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1     6     24.93  23.45     4.1%    1.0     245
+  fewshot  fixed    4     6     26.30  26.08     3.8%    4.0     312
+  fewshot  pc       1     6     25.33  23.58     3.8%   28.0     854
+  fewshot  pc       4     6     25.67  23.97     3.1%  107.0    2683
+  cicle    fixed    1     6     24.95  24.90     3.0%    1.0     232
+  cicle    fixed    4     6     27.06  27.60     3.0%    4.0     299
+  cicle    pc       1     6     25.91  24.55     2.9%   22.0     706
+  cicle    pc       4     6     25.73  25.15     2.3%   83.3    2132
+  candidate sets [cicle]: coverage 94.4%, mean size 21.98, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.39 pp [95% CI -0.68, +1.56], p = 0.474, 12 pairs
+      llama-3.1-8b     +2.14 pp [95% CI -0.48, +4.38], p = 0.148, 2 pairs
+      llama-3.2-3b     +0.20 pp [95% CI -1.89, +2.09], p = 0.880, 2 pairs
+      ministral-3b     -1.05 pp [95% CI -3.53, +1.95], p = 0.564, 2 pairs
+      mistral-7b-v0.3  +0.56 pp [95% CI -1.32, +2.46], p = 0.576, 2 pairs
+      qwen-2.5-3b      -0.25 pp [95% CI -2.49, +1.81], p = 0.808, 2 pairs
+      qwen-2.5-7b      +0.75 pp [95% CI -1.64, +3.08], p = 0.448, 2 pairs
+  CICLe - fewshot (pc   ): +0.32 pp [95% CI -0.96, +1.52], p = 0.644, 12 pairs
+      llama-3.1-8b     +0.45 pp [95% CI -2.05, +2.69], p = 0.816, 2 pairs
+      llama-3.2-3b     -1.38 pp [95% CI -3.07, +0.47], p = 0.168, 2 pairs
+      ministral-3b     +2.10 pp [95% CI -0.20, +4.51], p = 0.080, 2 pairs
+      mistral-7b-v0.3  -0.67 pp [95% CI -2.50, +1.19], p = 0.476, 2 pairs
+      qwen-2.5-3b      +2.53 pp [95% CI -0.00, +4.88], p = 0.056, 2 pairs
+      qwen-2.5-7b      -1.13 pp [95% CI -3.29, +1.37], p = 0.440, 2 pairs
+
+===== go-emotions-random: 48 runs, 6 models, seeds [42]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1     6     24.29  23.12     4.2%    1.0     246
+  fewshot  fixed    4     6     25.51  24.72     4.5%    4.0     308
+  fewshot  pc       1     6     23.65  22.85     3.5%   28.0     795
+  fewshot  pc       4     6     23.35  21.78     2.7%  107.0    2434
+  cicle    fixed    1     6     25.20  24.22     3.2%    1.0     233
+  cicle    fixed    4     6     25.64  25.63     3.6%    4.0     295
+  cicle    pc       1     6     24.03  23.67     3.0%   22.0     660
+  cicle    pc       4     6     23.76  23.13     1.9%   83.3    1943
+  candidate sets [cicle]: coverage 94.4%, mean size 21.98, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.52 pp [95% CI -0.42, +1.62], p = 0.248, 12 pairs
+      llama-3.1-8b     -0.85 pp [95% CI -3.49, +1.46], p = 0.568, 2 pairs
+      llama-3.2-3b     +2.39 pp [95% CI +0.69, +4.10], p = 0.000, 2 pairs
+      ministral-3b     -0.98 pp [95% CI -3.19, +1.77], p = 0.624, 2 pairs
+      mistral-7b-v0.3  -0.56 pp [95% CI -2.74, +1.85], p = 0.692, 2 pairs
+      qwen-2.5-3b      +1.95 pp [95% CI -0.34, +4.18], p = 0.100, 2 pairs
+      qwen-2.5-7b      +1.15 pp [95% CI -1.62, +3.75], p = 0.492, 2 pairs
+  CICLe - fewshot (pc   ): +0.39 pp [95% CI -0.67, +1.63], p = 0.377, 12 pairs
+      llama-3.1-8b     +0.21 pp [95% CI -2.20, +3.02], p = 0.856, 2 pairs
+      llama-3.2-3b     -0.01 pp [95% CI -2.76, +3.24], p = 0.936, 2 pairs
+      ministral-3b     -1.48 pp [95% CI -3.68, +1.13], p = 0.380, 2 pairs
+      mistral-7b-v0.3  +0.60 pp [95% CI -2.08, +3.31], p = 0.708, 2 pairs
+      qwen-2.5-3b      +1.53 pp [95% CI -0.10, +3.43], p = 0.068, 2 pairs
+      qwen-2.5-7b      +1.50 pp [95% CI -0.84, +3.75], p = 0.200, 2 pairs
+
+===== go-emotions-relabel: 306 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1    18      7.97  10.83     0.7%    1.0     286
+  fewshot  fixed    4    18     11.80  16.66     1.3%    4.0     351
+  fewshot  pc       1    18     10.61  12.44     0.5%   28.0     874
+  fewshot  pc       4    18     14.37  18.10     0.5%  107.0    2609
+  cicle    fixed    0    18      2.05   3.53     1.1%    0.0     238
+  cicle    fixed    1    18      8.82  11.61     1.0%    1.0     266
+  cicle    fixed    4    18     12.27  17.33     1.1%    4.0     330
+  cicle    pc       1    18     11.67  13.97     0.6%   22.1     727
+  cicle    pc       4    18     15.27  19.77     0.6%   83.8    2091
+  topk     fixed    1    18      8.11  11.46     2.5%    1.0     265
+  topk     fixed    4    18     12.12  17.69     1.4%    4.0     329
+  topk     pc       1    18     11.14  13.78     0.6%   22.0     725
+  topk     pc       4    18     14.51  19.08     0.6%   88.0    2161
+  mass     fixed    1    18      8.13  11.77     3.1%    1.0     254
+  mass     fixed    4    18     12.13  17.62     1.5%    4.0     318
+  mass     pc       1    18     11.41  14.24     0.6%   18.8     644
+  mass     pc       4    18     14.85  20.04     0.6%   75.2    1872
+  candidate sets [cicle]: coverage 95.5%, mean size 22.13, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 98.8%, mean size 22.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 97.9%, mean size 18.80, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.66 pp [95% CI +0.32, +0.99], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.68 pp [95% CI -0.01, +1.33], p = 0.064, 6 pairs
+      llama-3.2-3b     +0.14 pp [95% CI -0.74, +0.99], p = 0.732, 6 pairs
+      ministral-3b     -0.17 pp [95% CI -0.76, +0.53], p = 0.580, 6 pairs
+      mistral-7b-v0.3  +0.33 pp [95% CI -0.26, +0.92], p = 0.316, 6 pairs
+      qwen-2.5-3b      +1.21 pp [95% CI +0.48, +1.94], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.75 pp [95% CI +1.15, +2.35], p = 0.000, 6 pairs
+  CICLe - fewshot (pc   ): +0.98 pp [95% CI +0.66, +1.38], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.59 pp [95% CI -0.15, +1.43], p = 0.152, 6 pairs
+      llama-3.2-3b     +0.46 pp [95% CI -0.45, +1.48], p = 0.332, 6 pairs
+      ministral-3b     +0.56 pp [95% CI -0.27, +1.64], p = 0.168, 6 pairs
+      mistral-7b-v0.3  +0.68 pp [95% CI +0.06, +1.34], p = 0.036, 6 pairs
+      qwen-2.5-3b      +2.01 pp [95% CI +1.07, +2.96], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.58 pp [95% CI +0.88, +2.35], p = 0.000, 6 pairs
+  CICLe - topk    (fixed): +0.43 pp [95% CI -0.06, +0.88], p = 0.097, 36 pairs
+      llama-3.1-8b     +0.46 pp [95% CI -0.37, +1.26], p = 0.240, 6 pairs
+      llama-3.2-3b     -1.12 pp [95% CI -1.85, -0.39], p = 0.000, 6 pairs
+      ministral-3b     +0.77 pp [95% CI -0.18, +1.59], p = 0.124, 6 pairs
+      mistral-7b-v0.3  -0.24 pp [95% CI -1.02, +0.59], p = 0.576, 6 pairs
+      qwen-2.5-3b      +1.31 pp [95% CI +0.28, +2.34], p = 0.008, 6 pairs
+      qwen-2.5-7b      +1.37 pp [95% CI +0.64, +2.05], p = 0.000, 6 pairs
+  CICLe - topk    (pc   ): +0.65 pp [95% CI +0.11, +1.17], p = 0.019, 36 pairs
+      llama-3.1-8b     +1.17 pp [95% CI +0.22, +1.99], p = 0.012, 6 pairs
+      llama-3.2-3b     -0.89 pp [95% CI -2.12, +0.11], p = 0.100, 6 pairs
+      ministral-3b     +0.40 pp [95% CI -0.34, +1.29], p = 0.332, 6 pairs
+      mistral-7b-v0.3  +0.18 pp [95% CI -0.61, +1.15], p = 0.636, 6 pairs
+      qwen-2.5-3b      +1.40 pp [95% CI +0.39, +2.51], p = 0.004, 6 pairs
+      qwen-2.5-7b      +1.61 pp [95% CI +0.53, +2.53], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +0.42 pp [95% CI -0.09, +0.89], p = 0.131, 36 pairs
+      llama-3.1-8b     +0.25 pp [95% CI -0.58, +1.01], p = 0.608, 6 pairs
+      llama-3.2-3b     -1.04 pp [95% CI -1.80, -0.26], p = 0.016, 6 pairs
+      ministral-3b     +1.06 pp [95% CI +0.10, +1.92], p = 0.032, 6 pairs
+      mistral-7b-v0.3  -0.12 pp [95% CI -0.79, +0.59], p = 0.860, 6 pairs
+      qwen-2.5-3b      +1.30 pp [95% CI +0.23, +2.18], p = 0.012, 6 pairs
+      qwen-2.5-7b      +1.04 pp [95% CI +0.29, +1.78], p = 0.016, 6 pairs
+  CICLe - mass    (pc   ): +0.34 pp [95% CI -0.20, +0.94], p = 0.204, 36 pairs
+      llama-3.1-8b     +0.02 pp [95% CI -0.97, +1.07], p = 0.968, 6 pairs
+      llama-3.2-3b     -1.05 pp [95% CI -2.06, -0.09], p = 0.032, 6 pairs
+      ministral-3b     +0.33 pp [95% CI -0.67, +1.32], p = 0.504, 6 pairs
+      mistral-7b-v0.3  +0.26 pp [95% CI -0.55, +1.22], p = 0.524, 6 pairs
+      qwen-2.5-3b      +1.43 pp [95% CI +0.34, +2.55], p = 0.012, 6 pairs
+      qwen-2.5-7b      +1.07 pp [95% CI +0.07, +2.17], p = 0.036, 6 pairs
+
+===== ohsumed: 267 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     32.80  54.08     0.0%    0.0       0
+  finetuned-        0     3     55.43  70.27     0.0%    0.0       0
+  zeroshot -        0    18     35.90  43.21     5.2%    0.0     579
+  fewshot  fixed    1    18     46.66  52.65     5.3%    1.0     897
+  fewshot  fixed    4    18     50.35  57.12     3.9%    4.0    1826
+  fewshot  pc       1    18     44.59  50.47     6.4%   23.0    7518
+  cicle    fixed    0    18     40.17  48.63     1.3%    0.0     509
+  cicle    fixed    1    18     47.65  55.24     1.8%    1.0     828
+  cicle    fixed    4    18     51.67  59.45     1.3%    4.0    1756
+  cicle    pc       1    18     49.81  57.26     1.5%   12.3    4159
+  topk     fixed    1    18     46.87  53.00     2.7%    1.0     831
+  topk     fixed    4    18     50.30  57.09     2.0%    4.0    1760
+  mass     fixed    1    18     46.17  51.86     3.6%    1.0     843
+  mass     fixed    4    18     50.10  56.32     2.7%    4.0    1771
+  marginal fixed    1    18     45.49  50.69     0.9%    1.0     782
+  marginal fixed    4    18     48.07  53.64     0.7%    4.0    1704
+  candidate sets [cicle]: coverage 96.4%, mean size 12.27, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 98.8%, mean size 12.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 99.4%, mean size 13.95, LLM skipped 0.5%
+  candidate sets [marginal]: coverage 95.2%, mean size 4.81, LLM skipped 7.4%
+  CICLe - fewshot (fixed): +1.15 pp [95% CI +0.56, +1.85], p = 0.001, 36 pairs
+      llama-3.1-8b     +0.51 pp [95% CI -0.62, +1.58], p = 0.420, 6 pairs
+      llama-3.2-3b     -0.33 pp [95% CI -1.51, +0.96], p = 0.712, 6 pairs
+      ministral-3b     +1.66 pp [95% CI +0.38, +3.13], p = 0.008, 6 pairs
+      mistral-7b-v0.3  -0.13 pp [95% CI -1.28, +1.10], p = 0.848, 6 pairs
+      qwen-2.5-3b      +4.71 pp [95% CI +3.26, +6.56], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.49 pp [95% CI -0.68, +1.54], p = 0.372, 6 pairs
+  CICLe - fewshot (pc   ): +5.21 pp [95% CI +4.43, +6.06], p = 0.000, 18 pairs
+      llama-3.1-8b     +3.30 pp [95% CI +1.36, +5.42], p = 0.000, 3 pairs
+      llama-3.2-3b     +4.95 pp [95% CI +3.04, +6.80], p = 0.000, 3 pairs
+      ministral-3b     +4.39 pp [95% CI +2.67, +6.17], p = 0.000, 3 pairs
+      mistral-7b-v0.3  +3.28 pp [95% CI +1.72, +4.82], p = 0.000, 3 pairs
+      qwen-2.5-3b      +13.73 pp [95% CI +11.65, +15.86], p = 0.000, 3 pairs
+      qwen-2.5-7b      +1.64 pp [95% CI +0.11, +3.22], p = 0.036, 3 pairs
+  CICLe - topk    (fixed): +1.08 pp [95% CI +0.39, +1.78], p = 0.003, 36 pairs
+      llama-3.1-8b     +1.28 pp [95% CI -0.17, +2.35], p = 0.080, 6 pairs
+      llama-3.2-3b     +1.92 pp [95% CI +0.51, +3.33], p = 0.004, 6 pairs
+      ministral-3b     -1.42 pp [95% CI -2.86, +0.05], p = 0.056, 6 pairs
+      mistral-7b-v0.3  +0.82 pp [95% CI -0.35, +2.01], p = 0.192, 6 pairs
+      qwen-2.5-3b      +2.23 pp [95% CI +0.81, +3.81], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.62 pp [95% CI +0.16, +2.96], p = 0.044, 6 pairs
+  CICLe - mass    (fixed): +1.52 pp [95% CI +0.83, +2.24], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.34 pp [95% CI -0.08, +2.40], p = 0.064, 6 pairs
+      llama-3.2-3b     +2.90 pp [95% CI +1.72, +4.21], p = 0.000, 6 pairs
+      ministral-3b     -0.74 pp [95% CI -2.14, +0.59], p = 0.300, 6 pairs
+      mistral-7b-v0.3  +0.83 pp [95% CI -0.27, +2.04], p = 0.152, 6 pairs
+      qwen-2.5-3b      +3.04 pp [95% CI +1.60, +4.57], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.77 pp [95% CI +0.45, +3.06], p = 0.004, 6 pairs
+  CICLe - marginal (fixed): +2.88 pp [95% CI +1.94, +4.11], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.67 pp [95% CI +0.09, +3.38], p = 0.036, 6 pairs
+      llama-3.2-3b     +9.85 pp [95% CI +8.34, +11.80], p = 0.000, 6 pairs
+      ministral-3b     +1.82 pp [95% CI -0.26, +3.77], p = 0.068, 6 pairs
+      mistral-7b-v0.3  -1.23 pp [95% CI -2.67, +0.38], p = 0.156, 6 pairs
+      qwen-2.5-3b      +3.22 pp [95% CI +1.65, +5.00], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.93 pp [95% CI +0.22, +3.80], p = 0.020, 6 pairs
+
+===== semeval-18: 555 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12      6.51  24.46     0.0%    0.0       0
+  finetuned-        0     3     24.53  39.00     0.0%    0.0       0
+  zeroshot -        0    18     12.21  19.66     5.1%    0.0     236
+  fewshot  fixed    1    18     14.35  19.95     7.6%    1.0     266
+  fewshot  fixed    2    18     14.59  20.10     7.0%    2.0     290
+  fewshot  fixed    4    18     15.29  21.07     6.0%    4.0     338
+  fewshot  fixed    8    18     15.42  22.19     4.3%    8.0     436
+  fewshot  pc       1    18     15.16  20.71     4.4%   20.0     731
+  fewshot  pc       2    18     15.09  21.17     3.4%   40.0    1223
+  fewshot  pc       4    18     15.38  21.94     2.9%   80.0    2209
+  fewshot  pc       8    18     15.66  23.08     3.2%  160.0    4189
+  cicle    fixed    0    18     13.03  19.63     5.0%    0.0     225
+  cicle    fixed    1    18     14.71  19.93     7.2%    1.0     255
+  cicle    fixed    2    18     15.06  20.11     6.7%    2.0     279
+  cicle    fixed    4    18     15.89  21.23     5.5%    4.0     328
+  cicle    fixed    8    18     16.07  22.28     4.1%    8.0     425
+  cicle    pc       1    18     15.75  20.81     4.3%   17.1     648
+  cicle    pc       2    18     15.65  21.27     3.1%   34.2    1069
+  cicle    pc       4    18     15.72  21.91     2.6%   68.5    1911
+  cicle    pc       8    18     16.04  22.91     2.8%  137.0    3603
+  topk     fixed    1    18     14.86  20.30     6.9%    1.0     254
+  topk     fixed    4    18     15.67  21.20     5.1%    4.0     327
+  topk     pc       1    18     15.75  20.88     3.7%   17.0     644
+  topk     pc       4    18     15.70  22.13     2.3%   68.0    1897
+  mass     fixed    1    18     14.95  20.28     6.9%    1.0     254
+  mass     fixed    4    18     15.64  21.22     5.0%    4.0     326
+  mass     pc       1    18     15.79  20.96     3.8%   16.9     640
+  mass     pc       4    18     15.64  22.07     2.3%   67.5    1883
+  oracle   fixed    1    18     15.82  21.65     7.4%    1.0     255
+  oracle   fixed    4    18     17.05  23.06     5.9%    4.0     328
+  oracle   pc       1    18     16.95  22.63     4.7%   17.0     647
+  oracle   pc       4    18     17.17  23.97     2.8%   68.0    1904
+  candidate sets [cicle]: coverage 94.4%, mean size 17.12, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 97.1%, mean size 17.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 97.2%, mean size 16.87, LLM skipped 0.0%
+  candidate sets [oracle]: coverage 100.0%, mean size 17.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.52 pp [95% CI +0.29, +0.74], p = 0.000, 72 pairs
+      llama-3.1-8b     +0.45 pp [95% CI -0.04, +0.90], p = 0.076, 12 pairs
+      llama-3.2-3b     +0.50 pp [95% CI -0.00, +0.97], p = 0.052, 12 pairs
+      ministral-3b     +0.74 pp [95% CI +0.28, +1.23], p = 0.004, 12 pairs
+      mistral-7b-v0.3  +0.85 pp [95% CI +0.40, +1.30], p = 0.000, 12 pairs
+      qwen-2.5-3b      +0.12 pp [95% CI -0.27, +0.49], p = 0.620, 12 pairs
+      qwen-2.5-7b      +0.48 pp [95% CI -0.03, +0.87], p = 0.068, 12 pairs
+  CICLe - fewshot (pc   ): +0.46 pp [95% CI +0.23, +0.71], p = 0.000, 72 pairs
+      llama-3.1-8b     +0.65 pp [95% CI +0.16, +1.17], p = 0.008, 12 pairs
+      llama-3.2-3b     +0.92 pp [95% CI +0.42, +1.44], p = 0.000, 12 pairs
+      ministral-3b     +0.62 pp [95% CI +0.16, +1.11], p = 0.016, 12 pairs
+      mistral-7b-v0.3  +0.73 pp [95% CI +0.23, +1.23], p = 0.000, 12 pairs
+      qwen-2.5-3b      +0.16 pp [95% CI -0.25, +0.58], p = 0.528, 12 pairs
+      qwen-2.5-7b      -0.29 pp [95% CI -0.76, +0.17], p = 0.228, 12 pairs
+  CICLe - topk    (fixed): +0.04 pp [95% CI -0.25, +0.33], p = 0.814, 36 pairs
+      llama-3.1-8b     -0.17 pp [95% CI -0.68, +0.38], p = 0.548, 6 pairs
+      llama-3.2-3b     +0.29 pp [95% CI -0.30, +0.96], p = 0.348, 6 pairs
+      ministral-3b     +0.24 pp [95% CI -0.36, +0.85], p = 0.412, 6 pairs
+      mistral-7b-v0.3  -0.07 pp [95% CI -0.67, +0.49], p = 0.772, 6 pairs
+      qwen-2.5-3b      +0.05 pp [95% CI -0.52, +0.56], p = 0.768, 6 pairs
+      qwen-2.5-7b      -0.10 pp [95% CI -0.68, +0.47], p = 0.744, 6 pairs
+  CICLe - topk    (pc   ): +0.01 pp [95% CI -0.30, +0.33], p = 0.974, 36 pairs
+      llama-3.1-8b     +0.10 pp [95% CI -0.62, +0.74], p = 0.756, 6 pairs
+      llama-3.2-3b     +0.17 pp [95% CI -0.49, +0.90], p = 0.604, 6 pairs
+      ministral-3b     -0.50 pp [95% CI -1.12, +0.17], p = 0.144, 6 pairs
+      mistral-7b-v0.3  +0.74 pp [95% CI +0.06, +1.42], p = 0.036, 6 pairs
+      qwen-2.5-3b      +0.13 pp [95% CI -0.50, +0.73], p = 0.696, 6 pairs
+      qwen-2.5-7b      -0.58 pp [95% CI -1.24, +0.04], p = 0.068, 6 pairs
+  CICLe - mass    (fixed): +0.01 pp [95% CI -0.29, +0.30], p = 0.937, 36 pairs
+      llama-3.1-8b     -0.07 pp [95% CI -0.59, +0.48], p = 0.812, 6 pairs
+      llama-3.2-3b     +0.33 pp [95% CI -0.27, +1.02], p = 0.304, 6 pairs
+      ministral-3b     +0.12 pp [95% CI -0.45, +0.75], p = 0.652, 6 pairs
+      mistral-7b-v0.3  -0.50 pp [95% CI -1.12, +0.18], p = 0.152, 6 pairs
+      qwen-2.5-3b      +0.27 pp [95% CI -0.25, +0.79], p = 0.280, 6 pairs
+      qwen-2.5-7b      -0.12 pp [95% CI -0.66, +0.41], p = 0.644, 6 pairs
+  CICLe - mass    (pc   ): +0.02 pp [95% CI -0.29, +0.33], p = 0.874, 36 pairs
+      llama-3.1-8b     +0.02 pp [95% CI -0.60, +0.66], p = 0.976, 6 pairs
+      llama-3.2-3b     +0.34 pp [95% CI -0.36, +1.04], p = 0.276, 6 pairs
+      ministral-3b     -0.46 pp [95% CI -1.15, +0.19], p = 0.176, 6 pairs
+      mistral-7b-v0.3  +0.53 pp [95% CI -0.19, +1.18], p = 0.184, 6 pairs
+      qwen-2.5-3b      +0.25 pp [95% CI -0.34, +0.83], p = 0.364, 6 pairs
+      qwen-2.5-7b      -0.53 pp [95% CI -1.13, +0.06], p = 0.084, 6 pairs
+  CICLe - oracle  (fixed): -1.13 pp [95% CI -1.51, -0.75], p = 0.000, 36 pairs
+      llama-3.1-8b     -1.72 pp [95% CI -2.43, -0.96], p = 0.000, 6 pairs
+      llama-3.2-3b     -0.74 pp [95% CI -1.46, +0.01], p = 0.060, 6 pairs
+      ministral-3b     -1.05 pp [95% CI -1.73, -0.23], p = 0.004, 6 pairs
+      mistral-7b-v0.3  -0.68 pp [95% CI -1.41, +0.06], p = 0.080, 6 pairs
+      qwen-2.5-3b      -0.94 pp [95% CI -1.48, -0.35], p = 0.004, 6 pairs
+      qwen-2.5-7b      -1.67 pp [95% CI -2.45, -0.90], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -1.32 pp [95% CI -1.68, -0.95], p = 0.000, 36 pairs
+      llama-3.1-8b     -2.18 pp [95% CI -2.98, -1.47], p = 0.000, 6 pairs
+      llama-3.2-3b     -1.46 pp [95% CI -2.23, -0.72], p = 0.000, 6 pairs
+      ministral-3b     -0.48 pp [95% CI -1.18, +0.30], p = 0.204, 6 pairs
+      mistral-7b-v0.3  -0.45 pp [95% CI -1.18, +0.24], p = 0.192, 6 pairs
+      qwen-2.5-3b      -1.07 pp [95% CI -1.85, -0.29], p = 0.008, 6 pairs
+      qwen-2.5-7b      -2.31 pp [95% CI -2.98, -1.54], p = 0.000, 6 pairs
+  ablation over 24 shared (variant, k, model, seed) cells:
+    emb        clf   alpha   CICLe  few-shot   diff  coverage  set size  LLM skipped
+    contriever lr     0.05   16.27     15.71  +0.56     94.2%     16.77         0.0%
+    minilm     lr     0.01   15.45     15.33  +0.12     98.8%     19.42         0.0%
+    minilm     lr     0.05   15.80     15.33  +0.47     94.4%     17.12         0.0%
+    minilm     lr     0.10   16.37     15.33  +1.04     88.5%     14.64         0.0%
+    minilm     lr     0.20   16.69     15.33  +1.36     77.8%     11.48         0.0%
+    minilm     svm    0.05   16.02     15.33  +0.69     94.9%     17.13         0.0%
+    tfidf      lr     0.05   15.08     14.97  +0.11     95.1%     18.06         0.0%
+
+===== semeval-18-relabel: 144 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1    18      6.28   8.42     6.0%    1.0     267
+  fewshot  fixed    4    18      8.35  11.30     5.3%    4.0     340
+  fewshot  pc       1    18      7.69   9.68     2.1%   20.0     732
+  fewshot  pc       4    18     10.46  13.61     0.2%   80.0    2212
+  cicle    fixed    1    18      7.05   9.18     4.5%    1.0     257
+  cicle    fixed    4    18      9.16  12.09     4.3%    4.0     330
+  cicle    pc       1    18      8.29  10.38     1.9%   17.2     651
+  cicle    pc       4    18     11.30  14.38     0.1%   68.6    1921
+  candidate sets [cicle]: coverage 94.4%, mean size 17.16, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.79 pp [95% CI +0.54, +1.05], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.76 pp [95% CI +0.33, +1.24], p = 0.004, 6 pairs
+      llama-3.2-3b     +1.34 pp [95% CI +0.84, +1.81], p = 0.000, 6 pairs
+      ministral-3b     +0.13 pp [95% CI -0.35, +0.75], p = 0.632, 6 pairs
+      mistral-7b-v0.3  +0.82 pp [95% CI +0.31, +1.34], p = 0.000, 6 pairs
+      qwen-2.5-3b      +0.78 pp [95% CI +0.16, +1.30], p = 0.004, 6 pairs
+      qwen-2.5-7b      +0.91 pp [95% CI +0.44, +1.32], p = 0.000, 6 pairs
+  CICLe - fewshot (pc   ): +0.72 pp [95% CI +0.44, +0.99], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.43 pp [95% CI -0.19, +1.11], p = 0.164, 6 pairs
+      llama-3.2-3b     +0.88 pp [95% CI +0.33, +1.32], p = 0.004, 6 pairs
+      ministral-3b     +0.82 pp [95% CI +0.18, +1.51], p = 0.016, 6 pairs
+      mistral-7b-v0.3  +0.45 pp [95% CI -0.24, +1.08], p = 0.192, 6 pairs
+      qwen-2.5-3b      +0.59 pp [95% CI -0.04, +1.15], p = 0.068, 6 pairs
+      qwen-2.5-7b      +1.15 pp [95% CI +0.56, +1.72], p = 0.000, 6 pairs
+
+===== sst: 627 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     27.71  37.77     0.0%    0.0       0
+  finetuned-        0     3     51.19  52.17     0.0%    0.0       0
+  zeroshot -        0    18     40.35  44.71     0.0%    0.0     184
+  fewshot  fixed    1    18     40.59  42.82     0.0%    1.0     217
+  fewshot  fixed    2    18     43.17  45.08     0.0%    2.0     244
+  fewshot  fixed    4    18     44.11  46.23     0.0%    4.0     298
+  fewshot  fixed    8    18     45.80  47.99     0.0%    8.0     407
+  fewshot  pc       1    18     44.87  47.27     0.0%    5.0     327
+  fewshot  pc       2    18     46.37  48.34     0.0%   10.0     466
+  fewshot  pc       4    18     46.60  48.37     0.0%   20.0     746
+  fewshot  pc       8    18     46.31  48.04     0.0%   40.0    1311
+  cicle    fixed    0    18     45.11  47.07     0.1%    0.0     181
+  cicle    fixed    1    18     43.04  44.42     0.0%    1.0     214
+  cicle    fixed    2    18     45.19  46.54     0.0%    2.0     241
+  cicle    fixed    4    18     45.75  47.40     0.0%    4.0     295
+  cicle    fixed    8    18     46.77  48.66     0.0%    8.0     404
+  cicle    pc       1    18     46.23  47.99     0.0%    3.9     292
+  cicle    pc       2    18     47.59  49.15     0.0%    7.7     399
+  cicle    pc       4    18     47.51  49.13     0.0%   15.5     615
+  cicle    pc       8    18     47.10  48.64     0.0%   30.9    1050
+  topk     fixed    1    18     43.26  45.66     0.0%    1.0     214
+  topk     fixed    4    18     45.81  48.67     0.0%    4.0     295
+  topk     pc       1    18     45.95  48.71     0.0%    4.0     296
+  topk     pc       4    18     47.15  49.83     0.0%   16.0     629
+  mass     fixed    1    18     41.79  43.80     0.0%    1.0     215
+  mass     fixed    4    18     44.86  47.07     0.0%    4.0     296
+  mass     pc       1    18     45.22  47.52     0.0%    4.5     312
+  mass     pc       4    18     47.11  49.06     0.0%   18.0     688
+  marginal fixed    1    18     43.75  45.67     0.0%    1.0     213
+  marginal fixed    4    18     46.17  48.59     0.0%    4.0     294
+  marginal pc       1    18     46.43  48.86     0.0%    3.7     286
+  marginal pc       4    18     47.37  49.71     0.0%   14.7     592
+  oracle   fixed    1    18     49.94  51.32     0.0%    1.0     214
+  oracle   fixed    4    18     53.07  55.05     0.0%    4.0     296
+  oracle   pc       1    18     53.63  55.61     0.0%    4.0     297
+  oracle   pc       4    18     55.30  57.18     0.0%   16.0     632
+  candidate sets [cicle]: coverage 95.4%, mean size 3.86, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 95.5%, mean size 4.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 99.2%, mean size 4.50, LLM skipped 0.0%
+  candidate sets [marginal]: coverage 93.9%, mean size 3.67, LLM skipped 0.1%
+  candidate sets [oracle]: coverage 100.0%, mean size 4.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +1.77 pp [95% CI +1.16, +2.42], p = 0.000, 72 pairs
+      llama-3.1-8b     +1.94 pp [95% CI +1.14, +2.82], p = 0.000, 12 pairs
+      llama-3.2-3b     +3.85 pp [95% CI +2.84, +4.92], p = 0.000, 12 pairs
+      ministral-3b     +3.36 pp [95% CI +2.30, +4.31], p = 0.000, 12 pairs
+      mistral-7b-v0.3  -0.42 pp [95% CI -1.24, +0.37], p = 0.332, 12 pairs
+      qwen-2.5-3b      +0.40 pp [95% CI -0.66, +1.38], p = 0.460, 12 pairs
+      qwen-2.5-7b      +1.49 pp [95% CI +0.68, +2.30], p = 0.000, 12 pairs
+  CICLe - fewshot (pc   ): +1.07 pp [95% CI +0.42, +1.74], p = 0.002, 72 pairs
+      llama-3.1-8b     +0.35 pp [95% CI -0.70, +1.34], p = 0.540, 12 pairs
+      llama-3.2-3b     +3.17 pp [95% CI +2.13, +4.16], p = 0.000, 12 pairs
+      ministral-3b     +1.33 pp [95% CI +0.37, +2.35], p = 0.012, 12 pairs
+      mistral-7b-v0.3  -0.54 pp [95% CI -1.45, +0.46], p = 0.268, 12 pairs
+      qwen-2.5-3b      +1.12 pp [95% CI +0.05, +2.15], p = 0.040, 12 pairs
+      qwen-2.5-7b      +0.96 pp [95% CI +0.04, +1.81], p = 0.040, 12 pairs
+  CICLe - topk    (fixed): -0.14 pp [95% CI -0.90, +0.62], p = 0.715, 36 pairs
+      llama-3.1-8b     +0.41 pp [95% CI -0.67, +1.46], p = 0.500, 6 pairs
+      llama-3.2-3b     -1.57 pp [95% CI -2.75, -0.43], p = 0.004, 6 pairs
+      ministral-3b     +1.65 pp [95% CI +0.42, +2.94], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -1.20 pp [95% CI -2.19, -0.13], p = 0.016, 6 pairs
+      qwen-2.5-3b      -1.91 pp [95% CI -3.08, -0.82], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.79 pp [95% CI +0.79, +2.80], p = 0.000, 6 pairs
+  CICLe - topk    (pc   ): +0.32 pp [95% CI -0.45, +1.13], p = 0.436, 36 pairs
+      llama-3.1-8b     +0.75 pp [95% CI -0.39, +1.77], p = 0.184, 6 pairs
+      llama-3.2-3b     -0.68 pp [95% CI -1.84, +0.55], p = 0.308, 6 pairs
+      ministral-3b     +2.28 pp [95% CI +1.04, +3.43], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.10 pp [95% CI -1.17, +0.96], p = 0.840, 6 pairs
+      qwen-2.5-3b      -2.29 pp [95% CI -3.48, -1.16], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.95 pp [95% CI +0.90, +2.87], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +1.07 pp [95% CI +0.46, +1.72], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.81 pp [95% CI +0.93, +2.65], p = 0.000, 6 pairs
+      llama-3.2-3b     +1.31 pp [95% CI +0.26, +2.31], p = 0.016, 6 pairs
+      ministral-3b     +2.62 pp [95% CI +1.63, +3.65], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.53 pp [95% CI -1.36, +0.27], p = 0.168, 6 pairs
+      qwen-2.5-3b      -0.48 pp [95% CI -1.41, +0.52], p = 0.368, 6 pairs
+      qwen-2.5-7b      +1.71 pp [95% CI +0.88, +2.63], p = 0.000, 6 pairs
+  CICLe - mass    (pc   ): +0.71 pp [95% CI +0.08, +1.34], p = 0.026, 36 pairs
+      llama-3.1-8b     +0.65 pp [95% CI -0.28, +1.51], p = 0.200, 6 pairs
+      llama-3.2-3b     +1.48 pp [95% CI +0.51, +2.52], p = 0.000, 6 pairs
+      ministral-3b     +1.97 pp [95% CI +0.94, +3.06], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.38 pp [95% CI -1.25, +0.46], p = 0.396, 6 pairs
+      qwen-2.5-3b      -0.50 pp [95% CI -1.61, +0.65], p = 0.396, 6 pairs
+      qwen-2.5-7b      +1.00 pp [95% CI +0.07, +1.92], p = 0.040, 6 pairs
+  CICLe - marginal (fixed): -0.56 pp [95% CI -1.17, +0.05], p = 0.068, 36 pairs
+      llama-3.1-8b     -0.45 pp [95% CI -1.33, +0.44], p = 0.316, 6 pairs
+      llama-3.2-3b     -1.79 pp [95% CI -2.71, -0.94], p = 0.000, 6 pairs
+      ministral-3b     +0.70 pp [95% CI -0.24, +1.61], p = 0.144, 6 pairs
+      mistral-7b-v0.3  -1.09 pp [95% CI -1.92, -0.25], p = 0.020, 6 pairs
+      qwen-2.5-3b      -1.33 pp [95% CI -2.14, -0.40], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.59 pp [95% CI -0.08, +1.35], p = 0.080, 6 pairs
+  CICLe - marginal (pc   ): -0.03 pp [95% CI -0.64, +0.61], p = 0.949, 36 pairs
+      llama-3.1-8b     +0.07 pp [95% CI -0.82, +1.05], p = 0.928, 6 pairs
+      llama-3.2-3b     -0.36 pp [95% CI -1.30, +0.62], p = 0.484, 6 pairs
+      ministral-3b     +1.60 pp [95% CI +0.62, +2.48], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.27 pp [95% CI -1.18, +0.61], p = 0.600, 6 pairs
+      qwen-2.5-3b      -2.10 pp [95% CI -3.10, -1.07], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.88 pp [95% CI +0.12, +1.75], p = 0.040, 6 pairs
+  CICLe - oracle  (fixed): -7.11 pp [95% CI -8.06, -6.13], p = 0.000, 36 pairs
+      llama-3.1-8b     -8.09 pp [95% CI -9.49, -6.83], p = 0.000, 6 pairs
+      llama-3.2-3b     -5.28 pp [95% CI -6.72, -3.93], p = 0.000, 6 pairs
+      ministral-3b     -5.84 pp [95% CI -7.47, -4.32], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -8.94 pp [95% CI -10.23, -7.58], p = 0.000, 6 pairs
+      qwen-2.5-3b      -5.91 pp [95% CI -7.35, -4.41], p = 0.000, 6 pairs
+      qwen-2.5-7b      -8.57 pp [95% CI -10.08, -7.19], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -7.60 pp [95% CI -8.52, -6.68], p = 0.000, 36 pairs
+      llama-3.1-8b     -7.97 pp [95% CI -9.24, -6.64], p = 0.000, 6 pairs
+      llama-3.2-3b     -7.43 pp [95% CI -8.88, -6.12], p = 0.000, 6 pairs
+      ministral-3b     -8.17 pp [95% CI -9.76, -6.63], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -8.02 pp [95% CI -9.41, -6.68], p = 0.000, 6 pairs
+      qwen-2.5-3b      -5.29 pp [95% CI -6.78, -3.94], p = 0.000, 6 pairs
+      qwen-2.5-7b      -8.69 pp [95% CI -9.96, -7.17], p = 0.000, 6 pairs
+  ablation over 24 shared (variant, k, model, seed) cells:
+    emb        clf   alpha   CICLe  few-shot   diff  coverage  set size  LLM skipped
+    contriever lr     0.05   46.96     43.27  +3.69     95.5%      3.34         0.5%
+    minilm     lr     0.01   43.39     42.34  +1.05     99.2%      4.67         0.0%
+    minilm     lr     0.05   44.99     42.34  +2.65     95.4%      3.86         0.0%
+    minilm     lr     0.10   45.09     42.34  +2.75     90.5%      3.38         0.3%
+    minilm     lr     0.20   44.86     42.34  +2.52     80.3%      2.71         3.0%
+    minilm     svm    0.05   44.87     42.34  +2.53     96.1%      3.81         0.0%
+    tfidf      lr     0.05   42.84     41.22  +1.61     95.0%      4.30         0.1%
+
+===== sst-imb10: 447 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     15.95  26.37     0.0%    0.0       0
+  finetuned-        0     3     44.46  46.43     0.0%    0.0       0
+  fewshot  fixed    1    18     40.01  42.36     0.0%    1.0     217
+  fewshot  fixed    4    18     42.37  44.78     0.0%    4.0     297
+  fewshot  pc       1    18     44.58  46.97     0.0%    5.0     326
+  fewshot  pc       4    18     44.64  46.55     0.0%   20.0     740
+  cicle    fixed    1    18     42.72  44.63     0.0%    1.0     214
+  cicle    fixed    4    18     44.33  46.45     0.0%    4.0     294
+  cicle    pc       1    18     46.35  48.48     0.0%    4.1     298
+  cicle    pc       4    18     46.51  48.27     0.0%   16.2     633
+  topk     fixed    1    18     41.05  43.27     0.0%    1.0     214
+  topk     fixed    4    18     42.20  45.14     0.0%    4.0     294
+  topk     pc       1    18     43.90  46.49     0.0%    4.0     296
+  topk     pc       4    18     44.07  46.72     0.0%   16.0     625
+  mass     fixed    1    18     41.16  42.86     0.0%    1.0     215
+  mass     fixed    4    18     42.51  44.97     0.0%    4.0     294
+  mass     pc       1    18     44.72  46.75     0.0%    4.1     300
+  mass     pc       4    18     44.45  46.49     0.0%   16.6     641
+  marginal fixed    1    18     39.96  42.25     0.0%    1.0     214
+  marginal fixed    4    18     40.66  43.74     0.0%    4.0     294
+  marginal pc       1    18     42.42  44.96     0.0%    3.6     286
+  marginal pc       4    18     42.40  45.13     0.0%   14.6     587
+  oracle   fixed    1    18     48.97  50.53     0.0%    1.0     214
+  oracle   fixed    4    18     51.27  53.17     0.0%    4.0     295
+  oracle   pc       1    18     53.31  55.20     0.0%    4.0     297
+  oracle   pc       4    18     54.04  55.68     0.0%   16.0     628
+  candidate sets [cicle]: coverage 96.5%, mean size 4.04, LLM skipped 0.7%
+  candidate sets [topk ]: coverage 89.4%, mean size 4.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 92.2%, mean size 4.13, LLM skipped 0.4%
+  candidate sets [marginal]: coverage 82.6%, mean size 3.55, LLM skipped 4.0%
+  candidate sets [oracle]: coverage 100.0%, mean size 4.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +2.33 pp [95% CI +1.67, +2.98], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.70 pp [95% CI +1.59, +3.65], p = 0.000, 6 pairs
+      llama-3.2-3b     +6.14 pp [95% CI +4.97, +7.29], p = 0.000, 6 pairs
+      ministral-3b     +2.90 pp [95% CI +1.80, +4.13], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.94 pp [95% CI +0.12, +1.81], p = 0.028, 6 pairs
+      qwen-2.5-3b      +0.61 pp [95% CI -0.48, +1.70], p = 0.236, 6 pairs
+      qwen-2.5-7b      +0.71 pp [95% CI -0.18, +1.63], p = 0.128, 6 pairs
+  CICLe - fewshot (pc   ): +1.82 pp [95% CI +1.16, +2.45], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.94 pp [95% CI +0.94, +2.94], p = 0.004, 6 pairs
+      llama-3.2-3b     +4.12 pp [95% CI +2.92, +5.19], p = 0.000, 6 pairs
+      ministral-3b     +1.66 pp [95% CI +0.60, +2.72], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.14 pp [95% CI -1.19, +0.89], p = 0.784, 6 pairs
+      qwen-2.5-3b      +1.87 pp [95% CI +0.89, +2.97], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.44 pp [95% CI +0.49, +2.41], p = 0.008, 6 pairs
+  CICLe - topk    (fixed): +1.90 pp [95% CI +0.98, +2.82], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.15 pp [95% CI -0.14, +2.38], p = 0.088, 6 pairs
+      llama-3.2-3b     +1.53 pp [95% CI +0.36, +2.81], p = 0.020, 6 pairs
+      ministral-3b     +2.09 pp [95% CI +0.75, +3.55], p = 0.004, 6 pairs
+      mistral-7b-v0.3  +2.16 pp [95% CI +1.12, +3.50], p = 0.000, 6 pairs
+      qwen-2.5-3b      +3.16 pp [95% CI +1.74, +4.39], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.32 pp [95% CI -0.01, +2.72], p = 0.060, 6 pairs
+  CICLe - topk    (pc   ): +2.44 pp [95% CI +1.52, +3.43], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.24 pp [95% CI +0.99, +3.68], p = 0.000, 6 pairs
+      llama-3.2-3b     +1.71 pp [95% CI +0.27, +3.08], p = 0.008, 6 pairs
+      ministral-3b     +2.42 pp [95% CI +0.94, +3.93], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +2.37 pp [95% CI +1.15, +3.78], p = 0.000, 6 pairs
+      qwen-2.5-3b      +3.76 pp [95% CI +2.37, +5.22], p = 0.000, 6 pairs
+      qwen-2.5-7b      +2.17 pp [95% CI +0.85, +3.47], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +1.69 pp [95% CI +0.94, +2.42], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.16 pp [95% CI +0.13, +2.18], p = 0.020, 6 pairs
+      llama-3.2-3b     +2.62 pp [95% CI +1.31, +3.72], p = 0.000, 6 pairs
+      ministral-3b     +0.81 pp [95% CI -0.68, +2.09], p = 0.236, 6 pairs
+      mistral-7b-v0.3  +1.98 pp [95% CI +1.04, +3.08], p = 0.000, 6 pairs
+      qwen-2.5-3b      +2.76 pp [95% CI +1.56, +3.90], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.81 pp [95% CI -0.22, +2.01], p = 0.168, 6 pairs
+  CICLe - mass    (pc   ): +1.85 pp [95% CI +1.03, +2.61], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.94 pp [95% CI +0.90, +3.08], p = 0.000, 6 pairs
+      llama-3.2-3b     +2.33 pp [95% CI +1.28, +3.39], p = 0.000, 6 pairs
+      ministral-3b     +0.68 pp [95% CI -0.56, +1.81], p = 0.280, 6 pairs
+      mistral-7b-v0.3  +1.54 pp [95% CI +0.52, +2.67], p = 0.000, 6 pairs
+      qwen-2.5-3b      +3.21 pp [95% CI +1.98, +4.32], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.38 pp [95% CI +0.19, +2.50], p = 0.028, 6 pairs
+  CICLe - marginal (fixed): +3.22 pp [95% CI +2.38, +4.05], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.51 pp [95% CI +1.36, +3.63], p = 0.000, 6 pairs
+      llama-3.2-3b     +3.39 pp [95% CI +2.15, +4.71], p = 0.000, 6 pairs
+      ministral-3b     +0.97 pp [95% CI -0.37, +2.33], p = 0.156, 6 pairs
+      mistral-7b-v0.3  +3.90 pp [95% CI +2.77, +4.91], p = 0.000, 6 pairs
+      qwen-2.5-3b      +4.70 pp [95% CI +3.41, +6.17], p = 0.000, 6 pairs
+      qwen-2.5-7b      +3.83 pp [95% CI +2.56, +4.90], p = 0.000, 6 pairs
+  CICLe - marginal (pc   ): +4.01 pp [95% CI +3.11, +4.90], p = 0.000, 36 pairs
+      llama-3.1-8b     +4.33 pp [95% CI +3.09, +5.53], p = 0.000, 6 pairs
+      llama-3.2-3b     +3.12 pp [95% CI +1.89, +4.47], p = 0.000, 6 pairs
+      ministral-3b     +2.99 pp [95% CI +1.55, +4.49], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +3.83 pp [95% CI +2.55, +5.12], p = 0.000, 6 pairs
+      qwen-2.5-3b      +4.67 pp [95% CI +3.41, +5.94], p = 0.000, 6 pairs
+      qwen-2.5-7b      +5.15 pp [95% CI +3.91, +6.38], p = 0.000, 6 pairs
+  CICLe - oracle  (fixed): -6.59 pp [95% CI -7.58, -5.62], p = 0.000, 36 pairs
+      llama-3.1-8b     -8.14 pp [95% CI -9.47, -6.78], p = 0.000, 6 pairs
+      llama-3.2-3b     -5.87 pp [95% CI -7.37, -4.49], p = 0.000, 6 pairs
+      ministral-3b     -5.67 pp [95% CI -7.02, -4.13], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -6.39 pp [95% CI -7.78, -4.82], p = 0.000, 6 pairs
+      qwen-2.5-3b      -5.24 pp [95% CI -6.73, -3.84], p = 0.000, 6 pairs
+      qwen-2.5-7b      -8.25 pp [95% CI -9.67, -6.92], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -7.25 pp [95% CI -8.21, -6.25], p = 0.000, 36 pairs
+      llama-3.1-8b     -7.23 pp [95% CI -8.62, -6.10], p = 0.000, 6 pairs
+      llama-3.2-3b     -7.55 pp [95% CI -9.05, -6.02], p = 0.000, 6 pairs
+      ministral-3b     -7.92 pp [95% CI -9.40, -6.55], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -7.32 pp [95% CI -8.79, -6.02], p = 0.000, 6 pairs
+      qwen-2.5-3b      -5.17 pp [95% CI -6.73, -3.63], p = 0.000, 6 pairs
+      qwen-2.5-7b      -8.32 pp [95% CI -9.73, -7.08], p = 0.000, 6 pairs
+
+===== sst-imb100: 447 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12      9.25  20.91     0.0%    0.0       0
+  finetuned-        0     3     31.89  39.30     0.0%    0.0       0
+  fewshot  fixed    1    18     37.71  40.92     0.0%    1.0     217
+  fewshot  fixed    4    18     38.22  41.71     0.0%    4.0     298
+  fewshot  pc       1    18     42.13  44.90     0.0%    5.0     329
+  fewshot  pc       4    18     40.79  43.75     0.0%   20.0     749
+  cicle    fixed    1    18     39.28  41.61     0.0%    1.0     216
+  cicle    fixed    4    18     39.68  42.34     0.0%    4.0     297
+  cicle    pc       1    18     43.35  45.67     0.0%    4.4     309
+  cicle    pc       4    18     41.89  44.34     0.0%   17.4     674
+  topk     fixed    1    18     36.00  41.61     0.0%    1.0     215
+  topk     fixed    4    18     36.26  41.89     0.0%    4.0     297
+  topk     pc       1    18     38.86  44.44     0.0%    4.3     311
+  topk     pc       4    18     37.98  43.46     0.0%   17.3     681
+  mass     fixed    1    18     30.93  38.31     0.0%    1.0     212
+  mass     fixed    4    18     30.93  38.23     0.0%    4.0     293
+  mass     pc       1    18     32.11  39.52     0.0%    2.9     265
+  mass     pc       4    18     31.74  39.38     0.0%   11.6     509
+  marginal fixed    1    18     29.78  38.07     0.2%    1.0     211
+  marginal fixed    4    18     28.62  37.14     0.1%    4.0     293
+  marginal pc       1    18     30.06  38.54     0.0%    2.4     251
+  marginal pc       4    18     29.34  38.09     0.0%    9.8     455
+  oracle   fixed    1    18     44.56  46.68     0.0%    1.0     216
+  oracle   fixed    4    18     45.06  47.34     0.0%    4.0     298
+  oracle   pc       1    18     48.71  50.79     0.0%    4.3     309
+  oracle   pc       4    18     47.95  49.89     0.0%   17.3     674
+  candidate sets [cicle]: coverage 96.0%, mean size 4.35, LLM skipped 0.1%
+  candidate sets [topk ]: coverage 88.4%, mean size 4.33, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 60.0%, mean size 2.85, LLM skipped 2.3%
+  candidate sets [marginal]: coverage 51.9%, mean size 2.26, LLM skipped 11.3%
+  candidate sets [oracle]: coverage 100.0%, mean size 4.33, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +1.51 pp [95% CI +0.87, +2.14], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.74 pp [95% CI +0.61, +2.72], p = 0.004, 6 pairs
+      llama-3.2-3b     +3.65 pp [95% CI +2.64, +4.53], p = 0.000, 6 pairs
+      ministral-3b     +2.84 pp [95% CI +1.93, +3.82], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.50 pp [95% CI -1.28, +0.32], p = 0.260, 6 pairs
+      qwen-2.5-3b      +0.78 pp [95% CI -0.44, +1.83], p = 0.168, 6 pairs
+      qwen-2.5-7b      +0.54 pp [95% CI -0.21, +1.30], p = 0.200, 6 pairs
+  CICLe - fewshot (pc   ): +1.16 pp [95% CI +0.54, +1.81], p = 0.001, 36 pairs
+      llama-3.1-8b     +1.15 pp [95% CI +0.14, +2.05], p = 0.032, 6 pairs
+      llama-3.2-3b     +3.23 pp [95% CI +2.28, +4.18], p = 0.000, 6 pairs
+      ministral-3b     +0.85 pp [95% CI -0.12, +1.74], p = 0.096, 6 pairs
+      mistral-7b-v0.3  -0.41 pp [95% CI -1.43, +0.44], p = 0.364, 6 pairs
+      qwen-2.5-3b      +1.55 pp [95% CI +0.54, +2.55], p = 0.004, 6 pairs
+      qwen-2.5-7b      +0.61 pp [95% CI -0.29, +1.49], p = 0.236, 6 pairs
+  CICLe - topk    (fixed): +3.35 pp [95% CI +2.57, +4.15], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.86 pp [95% CI +1.74, +4.06], p = 0.000, 6 pairs
+      llama-3.2-3b     +2.21 pp [95% CI +0.94, +3.50], p = 0.000, 6 pairs
+      ministral-3b     +3.53 pp [95% CI +2.19, +4.71], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +5.45 pp [95% CI +4.34, +6.64], p = 0.000, 6 pairs
+      qwen-2.5-3b      +3.79 pp [95% CI +2.32, +4.95], p = 0.000, 6 pairs
+      qwen-2.5-7b      +2.24 pp [95% CI +1.32, +3.14], p = 0.000, 6 pairs
+  CICLe - topk    (pc   ): +4.21 pp [95% CI +3.38, +5.03], p = 0.000, 36 pairs
+      llama-3.1-8b     +5.17 pp [95% CI +3.94, +6.38], p = 0.000, 6 pairs
+      llama-3.2-3b     +2.83 pp [95% CI +1.73, +3.90], p = 0.000, 6 pairs
+      ministral-3b     +4.85 pp [95% CI +3.60, +6.03], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +6.08 pp [95% CI +4.83, +7.34], p = 0.000, 6 pairs
+      qwen-2.5-3b      +3.43 pp [95% CI +2.15, +4.68], p = 0.000, 6 pairs
+      qwen-2.5-7b      +2.87 pp [95% CI +1.71, +3.89], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +8.54 pp [95% CI +7.56, +9.49], p = 0.000, 36 pairs
+      llama-3.1-8b     +6.70 pp [95% CI +5.25, +8.15], p = 0.000, 6 pairs
+      llama-3.2-3b     +8.22 pp [95% CI +6.72, +9.51], p = 0.000, 6 pairs
+      ministral-3b     +5.44 pp [95% CI +3.87, +6.92], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +11.99 pp [95% CI +10.55, +13.43], p = 0.000, 6 pairs
+      qwen-2.5-3b      +11.59 pp [95% CI +10.02, +13.02], p = 0.000, 6 pairs
+      qwen-2.5-7b      +7.32 pp [95% CI +5.79, +8.62], p = 0.000, 6 pairs
+  CICLe - mass    (pc   ): +10.70 pp [95% CI +9.63, +11.75], p = 0.000, 36 pairs
+      llama-3.1-8b     +12.04 pp [95% CI +10.61, +13.37], p = 0.000, 6 pairs
+      llama-3.2-3b     +7.07 pp [95% CI +5.72, +8.36], p = 0.000, 6 pairs
+      ministral-3b     +11.12 pp [95% CI +9.33, +12.77], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +12.77 pp [95% CI +11.28, +14.31], p = 0.000, 6 pairs
+      qwen-2.5-3b      +10.29 pp [95% CI +8.64, +11.83], p = 0.000, 6 pairs
+      qwen-2.5-7b      +10.88 pp [95% CI +9.43, +12.43], p = 0.000, 6 pairs
+  CICLe - marginal (fixed): +10.28 pp [95% CI +9.11, +11.40], p = 0.000, 36 pairs
+      llama-3.1-8b     +8.06 pp [95% CI +6.42, +9.49], p = 0.000, 6 pairs
+      llama-3.2-3b     +10.99 pp [95% CI +9.54, +12.32], p = 0.000, 6 pairs
+      ministral-3b     +7.35 pp [95% CI +5.87, +9.12], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +13.36 pp [95% CI +11.88, +15.05], p = 0.000, 6 pairs
+      qwen-2.5-3b      +12.95 pp [95% CI +11.20, +14.53], p = 0.000, 6 pairs
+      qwen-2.5-7b      +8.96 pp [95% CI +7.50, +10.38], p = 0.000, 6 pairs
+  CICLe - marginal (pc   ): +12.92 pp [95% CI +11.71, +14.10], p = 0.000, 36 pairs
+      llama-3.1-8b     +14.52 pp [95% CI +12.95, +16.09], p = 0.000, 6 pairs
+      llama-3.2-3b     +9.96 pp [95% CI +8.52, +11.41], p = 0.000, 6 pairs
+      ministral-3b     +11.93 pp [95% CI +10.27, +13.66], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +15.54 pp [95% CI +14.02, +17.17], p = 0.000, 6 pairs
+      qwen-2.5-3b      +11.89 pp [95% CI +10.12, +13.59], p = 0.000, 6 pairs
+      qwen-2.5-7b      +13.71 pp [95% CI +12.02, +15.07], p = 0.000, 6 pairs
+  CICLe - oracle  (fixed): -5.33 pp [95% CI -6.21, -4.43], p = 0.000, 36 pairs
+      llama-3.1-8b     -7.12 pp [95% CI -8.46, -5.85], p = 0.000, 6 pairs
+      llama-3.2-3b     -4.42 pp [95% CI -5.86, -2.95], p = 0.000, 6 pairs
+      ministral-3b     -4.24 pp [95% CI -5.56, -2.94], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -5.86 pp [95% CI -7.09, -4.66], p = 0.000, 6 pairs
+      qwen-2.5-3b      -4.29 pp [95% CI -5.49, -2.93], p = 0.000, 6 pairs
+      qwen-2.5-7b      -6.05 pp [95% CI -7.23, -4.69], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -5.70 pp [95% CI -6.57, -4.92], p = 0.000, 36 pairs
+      llama-3.1-8b     -5.09 pp [95% CI -6.30, -3.86], p = 0.000, 6 pairs
+      llama-3.2-3b     -6.11 pp [95% CI -7.48, -4.89], p = 0.000, 6 pairs
+      ministral-3b     -5.74 pp [95% CI -7.01, -4.42], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -5.61 pp [95% CI -6.96, -4.45], p = 0.000, 6 pairs
+      qwen-2.5-3b      -4.82 pp [95% CI -6.19, -3.57], p = 0.000, 6 pairs
+      qwen-2.5-7b      -6.84 pp [95% CI -8.35, -5.52], p = 0.000, 6 pairs
+
+===== sst-n1000: 159 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     24.88  35.44     0.0%    0.0       0
+  finetuned-        0     3     48.75  50.63     0.0%    0.0       0
+  fewshot  fixed    1    18     40.03  42.39     0.0%    1.0     217
+  fewshot  fixed    4    18     44.13  46.08     0.0%    4.0     298
+  fewshot  pc       1    18     44.87  47.22     0.0%    5.0     329
+  fewshot  pc       4    18     46.11  47.88     0.0%   20.0     749
+  cicle    fixed    1    18     42.58  44.00     0.0%    1.0     214
+  cicle    fixed    4    18     46.03  47.66     0.0%    4.0     296
+  cicle    pc       1    18     46.01  47.76     0.0%    4.0     297
+  cicle    pc       4    18     46.62  48.18     0.0%   15.9     632
+  candidate sets [cicle]: coverage 95.3%, mean size 3.98, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +2.23 pp [95% CI +1.62, +2.82], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.98 pp [95% CI +2.10, +3.88], p = 0.000, 6 pairs
+      llama-3.2-3b     +4.89 pp [95% CI +3.78, +6.00], p = 0.000, 6 pairs
+      ministral-3b     +3.28 pp [95% CI +2.07, +4.50], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.18 pp [95% CI -1.13, +0.75], p = 0.684, 6 pairs
+      qwen-2.5-3b      +1.08 pp [95% CI -0.03, +2.12], p = 0.056, 6 pairs
+      qwen-2.5-7b      +1.33 pp [95% CI +0.37, +2.26], p = 0.004, 6 pairs
+  CICLe - fewshot (pc   ): +0.83 pp [95% CI +0.20, +1.47], p = 0.009, 36 pairs
+      llama-3.1-8b     +0.47 pp [95% CI -0.53, +1.40], p = 0.372, 6 pairs
+      llama-3.2-3b     +2.70 pp [95% CI +1.74, +3.82], p = 0.000, 6 pairs
+      ministral-3b     +2.16 pp [95% CI +1.09, +3.26], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -1.94 pp [95% CI -3.04, -0.85], p = 0.000, 6 pairs
+      qwen-2.5-3b      +0.35 pp [95% CI -0.86, +1.44], p = 0.568, 6 pairs
+      qwen-2.5-7b      +1.23 pp [95% CI +0.30, +2.19], p = 0.012, 6 pairs
+
+===== sst-n250: 159 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     18.57  31.69     0.0%    0.0       0
+  finetuned-        0     3     38.77  46.03     0.0%    0.0       0
+  fewshot  fixed    1    18     40.18  42.56     0.0%    1.0     217
+  fewshot  fixed    4    18     43.85  45.94     0.0%    4.0     299
+  fewshot  pc       1    18     44.20  46.55     0.0%    5.0     327
+  fewshot  pc       4    18     45.88  47.53     0.0%   20.0     745
+  cicle    fixed    1    18     40.94  42.26     0.0%    1.0     215
+  cicle    fixed    4    18     43.88  45.28     0.0%    4.0     298
+  cicle    pc       1    18     43.84  45.44     0.0%    4.2     305
+  cicle    pc       4    18     44.99  46.26     0.0%   17.0     661
+  candidate sets [cicle]: coverage 92.2%, mean size 4.25, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.39 pp [95% CI -0.31, +1.07], p = 0.277, 36 pairs
+      llama-3.1-8b     +1.67 pp [95% CI +0.64, +2.67], p = 0.000, 6 pairs
+      llama-3.2-3b     +1.32 pp [95% CI +0.29, +2.32], p = 0.004, 6 pairs
+      ministral-3b     +2.15 pp [95% CI +1.11, +3.18], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -1.87 pp [95% CI -2.85, -0.96], p = 0.000, 6 pairs
+      qwen-2.5-3b      -1.68 pp [95% CI -2.92, -0.55], p = 0.004, 6 pairs
+      qwen-2.5-7b      +0.75 pp [95% CI -0.27, +1.84], p = 0.144, 6 pairs
+  CICLe - fewshot (pc   ): -0.63 pp [95% CI -1.33, +0.13], p = 0.112, 36 pairs
+      llama-3.1-8b     -1.08 pp [95% CI -2.12, -0.02], p = 0.048, 6 pairs
+      llama-3.2-3b     +1.36 pp [95% CI +0.32, +2.43], p = 0.020, 6 pairs
+      ministral-3b     -0.47 pp [95% CI -1.62, +0.76], p = 0.432, 6 pairs
+      mistral-7b-v0.3  -1.82 pp [95% CI -2.80, -0.83], p = 0.000, 6 pairs
+      qwen-2.5-3b      -1.86 pp [95% CI -2.94, -0.67], p = 0.004, 6 pairs
+      qwen-2.5-7b      +0.10 pp [95% CI -0.98, +1.18], p = 0.800, 6 pairs
+
+===== sst-n500: 159 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     22.31  34.26     0.0%    0.0       0
+  finetuned-        0     3     46.42  48.63     0.0%    0.0       0
+  fewshot  fixed    1    18     40.35  42.64     0.0%    1.0     217
+  fewshot  fixed    4    18     43.91  46.08     0.0%    4.0     298
+  fewshot  pc       1    18     45.27  47.75     0.0%    5.0     328
+  fewshot  pc       4    18     47.09  48.96     0.0%   20.0     744
+  cicle    fixed    1    18     42.56  44.14     0.0%    1.0     215
+  cicle    fixed    4    18     45.36  47.32     0.0%    4.0     296
+  cicle    pc       1    18     45.91  48.12     0.0%    4.2     303
+  cicle    pc       4    18     47.65  49.57     0.0%   16.7     649
+  candidate sets [cicle]: coverage 94.4%, mean size 4.17, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +1.83 pp [95% CI +1.21, +2.47], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.39 pp [95% CI +1.40, +3.28], p = 0.000, 6 pairs
+      llama-3.2-3b     +3.27 pp [95% CI +2.23, +4.29], p = 0.000, 6 pairs
+      ministral-3b     +3.80 pp [95% CI +2.52, +4.87], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.17 pp [95% CI -0.68, +1.24], p = 0.660, 6 pairs
+      qwen-2.5-3b      +0.48 pp [95% CI -0.42, +1.61], p = 0.312, 6 pairs
+      qwen-2.5-7b      +0.85 pp [95% CI +0.02, +1.67], p = 0.048, 6 pairs
+  CICLe - fewshot (pc   ): +0.60 pp [95% CI -0.08, +1.27], p = 0.079, 36 pairs
+      llama-3.1-8b     +0.19 pp [95% CI -0.80, +1.07], p = 0.700, 6 pairs
+      llama-3.2-3b     +2.50 pp [95% CI +1.51, +3.43], p = 0.000, 6 pairs
+      ministral-3b     +0.99 pp [95% CI -0.06, +2.07], p = 0.076, 6 pairs
+      mistral-7b-v0.3  -0.85 pp [95% CI -1.96, +0.08], p = 0.084, 6 pairs
+      qwen-2.5-3b      +0.37 pp [95% CI -0.71, +1.65], p = 0.492, 6 pairs
+      qwen-2.5-7b      +0.39 pp [95% CI -0.64, +1.29], p = 0.440, 6 pairs
+
+===== sst-relabel: 144 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1    18     24.34  26.47     0.6%    1.0     223
+  fewshot  fixed    4    18     32.08  33.37     0.3%    4.0     307
+  fewshot  pc       1    18     33.29  34.82     0.1%    5.0     337
+  fewshot  pc       4    18     36.77  38.33     0.0%   20.0     771
+  cicle    fixed    1    18     28.43  29.43     0.3%    1.0     219
+  cicle    fixed    4    18     35.48  36.39     0.2%    4.0     303
+  cicle    pc       1    18     35.44  36.39     0.1%    3.9     300
+  cicle    pc       4    18     38.84  39.84     0.0%   15.5     635
+  candidate sets [cicle]: coverage 95.4%, mean size 3.87, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +3.75 pp [95% CI +3.20, +4.31], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.79 pp [95% CI +0.97, +2.50], p = 0.000, 6 pairs
+      llama-3.2-3b     +2.05 pp [95% CI +1.13, +2.91], p = 0.000, 6 pairs
+      ministral-3b     +8.79 pp [95% CI +7.73, +9.85], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +3.34 pp [95% CI +2.32, +4.26], p = 0.000, 6 pairs
+      qwen-2.5-3b      +4.58 pp [95% CI +3.65, +5.46], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.92 pp [95% CI +1.06, +2.71], p = 0.000, 6 pairs
+  CICLe - fewshot (pc   ): +2.10 pp [95% CI +1.46, +2.74], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.85 pp [95% CI -0.07, +1.85], p = 0.076, 6 pairs
+      llama-3.2-3b     +2.22 pp [95% CI +1.19, +3.34], p = 0.000, 6 pairs
+      ministral-3b     +2.87 pp [95% CI +1.73, +4.03], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +2.58 pp [95% CI +1.54, +3.63], p = 0.000, 6 pairs
+      qwen-2.5-3b      +2.22 pp [95% CI +1.05, +3.26], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.89 pp [95% CI +0.96, +3.16], p = 0.000, 6 pairs
+
+===== yahoo-answers: 627 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     52.45  53.74     0.0%    0.0       0
+  finetuned-        0     3     61.82  62.37     0.0%    0.0       0
+  zeroshot -        0    18     55.32  54.61     6.1%    0.0     221
+  fewshot  fixed    1    18     54.79  53.98     4.8%    1.0     285
+  fewshot  fixed    2    18     56.37  55.84     3.8%    2.0     343
+  fewshot  fixed    4    18     58.35  57.97     2.8%    4.0     455
+  fewshot  fixed    8    18     59.79  59.70     1.7%    8.0     674
+  fewshot  pc       1    18     57.93  57.47     2.9%   10.0     700
+  fewshot  pc       2    18     59.54  59.33     2.0%   20.0    1183
+  fewshot  pc       4    18     61.65  61.48     1.6%   40.0    2166
+  fewshot  pc       8    18     62.20  62.07     1.5%   80.0    4168
+  cicle    fixed    0    18     56.27  55.82     3.3%    0.0     212
+  cicle    fixed    1    18     54.25  53.74     2.7%    1.0     276
+  cicle    fixed    2    18     56.46  55.99     2.1%    2.0     334
+  cicle    fixed    4    18     58.20  57.91     1.2%    4.0     447
+  cicle    fixed    8    18     59.65  59.60     0.7%    8.0     666
+  cicle    pc       1    18     59.48  59.21     1.3%    5.8     503
+  cicle    pc       2    18     60.92  60.82     0.8%   11.7     792
+  cicle    pc       4    18     62.74  62.74     0.6%   23.3    1378
+  cicle    pc       8    18     63.78  63.74     0.6%   46.7    2566
+  topk     fixed    1    18     53.94  53.48     2.5%    1.0     277
+  topk     fixed    4    18     57.78  57.54     1.0%    4.0     448
+  topk     pc       1    18     58.51  58.25     1.3%    5.7     505
+  topk     pc       4    18     62.18  62.15     0.5%   22.7    1381
+  mass     fixed    1    18     54.02  53.37     3.7%    1.0     281
+  mass     fixed    4    18     57.70  57.38     2.1%    4.0     452
+  mass     pc       1    18     58.03  57.73     2.1%    7.8     604
+  mass     pc       4    18     61.54  61.47     1.0%   31.4    1777
+  marginal fixed    1    18     54.42  54.00     2.5%    1.0     275
+  marginal fixed    4    18     58.06  57.83     1.2%    4.0     445
+  marginal pc       1    18     59.13  58.98     1.2%    6.0     509
+  marginal pc       4    18     62.40  62.41     0.7%   23.8    1401
+  oracle   fixed    1    18     61.91  61.23     3.0%    1.0     277
+  oracle   fixed    4    18     65.45  65.24     1.2%    4.0     446
+  oracle   pc       1    18     66.48  66.23     1.4%    5.7     492
+  oracle   pc       4    18     69.88  69.92     0.6%   22.7    1333
+  candidate sets [cicle]: coverage 95.0%, mean size 5.67, LLM skipped 3.4%
+  candidate sets [topk ]: coverage 93.7%, mean size 5.67, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 98.4%, mean size 7.84, LLM skipped 0.1%
+  candidate sets [marginal]: coverage 95.6%, mean size 5.71, LLM skipped 5.1%
+  candidate sets [oracle]: coverage 100.0%, mean size 5.67, LLM skipped 0.0%
+  CICLe - fewshot (fixed): -0.19 pp [95% CI -0.57, +0.21], p = 0.340, 72 pairs
+      llama-3.1-8b     +0.03 pp [95% CI -0.54, +0.48], p = 0.908, 12 pairs
+      llama-3.2-3b     -2.33 pp [95% CI -3.08, -1.59], p = 0.000, 12 pairs
+      ministral-3b     -0.17 pp [95% CI -1.01, +0.79], p = 0.868, 12 pairs
+      mistral-7b-v0.3  -0.69 pp [95% CI -1.35, -0.05], p = 0.028, 12 pairs
+      qwen-2.5-3b      +1.99 pp [95% CI +1.29, +2.80], p = 0.000, 12 pairs
+      qwen-2.5-7b      +0.05 pp [95% CI -0.44, +0.50], p = 0.876, 12 pairs
+  CICLe - fewshot (pc   ): +1.40 pp [95% CI +1.06, +1.79], p = 0.000, 72 pairs
+      llama-3.1-8b     +0.74 pp [95% CI +0.22, +1.28], p = 0.008, 12 pairs
+      llama-3.2-3b     +0.82 pp [95% CI +0.25, +1.39], p = 0.008, 12 pairs
+      ministral-3b     +3.40 pp [95% CI +2.55, +4.16], p = 0.000, 12 pairs
+      mistral-7b-v0.3  +0.08 pp [95% CI -0.52, +0.75], p = 0.760, 12 pairs
+      qwen-2.5-3b      +2.14 pp [95% CI +1.35, +2.87], p = 0.000, 12 pairs
+      qwen-2.5-7b      +1.24 pp [95% CI +0.65, +1.87], p = 0.000, 12 pairs
+  CICLe - topk    (fixed): +0.37 pp [95% CI -0.08, +0.81], p = 0.095, 36 pairs
+      llama-3.1-8b     -0.16 pp [95% CI -0.81, +0.43], p = 0.632, 6 pairs
+      llama-3.2-3b     +0.97 pp [95% CI +0.08, +1.77], p = 0.028, 6 pairs
+      ministral-3b     +0.34 pp [95% CI -0.58, +1.30], p = 0.444, 6 pairs
+      mistral-7b-v0.3  +0.48 pp [95% CI -0.28, +1.16], p = 0.216, 6 pairs
+      qwen-2.5-3b      +1.15 pp [95% CI +0.34, +2.02], p = 0.008, 6 pairs
+      qwen-2.5-7b      -0.58 pp [95% CI -1.15, +0.04], p = 0.064, 6 pairs
+  CICLe - topk    (pc   ): +0.76 pp [95% CI +0.34, +1.18], p = 0.002, 36 pairs
+      llama-3.1-8b     +0.43 pp [95% CI -0.27, +1.08], p = 0.216, 6 pairs
+      llama-3.2-3b     +0.64 pp [95% CI -0.09, +1.33], p = 0.084, 6 pairs
+      ministral-3b     +1.37 pp [95% CI +0.45, +2.29], p = 0.004, 6 pairs
+      mistral-7b-v0.3  +0.39 pp [95% CI -0.39, +1.26], p = 0.312, 6 pairs
+      qwen-2.5-3b      +1.22 pp [95% CI +0.39, +2.12], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.54 pp [95% CI -0.08, +1.21], p = 0.120, 6 pairs
+  CICLe - mass    (fixed): +0.36 pp [95% CI -0.07, +0.76], p = 0.092, 36 pairs
+      llama-3.1-8b     +0.25 pp [95% CI -0.31, +0.87], p = 0.352, 6 pairs
+      llama-3.2-3b     -0.27 pp [95% CI -1.15, +0.72], p = 0.572, 6 pairs
+      ministral-3b     +0.45 pp [95% CI -0.59, +1.45], p = 0.440, 6 pairs
+      mistral-7b-v0.3  +0.35 pp [95% CI -0.37, +1.01], p = 0.340, 6 pairs
+      qwen-2.5-3b      +1.56 pp [95% CI +0.82, +2.32], p = 0.000, 6 pairs
+      qwen-2.5-7b      -0.18 pp [95% CI -0.78, +0.43], p = 0.476, 6 pairs
+  CICLe - mass    (pc   ): +1.33 pp [95% CI +0.95, +1.71], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.57 pp [95% CI -0.01, +1.20], p = 0.056, 6 pairs
+      llama-3.2-3b     +0.73 pp [95% CI +0.08, +1.43], p = 0.028, 6 pairs
+      ministral-3b     +3.12 pp [95% CI +2.13, +3.94], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.48 pp [95% CI -0.26, +1.16], p = 0.224, 6 pairs
+      qwen-2.5-3b      +1.97 pp [95% CI +1.12, +2.78], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.08 pp [95% CI +0.43, +1.81], p = 0.004, 6 pairs
+  CICLe - marginal (fixed): -0.02 pp [95% CI -0.37, +0.33], p = 0.972, 36 pairs
+      llama-3.1-8b     +0.19 pp [95% CI -0.30, +0.70], p = 0.380, 6 pairs
+      llama-3.2-3b     -0.04 pp [95% CI -0.83, +0.80], p = 0.968, 6 pairs
+      ministral-3b     -0.04 pp [95% CI -0.82, +0.78], p = 0.952, 6 pairs
+      mistral-7b-v0.3  +0.31 pp [95% CI -0.31, +0.89], p = 0.344, 6 pairs
+      qwen-2.5-3b      -0.22 pp [95% CI -0.93, +0.42], p = 0.532, 6 pairs
+      qwen-2.5-7b      -0.31 pp [95% CI -0.84, +0.16], p = 0.232, 6 pairs
+  CICLe - marginal (pc   ): +0.35 pp [95% CI +0.02, +0.68], p = 0.037, 36 pairs
+      llama-3.1-8b     +0.57 pp [95% CI +0.00, +1.10], p = 0.048, 6 pairs
+      llama-3.2-3b     +0.17 pp [95% CI -0.48, +0.76], p = 0.624, 6 pairs
+      ministral-3b     +0.76 pp [95% CI +0.02, +1.52], p = 0.040, 6 pairs
+      mistral-7b-v0.3  +0.13 pp [95% CI -0.48, +0.73], p = 0.712, 6 pairs
+      qwen-2.5-3b      +0.14 pp [95% CI -0.54, +0.84], p = 0.668, 6 pairs
+      qwen-2.5-7b      +0.31 pp [95% CI -0.27, +0.96], p = 0.360, 6 pairs
+  CICLe - oracle  (fixed): -7.46 pp [95% CI -8.18, -6.72], p = 0.000, 36 pairs
+      llama-3.1-8b     -9.44 pp [95% CI -10.46, -8.53], p = 0.000, 6 pairs
+      llama-3.2-3b     -6.33 pp [95% CI -7.67, -5.12], p = 0.000, 6 pairs
+      ministral-3b     -5.29 pp [95% CI -6.61, -4.02], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -7.82 pp [95% CI -8.95, -6.83], p = 0.000, 6 pairs
+      qwen-2.5-3b      -6.96 pp [95% CI -8.23, -5.74], p = 0.000, 6 pairs
+      qwen-2.5-7b      -8.89 pp [95% CI -9.94, -7.83], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -7.07 pp [95% CI -7.84, -6.31], p = 0.000, 36 pairs
+      llama-3.1-8b     -7.59 pp [95% CI -8.70, -6.51], p = 0.000, 6 pairs
+      llama-3.2-3b     -8.13 pp [95% CI -9.28, -7.08], p = 0.000, 6 pairs
+      ministral-3b     -6.64 pp [95% CI -7.88, -5.40], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -7.22 pp [95% CI -8.45, -6.16], p = 0.000, 6 pairs
+      qwen-2.5-3b      -5.86 pp [95% CI -7.11, -4.67], p = 0.000, 6 pairs
+      qwen-2.5-7b      -6.97 pp [95% CI -8.19, -5.75], p = 0.000, 6 pairs
+  ablation over 24 shared (variant, k, model, seed) cells:
+    emb        clf   alpha   CICLe  few-shot   diff  coverage  set size  LLM skipped
+    contriever lr     0.05   57.79     58.07  -0.28     95.6%      5.32         5.8%
+    minilm     lr     0.01   59.75     59.82  -0.07     99.1%      8.98         0.0%
+    minilm     lr     0.05   59.45     59.82  -0.37     95.0%      5.67         3.4%
+    minilm     lr     0.10   60.75     59.82  +0.93     90.1%      4.01         9.8%
+    minilm     lr     0.20   63.39     59.82  +3.57     79.3%      2.08        35.4%
+    minilm     svm    0.05   59.77     59.82  -0.05     95.6%      5.79         4.7%
+    tfidf      lr     0.05   54.47     55.16  -0.69     96.1%      7.97         1.1%
+
+===== yahoo-answers-altprompt: 48 runs, 6 models, seeds [42]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1     6     54.11  53.13     4.5%    1.0     278
+  fewshot  fixed    4     6     57.98  57.55     2.0%    4.0     451
+  fewshot  pc       1     6     53.07  52.12     3.6%   10.0     703
+  fewshot  pc       4     6     54.45  53.92     1.9%   40.0    2196
+  cicle    fixed    1     6     52.79  52.03     2.5%    1.0     272
+  cicle    fixed    4     6     55.99  55.62     1.2%    4.0     446
+  cicle    pc       1     6     53.73  53.38     1.5%    6.3     523
+  cicle    pc       4     6     53.44  53.27     0.7%   25.2    1475
+  candidate sets [cicle]: coverage 94.2%, mean size 6.12, LLM skipped 3.4%
+  CICLe - fewshot (fixed): -1.65 pp [95% CI -2.46, -0.85], p = 0.000, 12 pairs
+      llama-3.1-8b     -0.60 pp [95% CI -1.93, +0.62], p = 0.292, 2 pairs
+      llama-3.2-3b     -5.73 pp [95% CI -7.70, -3.63], p = 0.000, 2 pairs
+      ministral-3b     -4.77 pp [95% CI -6.70, -3.03], p = 0.000, 2 pairs
+      mistral-7b-v0.3  -1.34 pp [95% CI -2.72, +0.04], p = 0.056, 2 pairs
+      qwen-2.5-3b      +2.81 pp [95% CI +1.36, +4.47], p = 0.000, 2 pairs
+      qwen-2.5-7b      -0.27 pp [95% CI -1.59, +1.01], p = 0.756, 2 pairs
+  CICLe - fewshot (pc   ): -0.18 pp [95% CI -1.12, +0.71], p = 0.716, 12 pairs
+      llama-3.1-8b     -1.70 pp [95% CI -3.26, -0.11], p = 0.032, 2 pairs
+      llama-3.2-3b     -0.69 pp [95% CI -2.89, +1.50], p = 0.528, 2 pairs
+      ministral-3b     +2.51 pp [95% CI +0.96, +4.01], p = 0.004, 2 pairs
+      mistral-7b-v0.3  -0.82 pp [95% CI -2.58, +0.79], p = 0.368, 2 pairs
+      qwen-2.5-3b      -1.21 pp [95% CI -2.93, +0.60], p = 0.196, 2 pairs
+      qwen-2.5-7b      +0.84 pp [95% CI -0.66, +2.21], p = 0.268, 2 pairs
+
+===== yahoo-answers-imb10: 447 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     33.11  38.23     0.0%    0.0       0
+  finetuned-        0     3     58.71  59.40     0.0%    0.0       0
+  fewshot  fixed    1    18     54.19  53.42     4.8%    1.0     285
+  fewshot  fixed    4    18     56.39  56.02     2.9%    4.0     452
+  fewshot  pc       1    18     56.84  56.28     3.0%   10.0     710
+  fewshot  pc       4    18     59.41  59.19     1.7%   40.0    2198
+  cicle    fixed    1    18     53.65  53.07     3.0%    1.0     277
+  cicle    fixed    4    18     56.03  55.79     1.7%    4.0     447
+  cicle    pc       1    18     58.15  57.93     1.7%    6.2     539
+  cicle    pc       4    18     60.28  60.28     0.9%   25.0    1509
+  topk     fixed    1    18     53.17  52.62     2.7%    1.0     276
+  topk     fixed    4    18     55.34  55.22     1.3%    4.0     445
+  topk     pc       1    18     56.11  55.81     1.3%    6.0     518
+  topk     pc       4    18     58.84  58.83     0.6%   24.0    1420
+  mass     fixed    1    18     53.52  52.88     3.6%    1.0     280
+  mass     fixed    4    18     55.57  55.29     2.0%    4.0     448
+  mass     pc       1    18     56.43  55.99     1.9%    7.5     591
+  mass     pc       4    18     59.27  59.14     1.1%   30.0    1714
+  marginal fixed    1    18     53.98  53.55     2.4%    1.0     274
+  marginal fixed    4    18     56.33  56.22     1.3%    4.0     442
+  marginal pc       1    18     57.62  57.47     1.2%    5.3     485
+  marginal pc       4    18     59.69  59.72     0.6%   21.4    1289
+  oracle   fixed    1    18     60.39  59.66     3.2%    1.0     277
+  oracle   fixed    4    18     62.99  62.59     1.5%    4.0     444
+  oracle   pc       1    18     64.90  64.66     1.4%    6.0     515
+  oracle   pc       4    18     67.13  67.18     0.7%   24.0    1422
+  candidate sets [cicle]: coverage 94.9%, mean size 6.21, LLM skipped 0.6%
+  candidate sets [topk ]: coverage 90.5%, mean size 6.00, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 96.2%, mean size 7.45, LLM skipped 0.5%
+  candidate sets [marginal]: coverage 89.5%, mean size 5.04, LLM skipped 6.9%
+  candidate sets [oracle]: coverage 100.0%, mean size 6.00, LLM skipped 0.0%
+  CICLe - fewshot (fixed): -0.45 pp [95% CI -0.89, -0.02], p = 0.038, 36 pairs
+      llama-3.1-8b     -0.04 pp [95% CI -0.74, +0.68], p = 0.904, 6 pairs
+      llama-3.2-3b     -1.71 pp [95% CI -2.71, -0.78], p = 0.000, 6 pairs
+      ministral-3b     -2.05 pp [95% CI -3.07, -1.11], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -0.04 pp [95% CI -0.87, +0.77], p = 0.964, 6 pairs
+      qwen-2.5-3b      +0.75 pp [95% CI -0.07, +1.61], p = 0.064, 6 pairs
+      qwen-2.5-7b      +0.38 pp [95% CI -0.24, +1.07], p = 0.240, 6 pairs
+  CICLe - fewshot (pc   ): +1.09 pp [95% CI +0.66, +1.52], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.66 pp [95% CI -0.06, +1.40], p = 0.084, 6 pairs
+      llama-3.2-3b     +1.14 pp [95% CI +0.48, +1.88], p = 0.000, 6 pairs
+      ministral-3b     +2.24 pp [95% CI +1.34, +3.21], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.73 pp [95% CI -0.02, +1.42], p = 0.068, 6 pairs
+      qwen-2.5-3b      +1.14 pp [95% CI +0.31, +1.91], p = 0.004, 6 pairs
+      qwen-2.5-7b      +0.64 pp [95% CI -0.08, +1.41], p = 0.088, 6 pairs
+  CICLe - topk    (fixed): +0.58 pp [95% CI +0.02, +1.13], p = 0.041, 36 pairs
+      llama-3.1-8b     +0.32 pp [95% CI -0.46, +1.17], p = 0.408, 6 pairs
+      llama-3.2-3b     +1.96 pp [95% CI +0.91, +2.99], p = 0.000, 6 pairs
+      ministral-3b     -1.21 pp [95% CI -2.35, -0.08], p = 0.032, 6 pairs
+      mistral-7b-v0.3  +0.31 pp [95% CI -0.52, +1.29], p = 0.512, 6 pairs
+      qwen-2.5-3b      +0.96 pp [95% CI -0.01, +1.94], p = 0.064, 6 pairs
+      qwen-2.5-7b      +1.16 pp [95% CI +0.38, +1.88], p = 0.000, 6 pairs
+  CICLe - topk    (pc   ): +1.74 pp [95% CI +1.21, +2.30], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.80 pp [95% CI +1.01, +2.77], p = 0.000, 6 pairs
+      llama-3.2-3b     +2.63 pp [95% CI +1.84, +3.55], p = 0.000, 6 pairs
+      ministral-3b     +0.93 pp [95% CI -0.01, +1.92], p = 0.052, 6 pairs
+      mistral-7b-v0.3  +2.16 pp [95% CI +1.36, +3.00], p = 0.000, 6 pairs
+      qwen-2.5-3b      +1.46 pp [95% CI +0.35, +2.53], p = 0.004, 6 pairs
+      qwen-2.5-7b      +1.46 pp [95% CI +0.58, +2.35], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +0.29 pp [95% CI -0.17, +0.75], p = 0.179, 36 pairs
+      llama-3.1-8b     +0.21 pp [95% CI -0.52, +0.86], p = 0.556, 6 pairs
+      llama-3.2-3b     +0.83 pp [95% CI -0.05, +1.76], p = 0.064, 6 pairs
+      ministral-3b     -0.97 pp [95% CI -2.01, +0.08], p = 0.100, 6 pairs
+      mistral-7b-v0.3  +0.34 pp [95% CI -0.47, +1.05], p = 0.392, 6 pairs
+      qwen-2.5-3b      +0.59 pp [95% CI -0.34, +1.45], p = 0.172, 6 pairs
+      qwen-2.5-7b      +0.75 pp [95% CI +0.13, +1.37], p = 0.020, 6 pairs
+  CICLe - mass    (pc   ): +1.37 pp [95% CI +0.91, +1.79], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.88 pp [95% CI +0.12, +1.63], p = 0.024, 6 pairs
+      llama-3.2-3b     +2.05 pp [95% CI +1.34, +2.85], p = 0.000, 6 pairs
+      ministral-3b     +1.93 pp [95% CI +0.90, +2.93], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +1.47 pp [95% CI +0.61, +2.31], p = 0.000, 6 pairs
+      qwen-2.5-3b      +0.85 pp [95% CI +0.02, +1.75], p = 0.044, 6 pairs
+      qwen-2.5-7b      +1.02 pp [95% CI +0.26, +1.79], p = 0.012, 6 pairs
+  CICLe - marginal (fixed): -0.31 pp [95% CI -0.87, +0.23], p = 0.270, 36 pairs
+      llama-3.1-8b     +0.38 pp [95% CI -0.35, +1.10], p = 0.312, 6 pairs
+      llama-3.2-3b     -0.60 pp [95% CI -1.61, +0.47], p = 0.272, 6 pairs
+      ministral-3b     -2.77 pp [95% CI -3.94, -1.57], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.38 pp [95% CI -0.37, +1.28], p = 0.360, 6 pairs
+      qwen-2.5-3b      -0.44 pp [95% CI -1.33, +0.50], p = 0.336, 6 pairs
+      qwen-2.5-7b      +1.16 pp [95% CI +0.49, +1.87], p = 0.000, 6 pairs
+  CICLe - marginal (pc   ): +0.56 pp [95% CI +0.05, +1.08], p = 0.033, 36 pairs
+      llama-3.1-8b     +1.21 pp [95% CI +0.50, +1.98], p = 0.004, 6 pairs
+      llama-3.2-3b     +1.23 pp [95% CI +0.50, +2.08], p = 0.000, 6 pairs
+      ministral-3b     -0.94 pp [95% CI -1.87, +0.16], p = 0.084, 6 pairs
+      mistral-7b-v0.3  +1.36 pp [95% CI +0.45, +2.13], p = 0.004, 6 pairs
+      qwen-2.5-3b      -0.03 pp [95% CI -1.08, +0.93], p = 0.944, 6 pairs
+      qwen-2.5-7b      +0.55 pp [95% CI -0.29, +1.32], p = 0.228, 6 pairs
+  CICLe - oracle  (fixed): -6.85 pp [95% CI -7.53, -6.17], p = 0.000, 36 pairs
+      llama-3.1-8b     -7.95 pp [95% CI -9.02, -6.85], p = 0.000, 6 pairs
+      llama-3.2-3b     -6.16 pp [95% CI -7.35, -4.92], p = 0.000, 6 pairs
+      ministral-3b     -6.36 pp [95% CI -7.70, -5.03], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -6.64 pp [95% CI -7.72, -5.74], p = 0.000, 6 pairs
+      qwen-2.5-3b      -6.45 pp [95% CI -7.65, -5.20], p = 0.000, 6 pairs
+      qwen-2.5-7b      -7.53 pp [95% CI -8.59, -6.59], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -6.80 pp [95% CI -7.52, -6.13], p = 0.000, 36 pairs
+      llama-3.1-8b     -7.19 pp [95% CI -8.30, -6.02], p = 0.000, 6 pairs
+      llama-3.2-3b     -7.41 pp [95% CI -8.36, -6.40], p = 0.000, 6 pairs
+      ministral-3b     -6.45 pp [95% CI -7.66, -5.42], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -5.71 pp [95% CI -6.72, -4.75], p = 0.000, 6 pairs
+      qwen-2.5-3b      -7.01 pp [95% CI -8.20, -5.98], p = 0.000, 6 pairs
+      qwen-2.5-7b      -7.01 pp [95% CI -8.16, -5.97], p = 0.000, 6 pairs
+
+===== yahoo-answers-imb100: 447 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     20.34  28.26     0.0%    0.0       0
+  finetuned-        0     3     41.21  46.23     0.0%    0.0       0
+  fewshot  fixed    1    18     52.83  52.16     4.8%    1.0     284
+  fewshot  fixed    4    18     52.55  52.59     3.1%    4.0     449
+  fewshot  pc       1    18     55.06  54.62     3.1%   10.0     748
+  fewshot  pc       4    18     54.63  54.88     1.8%   40.0    2370
+  cicle    fixed    1    18     52.88  52.27     3.8%    1.0     279
+  cicle    fixed    4    18     52.92  53.01     2.3%    4.0     447
+  cicle    pc       1    18     56.03  55.86     2.2%    7.7     635
+  cicle    pc       4    18     55.44  55.98     1.4%   30.9    1918
+  topk     fixed    1    18     46.30  47.86     4.2%    1.0     278
+  topk     fixed    4    18     46.46  48.78     2.3%    4.0     443
+  topk     pc       1    18     48.09  49.99     2.5%    7.7     597
+  topk     pc       4    18     48.51  51.03     1.2%   30.7    1741
+  mass     fixed    1    18     43.58  46.06     3.3%    1.0     275
+  mass     fixed    4    18     44.07  47.24     1.8%    4.0     439
+  mass     pc       1    18     46.03  49.02     1.9%    6.0     511
+  mass     pc       4    18     46.56  49.92     0.9%   23.9    1398
+  marginal fixed    1    18     41.72  45.35     1.9%    1.0     270
+  marginal fixed    4    18     42.45  46.80     1.0%    4.0     433
+  marginal pc       1    18     43.74  48.00     1.0%    4.1     420
+  marginal pc       4    18     43.84  48.36     0.5%   16.5    1034
+  oracle   fixed    1    18     56.15  55.44     3.7%    1.0     279
+  oracle   fixed    4    18     55.86  55.82     2.1%    4.0     442
+  oracle   pc       1    18     59.11  58.74     2.2%    7.7     622
+  oracle   pc       4    18     58.98  59.34     1.2%   30.7    1866
+  candidate sets [cicle]: coverage 96.7%, mean size 7.73, LLM skipped 0.0%
+  candidate sets [topk ]: coverage 81.6%, mean size 7.67, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 74.2%, mean size 5.88, LLM skipped 1.8%
+  candidate sets [marginal]: coverage 64.8%, mean size 3.80, LLM skipped 10.9%
+  candidate sets [oracle]: coverage 100.0%, mean size 7.67, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.21 pp [95% CI -0.16, +0.59], p = 0.277, 36 pairs
+      llama-3.1-8b     +0.59 pp [95% CI -0.06, +1.15], p = 0.072, 6 pairs
+      llama-3.2-3b     -0.17 pp [95% CI -0.90, +0.66], p = 0.768, 6 pairs
+      ministral-3b     -0.80 pp [95% CI -1.63, +0.08], p = 0.080, 6 pairs
+      mistral-7b-v0.3  +0.73 pp [95% CI +0.04, +1.35], p = 0.040, 6 pairs
+      qwen-2.5-3b      +0.68 pp [95% CI -0.15, +1.43], p = 0.072, 6 pairs
+      qwen-2.5-7b      +0.25 pp [95% CI -0.40, +0.87], p = 0.416, 6 pairs
+  CICLe - fewshot (pc   ): +0.89 pp [95% CI +0.52, +1.26], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.15 pp [95% CI -0.49, +0.76], p = 0.600, 6 pairs
+      llama-3.2-3b     +1.40 pp [95% CI +0.69, +2.18], p = 0.000, 6 pairs
+      ministral-3b     +2.10 pp [95% CI +1.32, +2.86], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.93 pp [95% CI +0.27, +1.65], p = 0.012, 6 pairs
+      qwen-2.5-3b      +0.58 pp [95% CI -0.19, +1.22], p = 0.108, 6 pairs
+      qwen-2.5-7b      +0.16 pp [95% CI -0.56, +0.85], p = 0.604, 6 pairs
+  CICLe - topk    (fixed): +6.52 pp [95% CI +5.77, +7.25], p = 0.000, 36 pairs
+      llama-3.1-8b     +8.35 pp [95% CI +7.23, +9.39], p = 0.000, 6 pairs
+      llama-3.2-3b     +7.41 pp [95% CI +6.30, +8.48], p = 0.000, 6 pairs
+      ministral-3b     +6.16 pp [95% CI +4.98, +7.38], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +6.37 pp [95% CI +5.35, +7.45], p = 0.000, 6 pairs
+      qwen-2.5-3b      +4.48 pp [95% CI +3.33, +5.65], p = 0.000, 6 pairs
+      qwen-2.5-7b      +6.36 pp [95% CI +5.39, +7.30], p = 0.000, 6 pairs
+  CICLe - topk    (pc   ): +7.44 pp [95% CI +6.69, +8.18], p = 0.000, 36 pairs
+      llama-3.1-8b     +7.53 pp [95% CI +6.44, +8.52], p = 0.000, 6 pairs
+      llama-3.2-3b     +6.80 pp [95% CI +5.77, +7.90], p = 0.000, 6 pairs
+      ministral-3b     +8.25 pp [95% CI +7.11, +9.29], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +8.60 pp [95% CI +7.46, +9.59], p = 0.000, 6 pairs
+      qwen-2.5-3b      +6.00 pp [95% CI +4.74, +7.13], p = 0.000, 6 pairs
+      qwen-2.5-7b      +7.44 pp [95% CI +6.47, +8.62], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +9.08 pp [95% CI +8.30, +9.85], p = 0.000, 36 pairs
+      llama-3.1-8b     +10.99 pp [95% CI +9.85, +12.00], p = 0.000, 6 pairs
+      llama-3.2-3b     +9.98 pp [95% CI +8.72, +11.20], p = 0.000, 6 pairs
+      ministral-3b     +8.65 pp [95% CI +7.38, +9.87], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +9.13 pp [95% CI +7.87, +10.20], p = 0.000, 6 pairs
+      qwen-2.5-3b      +7.04 pp [95% CI +5.80, +8.25], p = 0.000, 6 pairs
+      qwen-2.5-7b      +8.68 pp [95% CI +7.52, +9.73], p = 0.000, 6 pairs
+  CICLe - mass    (pc   ): +9.44 pp [95% CI +8.64, +10.21], p = 0.000, 36 pairs
+      llama-3.1-8b     +9.69 pp [95% CI +8.55, +10.73], p = 0.000, 6 pairs
+      llama-3.2-3b     +8.28 pp [95% CI +7.12, +9.35], p = 0.000, 6 pairs
+      ministral-3b     +9.60 pp [95% CI +8.42, +10.84], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +10.83 pp [95% CI +9.75, +11.85], p = 0.000, 6 pairs
+      qwen-2.5-3b      +8.35 pp [95% CI +7.17, +9.50], p = 0.000, 6 pairs
+      qwen-2.5-7b      +9.89 pp [95% CI +8.69, +10.91], p = 0.000, 6 pairs
+  CICLe - marginal (fixed): +10.81 pp [95% CI +9.81, +11.77], p = 0.000, 36 pairs
+      llama-3.1-8b     +14.18 pp [95% CI +12.95, +15.31], p = 0.000, 6 pairs
+      llama-3.2-3b     +10.54 pp [95% CI +9.25, +11.87], p = 0.000, 6 pairs
+      ministral-3b     +8.31 pp [95% CI +6.79, +9.66], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +11.31 pp [95% CI +9.97, +12.62], p = 0.000, 6 pairs
+      qwen-2.5-3b      +8.57 pp [95% CI +7.14, +9.88], p = 0.000, 6 pairs
+      qwen-2.5-7b      +11.96 pp [95% CI +10.74, +13.21], p = 0.000, 6 pairs
+  CICLe - marginal (pc   ): +11.94 pp [95% CI +11.00, +12.80], p = 0.000, 36 pairs
+      llama-3.1-8b     +12.38 pp [95% CI +11.04, +13.53], p = 0.000, 6 pairs
+      llama-3.2-3b     +9.52 pp [95% CI +8.47, +10.75], p = 0.000, 6 pairs
+      ministral-3b     +10.71 pp [95% CI +9.21, +12.12], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +14.37 pp [95% CI +13.04, +15.80], p = 0.000, 6 pairs
+      qwen-2.5-3b      +10.68 pp [95% CI +9.40, +11.99], p = 0.000, 6 pairs
+      qwen-2.5-7b      +14.00 pp [95% CI +12.72, +15.31], p = 0.000, 6 pairs
+  CICLe - oracle  (fixed): -3.10 pp [95% CI -3.68, -2.54], p = 0.000, 36 pairs
+      llama-3.1-8b     -3.31 pp [95% CI -4.21, -2.30], p = 0.000, 6 pairs
+      llama-3.2-3b     -3.34 pp [95% CI -4.34, -2.16], p = 0.000, 6 pairs
+      ministral-3b     -2.73 pp [95% CI -3.80, -1.74], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -3.00 pp [95% CI -3.99, -2.05], p = 0.000, 6 pairs
+      qwen-2.5-3b      -3.17 pp [95% CI -4.16, -2.17], p = 0.000, 6 pairs
+      qwen-2.5-7b      -3.03 pp [95% CI -3.93, -2.14], p = 0.000, 6 pairs
+  CICLe - oracle  (pc   ): -3.31 pp [95% CI -3.87, -2.75], p = 0.000, 36 pairs
+      llama-3.1-8b     -3.79 pp [95% CI -4.77, -2.91], p = 0.000, 6 pairs
+      llama-3.2-3b     -2.92 pp [95% CI -3.96, -1.97], p = 0.000, 6 pairs
+      ministral-3b     -2.50 pp [95% CI -3.53, -1.53], p = 0.000, 6 pairs
+      mistral-7b-v0.3  -3.04 pp [95% CI -3.88, -2.29], p = 0.000, 6 pairs
+      qwen-2.5-3b      -3.76 pp [95% CI -4.79, -2.83], p = 0.000, 6 pairs
+      qwen-2.5-7b      -3.83 pp [95% CI -4.75, -3.00], p = 0.000, 6 pairs
+
+===== yahoo-answers-n1000: 159 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     47.74  49.99     0.0%    0.0       0
+  finetuned-        0     3     62.04  62.23     0.0%    0.0       0
+  fewshot  fixed    1    18     54.66  53.87     4.7%    1.0     284
+  fewshot  fixed    4    18     58.38  57.96     2.8%    4.0     451
+  fewshot  pc       1    18     58.16  57.59     2.9%   10.0     711
+  fewshot  pc       4    18     61.17  60.87     1.8%   40.0    2194
+  cicle    fixed    1    18     54.74  54.08     3.1%    1.0     277
+  cicle    fixed    4    18     57.71  57.36     1.4%    4.0     445
+  cicle    pc       1    18     59.42  59.02     1.5%    6.5     542
+  cicle    pc       4    18     62.43  62.23     0.8%   26.0    1516
+  candidate sets [cicle]: coverage 94.7%, mean size 6.46, LLM skipped 0.5%
+  CICLe - fewshot (fixed): -0.29 pp [95% CI -0.74, +0.14], p = 0.199, 36 pairs
+      llama-3.1-8b     +0.19 pp [95% CI -0.54, +0.83], p = 0.600, 6 pairs
+      llama-3.2-3b     -1.75 pp [95% CI -2.62, -0.85], p = 0.000, 6 pairs
+      ministral-3b     -0.49 pp [95% CI -1.40, +0.46], p = 0.336, 6 pairs
+      mistral-7b-v0.3  -0.57 pp [95% CI -1.35, +0.16], p = 0.124, 6 pairs
+      qwen-2.5-3b      +0.67 pp [95% CI -0.23, +1.60], p = 0.144, 6 pairs
+      qwen-2.5-7b      +0.20 pp [95% CI -0.39, +0.86], p = 0.532, 6 pairs
+  CICLe - fewshot (pc   ): +1.26 pp [95% CI +0.85, +1.67], p = 0.000, 36 pairs
+      llama-3.1-8b     +0.47 pp [95% CI -0.24, +1.15], p = 0.200, 6 pairs
+      llama-3.2-3b     +0.49 pp [95% CI -0.26, +1.16], p = 0.204, 6 pairs
+      ministral-3b     +3.15 pp [95% CI +2.16, +4.07], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +0.21 pp [95% CI -0.54, +0.89], p = 0.580, 6 pairs
+      qwen-2.5-3b      +2.26 pp [95% CI +1.38, +3.19], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.97 pp [95% CI +0.17, +1.69], p = 0.020, 6 pairs
+
+===== yahoo-answers-n250: 159 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     36.25  39.89     0.0%    0.0       0
+  finetuned-        0     3     52.16  54.63     0.0%    0.0       0
+  fewshot  fixed    1    18     54.50  53.49     5.2%    1.0     284
+  fewshot  fixed    4    18     56.74  56.21     3.7%    4.0     447
+  fewshot  pc       1    18     58.54  57.96     3.3%   10.0     731
+  fewshot  pc       4    18     60.55  60.31     2.1%   40.0    2297
+  cicle    fixed    1    18     54.16  53.18     4.5%    1.0     281
+  cicle    fixed    4    18     56.36  55.78     2.8%    4.0     445
+  cicle    pc       1    18     58.33  57.78     2.8%    8.3     641
+  cicle    pc       4    18     60.50  60.26     1.6%   33.0    1936
+  candidate sets [cicle]: coverage 94.6%, mean size 8.26, LLM skipped 0.0%
+  CICLe - fewshot (fixed): -0.36 pp [95% CI -0.81, +0.10], p = 0.126, 36 pairs
+      llama-3.1-8b     -0.64 pp [95% CI -1.21, -0.05], p = 0.040, 6 pairs
+      llama-3.2-3b     -0.91 pp [95% CI -1.64, -0.12], p = 0.028, 6 pairs
+      ministral-3b     -0.54 pp [95% CI -1.42, +0.37], p = 0.220, 6 pairs
+      mistral-7b-v0.3  -0.07 pp [95% CI -0.81, +0.65], p = 0.884, 6 pairs
+      qwen-2.5-3b      +0.40 pp [95% CI -0.26, +1.13], p = 0.248, 6 pairs
+      qwen-2.5-7b      -0.39 pp [95% CI -0.97, +0.23], p = 0.292, 6 pairs
+  CICLe - fewshot (pc   ): -0.13 pp [95% CI -0.56, +0.31], p = 0.563, 36 pairs
+      llama-3.1-8b     -0.26 pp [95% CI -0.89, +0.34], p = 0.452, 6 pairs
+      llama-3.2-3b     +0.53 pp [95% CI -0.20, +1.30], p = 0.148, 6 pairs
+      ministral-3b     -0.22 pp [95% CI -1.08, +0.59], p = 0.584, 6 pairs
+      mistral-7b-v0.3  -0.85 pp [95% CI -1.63, -0.16], p = 0.016, 6 pairs
+      qwen-2.5-3b      +0.38 pp [95% CI -0.41, +1.12], p = 0.316, 6 pairs
+      qwen-2.5-7b      -0.36 pp [95% CI -1.02, +0.32], p = 0.292, 6 pairs
+
+===== yahoo-answers-n500: 159 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  base     -        0    12     41.28  44.13     0.0%    0.0       0
+  finetuned-        0     3     58.96  59.63     0.0%    0.0       0
+  fewshot  fixed    1    18     53.99  53.13     5.1%    1.0     285
+  fewshot  fixed    4    18     56.85  56.30     3.4%    4.0     445
+  fewshot  pc       1    18     57.33  56.83     3.2%   10.0     720
+  fewshot  pc       4    18     60.34  60.05     1.9%   40.0    2242
+  cicle    fixed    1    18     54.09  53.33     4.0%    1.0     280
+  cicle    fixed    4    18     56.82  56.30     2.5%    4.0     440
+  cicle    pc       1    18     58.25  57.86     2.2%    7.5     591
+  cicle    pc       4    18     61.19  61.04     1.2%   29.9    1726
+  candidate sets [cicle]: coverage 94.6%, mean size 7.47, LLM skipped 0.0%
+  CICLe - fewshot (fixed): +0.03 pp [95% CI -0.39, +0.49], p = 0.869, 36 pairs
+      llama-3.1-8b     +0.56 pp [95% CI -0.08, +1.19], p = 0.096, 6 pairs
+      llama-3.2-3b     -1.05 pp [95% CI -1.92, -0.17], p = 0.016, 6 pairs
+      ministral-3b     +0.15 pp [95% CI -0.77, +1.08], p = 0.748, 6 pairs
+      mistral-7b-v0.3  +0.29 pp [95% CI -0.55, +1.09], p = 0.564, 6 pairs
+      qwen-2.5-3b      +0.48 pp [95% CI -0.35, +1.28], p = 0.228, 6 pairs
+      qwen-2.5-7b      -0.21 pp [95% CI -0.79, +0.34], p = 0.484, 6 pairs
+  CICLe - fewshot (pc   ): +0.89 pp [95% CI +0.46, +1.32], p = 0.001, 36 pairs
+      llama-3.1-8b     +0.70 pp [95% CI -0.04, +1.49], p = 0.056, 6 pairs
+      llama-3.2-3b     +1.20 pp [95% CI +0.47, +1.98], p = 0.000, 6 pairs
+      ministral-3b     +1.34 pp [95% CI +0.43, +2.32], p = 0.004, 6 pairs
+      mistral-7b-v0.3  +0.22 pp [95% CI -0.45, +1.01], p = 0.560, 6 pairs
+      qwen-2.5-3b      +1.03 pp [95% CI +0.23, +1.88], p = 0.012, 6 pairs
+      qwen-2.5-7b      +0.82 pp [95% CI +0.11, +1.51], p = 0.028, 6 pairs
+
+===== yahoo-answers-random: 48 runs, 6 models, seeds [42]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1     6     53.06  52.62     4.8%    1.0     282
+  fewshot  fixed    4     6     52.62  52.12     4.2%    4.0     446
+  fewshot  pc       1     6     51.59  50.97     3.9%   10.0     775
+  fewshot  pc       4     6     52.92  52.45     2.2%   40.0    2400
+  cicle    fixed    1     6     52.19  51.73     2.8%    1.0     272
+  cicle    fixed    4     6     52.93  52.17     2.5%    4.0     434
+  cicle    pc       1     6     53.72  53.07     2.2%    6.3     553
+  cicle    pc       4     6     55.32  54.82     1.3%   25.2    1569
+  candidate sets [cicle]: coverage 94.2%, mean size 6.12, LLM skipped 3.4%
+  CICLe - fewshot (fixed): -0.28 pp [95% CI -1.42, +0.83], p = 0.663, 12 pairs
+      llama-3.1-8b     +0.51 pp [95% CI -1.10, +2.19], p = 0.524, 2 pairs
+      llama-3.2-3b     -1.84 pp [95% CI -4.20, +0.40], p = 0.108, 2 pairs
+      ministral-3b     -0.34 pp [95% CI -2.43, +1.76], p = 0.700, 2 pairs
+      mistral-7b-v0.3  -0.28 pp [95% CI -2.00, +1.72], p = 0.788, 2 pairs
+      qwen-2.5-3b      +0.42 pp [95% CI -1.41, +2.23], p = 0.628, 2 pairs
+      qwen-2.5-7b      -0.14 pp [95% CI -1.93, +1.62], p = 0.840, 2 pairs
+  CICLe - fewshot (pc   ): +2.26 pp [95% CI +1.25, +3.31], p = 0.000, 12 pairs
+      llama-3.1-8b     +1.07 pp [95% CI -0.58, +2.68], p = 0.236, 2 pairs
+      llama-3.2-3b     +7.34 pp [95% CI +4.89, +9.86], p = 0.000, 2 pairs
+      ministral-3b     +2.21 pp [95% CI +0.15, +4.22], p = 0.028, 2 pairs
+      mistral-7b-v0.3  +1.65 pp [95% CI -0.26, +3.30], p = 0.088, 2 pairs
+      qwen-2.5-3b      +1.16 pp [95% CI -0.70, +2.93], p = 0.240, 2 pairs
+      qwen-2.5-7b      +0.15 pp [95% CI -1.36, +1.58], p = 0.852, 2 pairs
+
+===== yahoo-answers-relabel: 306 runs, 6 models, seeds [42, 43, 44]
+  method   variant  k  runs  macro-F1    acc  invalid  shots  tokens
+  fewshot  fixed    1    18     25.27  26.11     0.6%    1.0     300
+  fewshot  fixed    4    18     40.62  41.21     0.4%    4.0     474
+  fewshot  pc       1    18     34.07  35.46     0.2%   10.0     727
+  fewshot  pc       4    18     47.85  49.01     0.0%   40.0    2236
+  cicle    fixed    0    18     18.90  21.28     1.5%    0.0     220
+  cicle    fixed    1    18     34.30  34.52     0.6%    1.0     286
+  cicle    fixed    4    18     44.62  44.75     0.3%    4.0     461
+  cicle    pc       1    18     41.13  41.33     0.2%    5.8     521
+  cicle    pc       4    18     52.03  52.61     0.0%   23.4    1420
+  topk     fixed    1    18     31.05  31.85     0.7%    1.0     286
+  topk     fixed    4    18     42.66  42.95     0.3%    4.0     462
+  topk     pc       1    18     37.41  37.89     0.3%    5.7     521
+  topk     pc       4    18     50.47  51.04     0.0%   22.7    1420
+  mass     fixed    1    18     27.91  28.66     0.6%    1.0     293
+  mass     fixed    4    18     40.94  41.27     0.4%    4.0     468
+  mass     pc       1    18     35.70  36.48     0.3%    7.8     625
+  mass     pc       4    18     48.53  49.44     0.0%   31.4    1832
+  candidate sets [cicle]: coverage 94.8%, mean size 5.68, LLM skipped 3.4%
+  candidate sets [topk ]: coverage 93.7%, mean size 5.67, LLM skipped 0.0%
+  candidate sets [mass ]: coverage 98.4%, mean size 7.84, LLM skipped 0.1%
+  CICLe - fewshot (fixed): +6.52 pp [95% CI +5.94, +7.09], p = 0.000, 36 pairs
+      llama-3.1-8b     +7.30 pp [95% CI +6.27, +8.20], p = 0.000, 6 pairs
+      llama-3.2-3b     +4.78 pp [95% CI +3.48, +5.84], p = 0.000, 6 pairs
+      ministral-3b     +5.17 pp [95% CI +3.94, +6.34], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +9.60 pp [95% CI +8.49, +10.61], p = 0.000, 6 pairs
+      qwen-2.5-3b      +8.78 pp [95% CI +7.44, +9.99], p = 0.000, 6 pairs
+      qwen-2.5-7b      +3.46 pp [95% CI +2.62, +4.28], p = 0.000, 6 pairs
+  CICLe - fewshot (pc   ): +5.62 pp [95% CI +4.99, +6.20], p = 0.000, 36 pairs
+      llama-3.1-8b     +4.15 pp [95% CI +3.15, +5.17], p = 0.000, 6 pairs
+      llama-3.2-3b     +6.83 pp [95% CI +5.75, +8.08], p = 0.000, 6 pairs
+      ministral-3b     +5.94 pp [95% CI +4.68, +7.21], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +5.74 pp [95% CI +4.63, +6.84], p = 0.000, 6 pairs
+      qwen-2.5-3b      +5.78 pp [95% CI +4.61, +6.94], p = 0.000, 6 pairs
+      qwen-2.5-7b      +5.30 pp [95% CI +4.21, +6.34], p = 0.000, 6 pairs
+  CICLe - topk    (fixed): +2.61 pp [95% CI +2.02, +3.21], p = 0.000, 36 pairs
+      llama-3.1-8b     +1.05 pp [95% CI +0.28, +1.93], p = 0.000, 6 pairs
+      llama-3.2-3b     +3.71 pp [95% CI +2.56, +4.87], p = 0.000, 6 pairs
+      ministral-3b     +4.48 pp [95% CI +3.37, +5.51], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +3.04 pp [95% CI +2.02, +4.07], p = 0.000, 6 pairs
+      qwen-2.5-3b      +2.90 pp [95% CI +1.79, +4.06], p = 0.000, 6 pairs
+      qwen-2.5-7b      +0.46 pp [95% CI -0.33, +1.28], p = 0.296, 6 pairs
+  CICLe - topk    (pc   ): +2.64 pp [95% CI +2.07, +3.23], p = 0.000, 36 pairs
+      llama-3.1-8b     +2.30 pp [95% CI +1.32, +3.26], p = 0.000, 6 pairs
+      llama-3.2-3b     +3.02 pp [95% CI +1.97, +4.10], p = 0.000, 6 pairs
+      ministral-3b     +3.34 pp [95% CI +2.10, +4.49], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +1.40 pp [95% CI +0.40, +2.33], p = 0.004, 6 pairs
+      qwen-2.5-3b      +3.70 pp [95% CI +2.48, +4.99], p = 0.000, 6 pairs
+      qwen-2.5-7b      +2.08 pp [95% CI +1.04, +3.05], p = 0.000, 6 pairs
+  CICLe - mass    (fixed): +5.03 pp [95% CI +4.47, +5.58], p = 0.000, 36 pairs
+      llama-3.1-8b     +4.16 pp [95% CI +3.37, +4.96], p = 0.000, 6 pairs
+      llama-3.2-3b     +5.11 pp [95% CI +3.90, +6.26], p = 0.000, 6 pairs
+      ministral-3b     +5.18 pp [95% CI +3.95, +6.28], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +7.26 pp [95% CI +6.28, +8.21], p = 0.000, 6 pairs
+      qwen-2.5-3b      +6.50 pp [95% CI +5.28, +7.68], p = 0.000, 6 pairs
+      qwen-2.5-7b      +1.99 pp [95% CI +1.15, +2.85], p = 0.000, 6 pairs
+  CICLe - mass    (pc   ): +4.46 pp [95% CI +3.88, +5.06], p = 0.000, 36 pairs
+      llama-3.1-8b     +3.06 pp [95% CI +2.17, +4.10], p = 0.000, 6 pairs
+      llama-3.2-3b     +6.28 pp [95% CI +5.23, +7.41], p = 0.000, 6 pairs
+      ministral-3b     +4.88 pp [95% CI +3.74, +5.97], p = 0.000, 6 pairs
+      mistral-7b-v0.3  +3.76 pp [95% CI +2.84, +4.72], p = 0.000, 6 pairs
+      qwen-2.5-3b      +5.03 pp [95% CI +3.81, +6.17], p = 0.000, 6 pairs
+      qwen-2.5-7b      +3.77 pp [95% CI +2.79, +4.73], p = 0.000, 6 pairs
