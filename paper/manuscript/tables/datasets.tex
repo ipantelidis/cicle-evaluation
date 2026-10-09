@@ -1,4 +1,4 @@
-% Table 1. Classes and imbalance computed on the training data as loaded (non-empty texts; GoEmotions single-label comments only); mean input length in Llama-3.1 tokens over the seed-42 test sample.
+% Table 1. Classes and imbalance computed on the training data as loaded (non-empty texts; GoEmotions single-label comments only; MASSIVE without cooking_query); mean input length in Llama-3.1 tokens over the seed-42 test sample.
 \begin{table}[t]
   \centering
   \footnotesize
@@ -12,6 +12,7 @@
     SemEval-18    & Emoji      & 20 & 8.7$\times$ &  20 & R \\
     GoEmotions    & Emotion    & 28 & 329$\times$ &  16 & R \\
     Ohsumed       & Medical & 23 & 65$\times$  & 271 & R, F \\
+    MASSIVE       & Intent  & 59 & 58$\times$  &   8 & R \\ % PENDING: MASSIVE runs; values computed from the data (full training set 810/14, seed-42 test sample in Llama-3.1 tokens)
     \bottomrule
   \end{tabular}
   \caption{Datasets. \emph{Cls.} is the number of classes, \emph{Imb.} the ratio between the largest and the smallest class in the full training set, \emph{Len.} the mean input length in Llama-3.1 tokens. \emph{Variants}: I = controlled imbalance of the labelled pool (10$\times$, 100$\times$), P = pool size (250, 500, 1,000), R = label renaming, F = Fixed retrieval only beyond $k = 1$ (a Per-Class prompt at $k = 4$ would hold about 90 abstracts). Every dataset is subsampled to 1,600 training, 400 calibration and 1,000 test instances per seed (Section~\ref{sec:protocol}).}

@@ -9,15 +9,15 @@ A gain is CICLe minus an alternative in macro-F1 points, with a 95\% paired boot
 
 Under the original prompt format, which outputs parse decides which models appear to benefit from narrowing.
 We ran the prompt format of the released CICLe implementation, with no label list and exact string matching, for the six models on seed 42 with Fixed retrieval and compared it with the corrected protocol on the same test sample (Table~\ref{tab:original}, Appendix~\ref{app:original}).
-Without a label list, up to 65\% of a model's few-shot outputs matched no label and were scored as errors, and the per-model effect of narrowing changed sign between the two formats in a third of the cells.
+Without a label list, up to 65\% of a model's few-shot outputs matched no label and were scored as errors, and the per-model effect of narrowing changed sign between the two formats in a third of the cells. % PENDING: MASSIVE original-prompt rerun
 Under the corrected protocol Per-Class CICLe never significantly hurts any of the six models (Table~\ref{tab:per_model}, Appendix~\ref{app:models}), which leaves the question of how large its gain is.
 
 \subsection{Narrowing Gives a Small Gain and a Shorter Prompt}
 \label{sec:res-gain}
 
 Narrowing the label set gives a small, reliable gain over few-shot prompting and a shorter prompt.
-Table~\ref{tab:main} compares zero-shot, few-shot and CICLe prompting at $k = 4$ on the five datasets, with the paired gain pooled over all $k$ in panel~B, and Figure~\ref{fig:main_tokens} plots every configuration against its prompt length.
-CICLe is ahead in nine of ten dataset and retrieval cells, with gains between 0.5 and 1.8 points whose intervals exclude zero (Table~\ref{tab:main}B).
+Table~\ref{tab:main} compares zero-shot, few-shot and CICLe prompting at $k = 4$ on the six datasets, with the paired gain pooled over all $k$ in panel~B, and Figure~\ref{fig:main_tokens} plots every configuration against its prompt length.
+CICLe is ahead in nine of ten dataset and retrieval cells, with gains between 0.5 and 1.8 points whose intervals exclude zero (Table~\ref{tab:main}B). % PENDING: MASSIVE column of Table 2 changes the cell count and the range
 The exception is Fixed retrieval on Yahoo Answers, where one retrieved example already carries the label and the difference is not significant.
 The gains do not grow with $k$ (Appendix~\ref{app:full}).
 The one large gain is Ohsumed with Per-Class retrieval, $+5.2$ [$+4.4$, $+6.1$] points, where a few-shot prompt holds one long abstract for every class and the LLM loses the input among them, while CICLe halves the list.
@@ -28,7 +28,8 @@ The candidate list alone, with no examples, is worth about one retrieved example
 \input{figures/fig_main_narrowing}
 
 The saving is on the prompt.
-Per-Class retrieval places $k$ examples per admissible class, so a narrower list shortens the prompt in proportion, by 11 to 45\% at equal $k$ (Table~\ref{tab:main}B), at the same or higher macro-F1, which is why the filled blue markers of Figure~\ref{fig:main_tokens} lie above and to the left of the grey ones.
+Per-Class retrieval places $k$ examples per admissible class, so a narrower list shortens the prompt in proportion, by 11 to 45\% at equal $k$ (Table~\ref{tab:main}B) % PENDING: MASSIVE
+, at the same or higher macro-F1, which is why the filled blue markers of Figure~\ref{fig:main_tokens} lie above and to the left of the grey ones.
 Fixed retrieval is cheaper still, and on GoEmotions it also scores higher, because examples for most of its 28 classes dilute the prompt more than they inform it.
 If narrowing helps, the next question is whether the rule used to narrow matters.
 
@@ -42,7 +43,7 @@ Under imbalance the conformal sets keep their coverage while the other rules los
 At 100 times imbalance CICLe beats the alternatives by 4 to 13 points (Table~\ref{tab:narrowing}, 100$\times$ rows), the marginal rule being worst because its shared threshold is set by the confident head classes.
 
 
-The naturally long-tailed datasets show the same effect at smaller size.
+The naturally long-tailed datasets show the same effect at smaller size. % PENDING: MASSIVE, the second naturally long-tailed dataset
 On GoEmotions and Ohsumed CICLe is one to three points ahead of every alternative, and the lowest per-class coverage of every alternative there is zero (Table~\ref{tab:set_stats}).
 Two things do not happen.
 CICLe's margin over few-shot prompting does not grow with imbalance (Figure~\ref{fig:main_narrowing}, left, grey line), because few-shot prompting lists every label and cannot lose coverage.
@@ -55,8 +56,8 @@ So far the LLM has seen label names it understands, which the next subsection re
 \label{sec:res-relabel}
 
 Narrowing helps most when the label names mean nothing.
-On all five datasets we replace every class name by a nonsense word, the same for all seeds, which leaves the base classifier untouched and forces the LLM to learn the labels from the examples (Table~\ref{tab:relabel}, Appendix~\ref{app:relabel}).
-With few examples few-shot prompting collapses, and CICLe's advantage on Yahoo Answers grows to $+6.5$ [$+6.0$, $+7.1$] points with Fixed retrieval, the largest gain we measure (Table~\ref{tab:relabel}, Yahoo Answers rows).
+On all six datasets we replace every class name by a nonsense word, the same for all seeds, which leaves the base classifier untouched and forces the LLM to learn the labels from the examples (Table~\ref{tab:relabel}, Appendix~\ref{app:relabel}).
+With few examples few-shot prompting collapses, and CICLe's advantage on Yahoo Answers grows to $+6.5$ [$+6.0$, $+7.1$] points with Fixed retrieval, the largest gain we measure (Table~\ref{tab:relabel}, Yahoo Answers rows). % PENDING: MASSIVE renaming
 On SST-5 the advantage roughly doubles, and on the datasets whose names were weak hints to begin with it stays close to the original (Table~\ref{tab:relabel}).
 The candidate list without examples is useless under nonsense names (Table~\ref{tab:relabel}, $k = 0$ rows), so what CICLe adds here is examples from the right classes.
 A calibrated set also beats uncalibrated sets of the same size more clearly than under real names (Table~\ref{tab:narrowing}, renamed rows), with one exception on renamed Ohsumed, where the much smaller marginal sets win by three points.
@@ -67,19 +68,18 @@ Whether such gains justify an LLM at all is the next question.
 \label{sec:res-baselines}
 
 An LLM pipeline pays when the labelled pool is skewed or small, and a fine-tuned encoder wins when it is balanced and plentiful.
-Table~\ref{tab:main_supervised} puts the fixed configuration, Per-Class CICLe at $k = 4$, next to the base classifier and a fine-tuned RoBERTa-base, with the best configuration, which is selected on the test set, as a secondary number, and Figure~\ref{fig:main_poolsize} varies the size of the labelled pool.
-With 1,600 balanced labels RoBERTa-base beats every 3B to 8B pipeline on four of five datasets, and on Yahoo Answers the logistic regression that CICLe narrows with beats both on its own (Table~\ref{tab:main_supervised}, balanced columns).
-The qualification is model size, since Qwen2.5-32B with CICLe overtakes the encoders on Yahoo Answers and SST-5 but not on the two many-class datasets (Table~\ref{tab:large}, Appendix~\ref{app:large}). % PENDING (rerun): RoBERTa-large with a lower learning rate
+Table~\ref{tab:main_supervised} puts the fixed configuration, Per-Class CICLe at $k = 4$, next to the base classifier and two fine-tuned encoders, and Figure~\ref{fig:main_poolsize} varies the size of the labelled pool.
+With 1,600 balanced labels RoBERTa-base beats every 3B to 8B pipeline on SST-5, SemEval-18, GoEmotions and Ohsumed, and on Yahoo Answers the logistic regression that CICLe narrows with beats both on its own (Table~\ref{tab:main_supervised}, 1$\times$ rows). % PENDING: MASSIVE supervised baselines against the pipelines
+The qualification is model size, since Qwen2.5-32B with CICLe overtakes the encoders on Yahoo Answers and SST-5 but not on the two many-class datasets (Table~\ref{tab:large}, Appendix~\ref{app:large}).
 
 \input{figures/fig_main_poolsize}
 \input{tables/main_supervised}
 
 At 100 times imbalance the order flips.
-RoBERTa-base loses about 20 points on Yahoo Answers while the pipeline loses seven (Table~\ref{tab:main_supervised}, 100$\times$ columns), because retrieval and the LLM's knowledge of the labels carry the rare classes.
+Both encoders lose about 20 points on Yahoo Answers while the pipeline loses seven (Table~\ref{tab:main_supervised}, 100$\times$ rows), because retrieval and the LLM's knowledge of the labels carry the rare classes.
 The pool-size sweep agrees (Figure~\ref{fig:main_poolsize}).
-The pipelines are nearly flat between 250 and 2,000 labels, while the encoder climbs with the pool and overtakes them on SST-5 somewhere between 500 and 1,000 labels, and never on Yahoo Answers, where the base classifier overtakes them instead (Table~\ref{tab:pool}, Appendix~\ref{app:pool}).
+The pipelines are nearly flat between 250 and 2,000 labels, while RoBERTa-base climbs with the pool and overtakes them on SST-5 between 500 and 1,000 labels (Table~\ref{tab:pool}, Appendix~\ref{app:pool}). % PENDING (rerun): RoBERTa-large at the smallest pools
 Narrowing itself needs calibration data, and with 50 calibration examples CICLe's margin over few-shot prompting is not significant (Appendix~\ref{app:pool}).
-The rule is to fine-tune, or to use the base classifier, when labels are plentiful and balanced, and to prompt with a narrowed list when they are skewed or scarce.
 What remains is how tight the narrowing should be.
 
 \subsection{Choosing $\alpha$ and the Components}
@@ -89,4 +89,4 @@ The miscoverage level should follow the strength of the base classifier.
 Figure~\ref{fig:alpha} and Table~\ref{tab:ablation} (Appendix~\ref{app:ablations}) vary $\alpha$, the embedding and the classifier with two Llama models.
 Loosening $\alpha$ from 0.05 to 0.20 on Yahoo Answers, where the classifier is strong, turns a null difference into a gain of $+3.6$ [$+2.7$, $+4.5$] points while a third of the inputs never reach the LLM, and it also helps where the sets are otherwise large, at the price of the coverage guarantee.
 The embedding matters more than the classifier (Table~\ref{tab:ablation}).
-The gain does not depend on one prompt template or on similarity-based retrieval (Table~\ref{tab:robust}, Appendix~\ref{app:relabel}), and larger models gain less but do not lose (Table~\ref{tab:large}). % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed; 12B and 32B on Ohsumed
+The gain survives a second prompt template and random retrieval (Table~\ref{tab:robust}), and larger models gain less but do not lose (Table~\ref{tab:large}). % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed; 12B and 32B on Ohsumed

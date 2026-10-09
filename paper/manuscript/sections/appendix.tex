@@ -52,7 +52,7 @@ Table~\ref{tab:narrowing} gives the paired difference between CICLe and every al
 \section{Label Renaming and Prompt Robustness}
 \label{app:relabel}
 
-Table~\ref{tab:relabel} gives the label-renaming results for all five datasets, including the candidate set without examples, and Table~\ref{tab:robust} repeats the CICLe against few-shot comparison on seed 42 with a second prompt template (``Choose exactly one of these labels'', examples as Text and Label lines, labels in random order and the most similar example placed last, which also tests the recency effect) and with examples drawn at random from the admissible classes. They support the claims of Sections~\ref{sec:res-relabel} and~\ref{sec:res-alpha}: the gain from narrowing is largest when label names carry no meaning, and it does not depend on one prompt wording or on similarity-based retrieval. The nonsense words are listed in Appendix~\ref{app:data}.
+Table~\ref{tab:relabel} gives the label-renaming results for all six datasets, including the candidate set without examples, and Table~\ref{tab:robust} repeats the CICLe against few-shot comparison on seed 42 with a second prompt template (``Choose exactly one of these labels'', examples as Text and Label lines, labels in random order and the most similar example placed last, which also tests the recency effect) and with examples drawn at random from the admissible classes. They support the claims of Sections~\ref{sec:res-relabel} and~\ref{sec:res-alpha}: the gain from narrowing is largest when label names carry no meaning, and it does not depend on one prompt wording or on similarity-based retrieval. The nonsense words are listed in Appendix~\ref{app:data}.
 
 \input{tables/relabel}
 \input{tables/robustness}
@@ -61,7 +61,7 @@ Table~\ref{tab:relabel} gives the label-renaming results for all five datasets, 
 \label{app:pool}
 
 Table~\ref{tab:baselines} gives the supervised baselines against the LLM pipelines on every dataset and imbalance level, and Table~\ref{tab:pool} gives macro-F1 against the size of the labelled pool on the two balanced datasets. They support the claim of Section~\ref{sec:res-baselines} about when the LLM pipeline is worth it: the pipelines are nearly flat across pool size and imbalance while the encoders and the base classifier are not. The base classifier, the retrieval pool and the fine-tuned encoders all see 80\% of the labelled pool, and the calibration split is the remaining 20\% (50 examples at a pool of 250), at which CICLe's Per-Class margin over few-shot prompting on SST-5 is $-0.63$ [$-1.33$, $+0.13$] and turns positive from 500 labels on. % CHECK: pool-size margins from paper/reference/analysis_2026-10-08_final.txt (B=2000); NUMBERS.md has no pool-size deltas
-% PENDING (rerun): RoBERTa-large rows, retrained with a lower learning rate
+% PENDING (rerun): RoBERTa-large rows at the smallest pools (still unstable at 250 labels)
 
 \input{tables/baselines}
 \input{tables/pool_size}
@@ -69,7 +69,7 @@ Table~\ref{tab:baselines} gives the supervised baselines against the LLM pipelin
 \section{Ablations and the Miscoverage Level}
 \label{app:ablations}
 
-Table~\ref{tab:ablation} varies the embedding, the classifier and $\alpha$ with Llama-3.1-8B and Llama-3.2-3B on the four short-text datasets, and Figure~\ref{fig:alpha} plots the $\alpha$ rows. They support the claim of Section~\ref{sec:res-alpha} that the miscoverage level should follow the strength of the base classifier, and they show that the embedding matters more than the classifier. Few-shot prompting uses the same embedding for retrieval as the CICLe run it is paired with, so the difference isolates the narrowing step. % PENDING: Ohsumed and the remaining models for the SVM and embedding ablations
+Table~\ref{tab:ablation} varies the embedding, the classifier and $\alpha$ with Llama-3.1-8B and Llama-3.2-3B on the five short-text datasets, and Figure~\ref{fig:alpha} plots the $\alpha$ rows. % PENDING: MASSIVE rows They support the claim of Section~\ref{sec:res-alpha} that the miscoverage level should follow the strength of the base classifier, and they show that the embedding matters more than the classifier. Few-shot prompting uses the same embedding for retrieval as the CICLe run it is paired with, so the difference isolates the narrowing step. % PENDING: Ohsumed and the remaining models for the SVM and embedding ablations
 
 \input{tables/ablation}
 \input{figures/fig_alpha}
@@ -95,6 +95,7 @@ Table~\ref{tab:fixes} pairs every test instance between CICLe and few-shot promp
 \section{Dataset Details}
 \label{app:data}
 
+MASSIVE uses the English intent split \texttt{SetFit/amazon\_massive\_intent\_en-US}. One intent (\texttt{cooking\_query}) has four training examples, too few to appear in both the training and calibration splits of a 2,000-example subsample, and is dropped, leaving 59 intents. The official test split holds a single example of one intent, too few to stratify, so the validation and test splits together form the test pool. The 2,000-example subsample keeps the natural skew, with 70 times as many examples in the largest class as in the smallest.
 Table~\ref{tab:imbalance_counts} lists the class order and training-pool counts under controlled imbalance for every seed, and Table~\ref{tab:relabel_words} the nonsense-word mapping used for label renaming. They document the two controlled variants behind the narrowing claim of Sections~\ref{sec:res-narrowing} and~\ref{sec:res-relabel}. Class sizes follow a geometric schedule between the largest and the smallest class, with at least five examples per class before the 80/20 split, and the class order is a random permutation drawn from the seed, so the rare classes differ between seeds and the per-class panels of Figure~\ref{fig:main_narrowing} are aggregated by frequency rank. The nonsense words are six-letter consonant-vowel strings generated with a fixed seed, no two sharing a four-letter prefix, so that the prefix matching of the parser cannot confuse them.
 
 \input{tables/imbalance_counts}
@@ -119,3 +120,4 @@ Tables~\ref{tab:grid_yahoo} to~\ref{tab:grid_ohsumed_relabel} give every method,
 \input{tables/grid_sst-relabel}
 \input{tables/grid_semeval-18-relabel}
 \input{tables/grid_ohsumed-relabel}
+% PENDING: full grids for MASSIVE and renamed MASSIVE

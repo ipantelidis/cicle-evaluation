@@ -4,8 +4,9 @@
 \subsection{Datasets}
 \label{sec:datasets}
 
-Table~\ref{tab:datasets} lists the five English single-label datasets, chosen to vary the number of classes, the class imbalance, the input length and the information carried by the label names.
+Table~\ref{tab:datasets} lists the six English single-label datasets, chosen to vary the number of classes, the class imbalance, the input length and the information carried by the label names.
 SST-5 \citep{socher2013recursive} is the near-balanced five-class case, Yahoo Answers \citep{zhang2015character} has ten balanced topics with informative names and a strong base classifier, SemEval-18 Task~2 \citep{barbieri2018semeval} predicts the emoji of a tweet, so its twenty label names carry little meaning, GoEmotions \citep{demszky2020goemotions}, restricted to single-label comments, is the many-class long-tailed case, and Ohsumed \citep{hersh1994ohsumed} classifies medical abstracts of about 270 tokens into 23 disease categories.
+MASSIVE \citep{fitzgerald2023massive} intent classification, with 59 intents of voice-assistant commands of about seven words, adds a second naturally long-tailed dataset with many classes and short inputs from a different domain (Appendix~\ref{app:data}). % PENDING: MASSIVE results arrive over the weekend
 The two balanced datasets serve as the substrate for the controlled-imbalance and pool-size experiments, since the skewed ones cannot be rebalanced without changing the task.
 
 \input{tables/datasets}
@@ -14,7 +15,7 @@ The two balanced datasets serve as the substrate for the controlled-imbalance an
 \label{sec:models}
 
 The main grid uses six open instruction-tuned LLMs, two sizes from each of three families: Llama-3.2-3B and Llama-3.1-8B \citep{grattafiori2024llama3}, Qwen2.5-3B and Qwen2.5-7B \citep{qwen2024qwen25}, Ministral-3-3B \citep{mistral2025ministral3} and Mistral-7B-v0.3 \citep{jiang2023mistral7b}. % CHECK that the Llama 3 herd report is the right citation for Llama-3.2-3B
-Mistral-NeMo-12B \citep{mistralai2024nemo} and Qwen2.5-32B \citep{qwen2024qwen25} are run with and without CICLe on the four short-text datasets (Appendix~\ref{app:large}). % PENDING: 12B and 32B on Ohsumed
+Mistral-NeMo-12B \citep{mistralai2024nemo} and Qwen2.5-32B \citep{qwen2024qwen25} are run with and without CICLe on the five short-text datasets (Appendix~\ref{app:large}). % PENDING: 12B and 32B on Ohsumed and MASSIVE
 All run in bfloat16 with greedy decoding through their chat templates.
 The base classifier of every narrowing method is logistic regression on \texttt{all-MiniLM-L6-v2} sentence embeddings \citep{reimers2019sentence,wang2020minilm}, and the same embeddings retrieve the examples by cosine similarity, so MiniLM is both the classifier's feature space and the retriever.
 Calibration uses \texttt{crepes} \citep{bostrom2022crepes} with seeded tie-breaking.
@@ -30,7 +31,7 @@ One test sample per seed is shared by every method, which makes paired tests ove
 Relative to the prompt format of the released CICLe implementation, the protocol changes five things. Every prompt lists the admissible labels, all classes or the candidate set, with identical wording otherwise. Every method retrieves from the same pool. Calibration split, conformal sets and test sample are seeded. Outputs are normalised before matching, and anything that still matches no label counts as wrong and is reported as an invalid output. A per-instance record is saved for every run.
 Appendix~\ref{app:prompt} gives the template, the parser and the original prompt format, which we rerun inside the same framework (Appendix~\ref{app:original}).
 
-Both retrieval variants are run for every prompting method, with $k \in \{1, 2, 4, 8\}$ on the four short-text datasets and $k \in \{1, 4\}$ elsewhere, and Per-Class retrieval on Ohsumed at $k = 1$ only (Appendix~\ref{app:prompt}).
+Both retrieval variants are run for every prompting method, with $k \in \{1, 2, 4, 8\}$ on the five short-text datasets and $k \in \{1, 4\}$ elsewhere, and Per-Class retrieval on Ohsumed at $k = 1$ only (Appendix~\ref{app:prompt}).
 The reference setting is MiniLM, logistic regression and $\alpha = 0.05$, the choices of the original paper.
 
 \subsection{Experiments}
@@ -39,25 +40,22 @@ The reference setting is MiniLM, logistic regression and $\alpha = 0.05$, the ch
 Each experiment beyond the main grid isolates one variable.
 \emph{Narrowing rules}: the four alternative rules of Section~\ref{sec:rules} on every dataset and variant, $k \in \{1, 4\}$.
 \emph{Controlled imbalance}: on SST-5 and Yahoo Answers the training sample is replaced by a long-tailed one whose class sizes decay geometrically to a ratio of 10 or 100, with at least five examples per class and a class order drawn from the seed, while the test sample is unchanged (Appendix~\ref{app:data}).
-\emph{Label renaming}: on all five datasets every class name is replaced by a nonsense word, the same for all seeds, leaving texts, splits and classifier unchanged.
+\emph{Label renaming}: on all six datasets every class name is replaced by a nonsense word, the same for all seeds, leaving texts, splits and classifier unchanged.
 \emph{No examples}: CICLe with $k = 0$ shows the candidate list alone.
 \emph{Pool size}: on SST-5 and Yahoo Answers the labelled pool is reduced to 250, 500 and 1,000 examples, split 80/20 as before, with every pipeline and baseline rerun.
-\emph{Ablations}: $\alpha \in \{0.01, 0.05, 0.10, 0.20\}$, the embedding and the classifier, with Llama-3.1-8B and Llama-3.2-3B on the short-text datasets. % PENDING: Ohsumed and the remaining models for the SVM and embedding ablations
+\emph{Ablations}: $\alpha \in \{0.01, 0.05, 0.10, 0.20\}$, the embedding and the classifier, with Llama-3.1-8B and Llama-3.2-3B on the short-text datasets. % PENDING: Ohsumed, MASSIVE and the remaining models for the SVM and embedding ablations
 \emph{Prompt robustness}: a second template with the labels in random order and the most similar example last, and random instead of similarity-based retrieval, on seed 42 with $k \in \{1, 4\}$. % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed
 
 \paragraph{Roadmap.}
-The protocol claim rests on the rerun of the original prompt format and the per-model comparison (Section~\ref{sec:res-protocol}).
-The gain claim rests on the main grid against few-shot prompting and the $k = 0$ runs (Section~\ref{sec:res-gain}).
-The narrowing claim rests on the alternative rules under controlled imbalance, on the naturally long-tailed datasets and under label renaming (Sections~\ref{sec:res-narrowing} and~\ref{sec:res-relabel}).
-The claim about when the LLM is worth it rests on the supervised baselines, the pool-size sweep, the $\alpha$ ablation and the larger models (Sections~\ref{sec:res-baselines} and~\ref{sec:res-alpha}).
+The main claim rests on the alternative rules under controlled and natural imbalance (Section~\ref{sec:res-narrowing}), the gain claim on the main grid, $k = 0$ and label renaming (Sections~\ref{sec:res-gain} and~\ref{sec:res-relabel}), the claim about when the LLM is worth it on the baselines, pool sizes, $\alpha$ and larger models (Sections~\ref{sec:res-baselines} and~\ref{sec:res-alpha}), and the protocol claim on the rerun of the original prompt format, which Section~\ref{sec:res-protocol} reports first because every other comparison depends on it.
 
 \subsection{Methods and Baselines}
 \label{sec:methods}
 
 \emph{Zero-shot} prompting lists all labels and no examples, \emph{few-shot} prompting adds retrieved examples from all classes, and \emph{CICLe} restricts both to the class-conditional conformal set, returning a singleton set without an LLM call and the classifier's top label for an empty set.
 The alternative narrowing rules differ from CICLe only in the set.
-Three supervised baselines use no LLM, namely the base classifier itself, and RoBERTa-base and RoBERTa-large \citep{liu2019roberta} fine-tuned on the same 1,600 examples for ten epochs (AdamW, learning rate $2 \times 10^{-5}$, batch size 16, 256 tokens, linear warm-up and decay) with the epoch chosen on the 400 calibration examples.
-The recipe is not tuned per model and is unstable for RoBERTa-large on some datasets, so the encoder scores are a floor. % PENDING (rerun): RoBERTa-large with a lower learning rate All baselines are run for three seeds and every dataset variant.
+Three supervised baselines use no LLM, namely the base classifier itself, and RoBERTa-base and RoBERTa-large \citep{liu2019roberta} fine-tuned on the same 1,600 examples for ten epochs (AdamW, learning rate $2 \times 10^{-5}$ for base and $10^{-5}$ for large, batch size 16, 256 tokens, linear warm-up and decay) with the epoch chosen on the 400 calibration examples.
+The recipe is not tuned further, so the encoder scores are a floor. All baselines are run for three seeds and every dataset variant.
 
 \subsection{Metrics and Statistics}
 \label{sec:metrics}

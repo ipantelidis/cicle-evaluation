@@ -1,27 +1,26 @@
 \section{Introduction}
 \label{sec:intro}
 
-Large language models (LLMs) classify text from a few labelled examples placed in the prompt, without any weight update \citep{brown2020language}.
-Which examples are shown, and in what order, can move accuracy by as much as a change in model size \citep{liu2022makes,lu2022fantastically,zhao2021calibrate}, and with many classes the prompt must also carry the label space.
+Small open large language models (LLMs) can classify text from a few labelled examples placed in the prompt \citep{brown2020language}, which makes them attractive when labelled data are scarce.
+Their accuracy depends on which examples are shown and in what order \citep{liu2022makes,lu2022fantastically,zhao2021calibrate}, and real labelled data make it harder. With many classes the prompt must carry a long label list, and with a skewed pool the rare classes have few examples to show.
 
-Conformal In-Context Learning (CICLe) was proposed by \citet{randl2024cicle} to make this decision smaller before the LLM sees it.
-A small classifier is calibrated with class-conditional conformal prediction so that, for each input, it returns a set of candidate labels that contains the true label with a chosen probability.
-The LLM then chooses among these candidates only, with examples retrieved from the candidate classes, and is not called when the set has one element.
+A natural remedy is to let a smaller model, such as a classifier trained on the labelled pool, narrow the label space before prompting, so that the LLM chooses among a few candidates with examples from those classes only \citep{milios2023incontext,randl2024cicle}.
+This paper asks how that classifier should narrow.
+Keeping its top-$k$ labels, or the labels that carry most of its probability, is the obvious choice, but a classifier trained on a skewed pool is least reliable on the rare classes, and a label left out of the candidate set cannot be predicted.
+Conformal In-Context Learning (CICLe) \citep{randl2024cicle} narrows instead with class-conditional conformal prediction, which calibrates one threshold per class so that every class, frequent or rare, stays in the set with a chosen probability.
+Our main finding is that this calibration is what keeps rare classes reachable.
+Under a long-tailed labelled pool, the worst-covered class keeps 89\% coverage under class-conditional sets, while top-$k$, probability-mass and marginal conformal sets of the same size cover the rarest class for at most 36\% of its instances, and often for none.
 
 CICLe was evaluated on one food-safety dataset, and its released implementation prompts without listing the admissible labels and parses outputs by exact string match.
-Whether its gains carry over to other tasks and models is an empirical question, and the answer depends on protocol choices that are easy to get wrong.
-A prompt without a label list makes up to 65\% of the outputs of some models unparseable, and the parse failures, not the method, then decide which models appear to benefit. Example pools of different size and unseeded conformal sets add noise that a paired test cannot remove.
-This paper gives a corrected protocol and asks a sharper question, namely how a small classifier should narrow the label space for an LLM, and when the LLM is worth calling at all.
-We evaluate CICLe on five English datasets, six open LLMs with 3B to 8B parameters and two with 12B and 32B, with three data seeds and paired bootstrap tests over test instances throughout.
-Our contributions follow the order of the Results section.
+We evaluate it and the alternative rules on six English datasets, six open LLMs with 3B to 8B parameters and two with 12B and 32B, under a protocol that lists the admissible labels in every prompt, shares one labelled pool across methods, seeds the conformal sets and pairs every comparison instance by instance.
+Our contributions are the following, main finding first.
 \begin{enumerate}
   \setlength\itemsep{0pt}
-  \item \textbf{The protocol decides the conclusion.} A corrected evaluation protocol for narrowing methods, with the label list in every prompt, a shared labelled pool, seeded conformal sets and instance-level paired tests, and evidence that these choices change conclusions about which models benefit (Section~\ref{sec:res-protocol}).
-  \item \textbf{Narrowing gives a small gain and a shorter prompt.} With wording, pool and seeds held equal, CICLe beats few-shot prompting in nine of ten dataset and retrieval cells by 0.5 to 1.8 macro-F1 points and shortens Per-Class prompts by 11 to 45\% (Section~\ref{sec:res-gain}).
-  \item \textbf{How you narrow matters.} On balanced data class-conditional conformal sets match top-$k$, probability-mass and marginal sets of the same size. When the labelled pool is long-tailed the alternatives lose coverage on the rare classes and 4 to 13 points, and narrowing helps most, up to 6.5 points, when label names are nonsense words (Sections~\ref{sec:res-narrowing} and~\ref{sec:res-relabel}).
-  \item \textbf{When the LLM pipeline is worth it.} With 1,600 balanced labels a fine-tuned RoBERTa-base beats every 3B to 8B pipeline on four of five datasets. Under a long-tailed or small pool the order flips, and the miscoverage level should follow the strength of the classifier (Sections~\ref{sec:res-baselines} and~\ref{sec:res-alpha}).
+  \item \textbf{How you narrow matters.} On balanced data, class-conditional conformal sets match top-$k$, probability-mass and marginal sets of the same size. Under a long-tailed labelled pool only class-conditional calibration keeps the rare classes in the candidate set, and the alternatives lose 4 to 13 points that the LLM cannot recover (Section~\ref{sec:res-narrowing}).
+  \item \textbf{Narrowing gives a small gain and a shorter prompt.} CICLe beats few-shot prompting in nine of ten dataset and retrieval cells by 0.5 to 1.8 macro-F1 points and shortens Per-Class prompts by 11 to 45\%, and its gain reaches 6.5 points when label names are nonsense words (Sections~\ref{sec:res-gain} and~\ref{sec:res-relabel}). % PENDING: MASSIVE changes the cell count and both ranges
+  \item \textbf{When the LLM pipeline is worth it.} With 1,600 balanced labels a fine-tuned RoBERTa-base beats every 3B to 8B pipeline on SST-5, SemEval-18, GoEmotions and Ohsumed, and the base classifier alone does on Yahoo Answers. Under a long-tailed or small pool the order flips, and the miscoverage level should follow the strength of the classifier (Sections~\ref{sec:res-baselines} and~\ref{sec:res-alpha}). % PENDING: MASSIVE supervised baselines against the pipelines
+  \item \textbf{The protocol decides the conclusion.} A corrected evaluation protocol for narrowing methods, with the label list in every prompt, a shared labelled pool, seeded conformal sets and instance-level paired tests. Without the label list, up to 65\% of a model's outputs do not parse, and the parse failures then decide which models appear to benefit (Section~\ref{sec:res-protocol}). % PENDING: MASSIVE original-prompt rerun
 \end{enumerate}
-Section~\ref{sec:background} explains conformal narrowing, Section~\ref{sec:setup} the datasets, models and protocol with a roadmap from claims to experiments, Section~\ref{sec:results} the results in the order above, and the appendix holds every table behind them.
-Imbalance of the labelled pool widens the gap between narrowing rules, not the gap between CICLe and few-shot prompting.
+After the background (Section~\ref{sec:background}) and setup (Section~\ref{sec:setup}), Section~\ref{sec:results} first establishes the measurement (Sections~\ref{sec:res-protocol} and~\ref{sec:res-gain}) and then turns to how one narrows, label names and when the LLM is worth it.
 Code, prompts and per-instance records will be released.
 % Anonymised repository placeholder: \url{https://anonymous.4open.science/r/XXXX}

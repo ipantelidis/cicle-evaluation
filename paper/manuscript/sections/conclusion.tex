@@ -1,10 +1,10 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-The conclusions a prompting comparison reaches depend on its protocol. Listing the admissible labels, sharing the example pool and seeding the conformal sets change which models appear to benefit from narrowing. Rule: hold the label list and the pool equal and report invalid outputs before comparing prompting methods.
+How a small classifier narrows the label space matters once the labelled pool is long-tailed. Class-conditional conformal sets keep the rare classes, top-$m$, probability-mass and marginal sets lose them, and the LLM cannot recover a label it was not offered. Rule: calibrate per class whenever the pool is skewed.
 
-Narrowing the label set with class-conditional conformal prediction gives a small, reliable gain over few-shot prompting and a shorter prompt. The gain is 0.5 to 1.8 points on short texts and larger on long documents with Per-Class retrieval. Rule: expect a point or two from narrowing, and a prompt that is a third shorter.
+Narrowing gives a small, reliable gain over few-shot prompting and a shorter prompt, most when label names carry no meaning. Rule: expect a point or two and a third fewer tokens, and more when labels are codes. % PENDING: MASSIVE
 
-How one narrows matters once the labelled pool is long-tailed. Class-conditional sets keep their coverage on rare classes, top-$m$, probability-mass and marginal sets do not, and the LLM cannot recover a label it was not offered. The gain is largest when the label names carry no meaning. Rule: calibrate per class when the pool is skewed, and use any rule when it is balanced.
+An LLM pipeline pays when labels are skewed or scarce, and a fine-tuned encoder or the base classifier wins when they are plentiful and balanced. Rule: fine-tune on a large balanced pool, otherwise prompt with a narrowed list and loosen $\alpha$ as the classifier improves.
 
-An LLM pipeline is worth its cost when labels are skewed or scarce, and a fine-tuned encoder, or the base classifier alone, wins when they are plentiful and balanced. Rule: fine-tune on a large balanced pool, prompt with a narrowed list otherwise, and loosen $\alpha$ as the classifier improves.
+Protocol choices decide which models appear to benefit. Rule: hold the label list and the example pool equal and report invalid outputs before comparing prompting methods.

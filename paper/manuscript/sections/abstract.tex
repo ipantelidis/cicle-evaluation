@@ -1,12 +1,10 @@
 % Abstract: at most 150 words (wc -w on the text without comments). Numbers follow paper/figures/NUMBERS.md.
 \begin{abstract}
-Narrowing the label set before prompting a large language model (LLM) is a cheap aid to in-context text classification.
-Conformal In-Context Learning (CICLe) does this with a small classifier calibrated by class-conditional conformal prediction.
-Under the prompt format of the released implementation, which lists no admissible labels, up to 65\% of some models' outputs do not parse, and few-shot and CICLe runs are not paired.
-We give a corrected protocol and evaluate CICLe on five English datasets with eight open LLMs and paired bootstrap tests.
-Narrowing gives a small, reliable gain over few-shot prompting, 0.5 to 1.8 macro-F1 points, and 11 to 45\% shorter prompts.
-How one narrows matters.
-When the labelled pool is long-tailed, class-conditional sets keep their coverage while top-$k$, probability-mass and marginal sets lose 3 to 13 points.
-The gain is largest when label names mean nothing.
-With 1,600 balanced labels a fine-tuned encoder beats the 3B to 8B pipelines, which win when the pool is skewed or small.
+In-context classification with small large language models (LLMs) is hard when there are many classes and the labelled data are skewed.
+A small classifier can narrow the label set before prompting, which raises the question of how it should narrow.
+We compare narrowing rules built from the same classifier on six English datasets with eight open LLMs, pairing every comparison instance by instance.
+When the labelled pool is long-tailed, class-conditional conformal sets, as used by Conformal In-Context Learning (CICLe), keep about 90\% coverage or more on every class, while top-$k$, probability-mass and marginal conformal sets lose the rarest classes and 4 to 13 macro-F1 points.
+Narrowing also gives a small, reliable gain over few-shot prompting, 0.5 to 1.8 points with 11 to 45\% shorter prompts, largest when label names carry no meaning. % PENDING: MASSIVE changes both ranges
+With plentiful balanced labels a fine-tuned encoder is the better choice.
+Without a label list in the prompt, up to 65\% of outputs do not parse, which changes which models appear to benefit. % PENDING: MASSIVE original-prompt rerun
 \end{abstract}
