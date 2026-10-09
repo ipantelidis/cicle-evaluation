@@ -1,0 +1,80 @@
+% CICLe (alpha = 0.05) class-wise coverage: calibration examples per class (mean over 3 seeds) and test coverage (%) pooled over the 3 seeds with a Wilson 95% interval. Under controlled imbalance the class order is seed-dependent, so classes are aggregated by frequency rank. Arrow: interval entirely below / above 95%.
+\begin{tabular}{lrrl|lrrl}
+\toprule
+Class & cal. & cov. & 95\% CI & Class & cal. & cov. & 95\% CI \\
+\midrule
+\multicolumn{8}{l}{\emph{Yahoo Answers 100$\times$ (by class rank)}: 3 of 10 classes flagged} \\
+rank 1 & 161 & 96 & [93, 98] & rank 6 & 12 & 98$\uparrow$ & [95, 99] \\
+rank 2 & 97 & 97 & [94, 98] & rank 7 & 7 & 98$\uparrow$ & [96, 99] \\
+rank 3 & 58 & 95 & [92, 97] & rank 8 & 4 & 95 & [92, 97] \\
+rank 4 & 35 & 97 & [94, 99] & rank 9 & 3 & 95 & [92, 97] \\
+rank 5 & 21 & 97 & [95, 99] & rank 10 & 2 & 98$\uparrow$ & [96, 99] \\
+\addlinespace
+\multicolumn{8}{l}{\emph{SST-5 100$\times$ (by class rank)}: 2 of 5 classes flagged} \\
+rank 1 & 274 & 97$\uparrow$ & [95, 98] & rank 4 & 9 & 97$\uparrow$ & [96, 98] \\
+rank 2 & 87 & 95 & [93, 96] & rank 5 & 3 & 96 & [94, 97] \\
+rank 3 & 27 & 94 & [92, 96] & & & & \\
+\addlinespace
+\multicolumn{8}{l}{\emph{GoEmotions}: 3 of 27 classes flagged} \\
+neutral & 141 & 95 & [93, 96] & disappointment & 8 & 93 & [83, 97] \\
+admiration & 30 & 100$\uparrow$ & [98, 100] & surprise & 8 & 96 & [88, 99] \\
+approval & 21 & 96 & [92, 98] & caring & 7 & 91 & [81, 96] \\
+gratitude & 21 & 93 & [88, 96] & excitement & 6 & 100 & [90, 100] \\
+amusement & 18 & 99$\uparrow$ & [96, 100] & realization & 6 & 100 & [94, 100] \\
+annoyance & 16 & 97 & [92, 99] & disgust & 5 & 94 & [84, 98] \\
+love & 16 & 96 & [91, 99] & fear & 5 & 95 & [84, 99] \\
+disapproval & 16 & 96 & [91, 98] & desire & 4 & 92 & [78, 97] \\
+curiosity & 15 & 94 & [88, 97] & remorse & 4 & 100 & [89, 100] \\
+anger & 11 & 92 & [84, 96] & embarrassment & 2 & 93 & [70, 99] \\
+confusion & 9 & 95 & [87, 98] & nervousness & 1 & 89 & [56, 98] \\
+joy & 9 & 85$\downarrow$ & [74, 92] & pride & 1 & 100 & [61, 100] \\
+optimism & 9 & 99 & [92, 100] & relief & 1 & 100 & [61, 100] \\
+sadness & 9 & 94 & [85, 98] & & & & \\
+\addlinespace
+\multicolumn{8}{l}{\emph{Ohsumed}: 6 of 23 classes flagged} \\
+Cardiovascular Diseases & 70 & 97$\uparrow$ & [95, 98] & Female Genital Diseases and Pregnancy Complications & 11 & 100$\uparrow$ & [95, 100] \\
+Neoplasms & 51 & 99$\uparrow$ & [97, 99] & Musculoskeletal Diseases & 10 & 98 & [93, 99] \\
+Pathological Conditions, Signs and Symptoms & 45 & 98$\uparrow$ & [96, 99] & Neonatal Diseases and Abnormalities & 7 & 98 & [90, 100] \\
+Disorders of Environmental Origin & 29 & 94 & [91, 97] & Eye Diseases & 6 & 95 & [86, 98] \\
+Nervous System Diseases & 26 & 96 & [93, 98] & Hemic and Lymphatic Diseases & 6 & 95 & [86, 98] \\
+Digestive System Diseases & 21 & 93 & [88, 96] & Endocrine Diseases & 5 & 91 & [76, 97] \\
+Immunologic Diseases & 21 & 98 & [94, 99] & Otorhinolaryngologic Diseases & 4 & 100 & [85, 100] \\
+Nutritional and Metabolic Diseases & 20 & 87$\downarrow$ & [79, 92] & Parasitic Diseases & 3 & 95 & [77, 99] \\
+Urologic and Male Genital Diseases & 18 & 99 & [95, 100] & Stomatognathic Diseases & 3 & 100 & [86, 100] \\
+Bacterial Infections and Mycoses & 14 & 89$\downarrow$ & [80, 94] & Virus Diseases & 3 & 100 & [90, 100] \\
+Respiratory Tract Diseases & 14 & 98 & [93, 99] & Animal Diseases & 1 & 100 & [70, 100] \\
+Skin and Connective Tissue Diseases & 12 & 92 & [85, 96] & & & & \\
+\addlinespace
+\multicolumn{8}{l}{\emph{MASSIVE}: 9 of 59 classes flagged} \\
+calendar\_set & 28 & 99$\uparrow$ & [96, 100] & audio\_volume\_mute & 4 & 100 & [88, 100] \\
+play\_music & 22 & 94 & [90, 97] & audio\_volume\_up & 4 & 93 & [70, 99] \\
+weather\_query & 20 & 91$\downarrow$ & [86, 95] & email\_querycontact & 4 & 92 & [74, 98] \\
+calendar\_query & 19 & 99 & [95, 100] & iot\_coffee & 4 & 100 & [89, 100] \\
+general\_quirky & 19 & 99$\uparrow$ & [97, 100] & iot\_hue\_lightchange & 4 & 100 & [90, 100] \\
+qa\_factoid & 19 & 93 & [88, 97] & music\_likeness & 4 & 97 & [83, 99] \\
+news\_query & 17 & 93 & [88, 97] & play\_game & 4 & 97 & [85, 99] \\
+email\_query & 15 & 92 & [86, 96] & social\_query & 4 & 93 & [77, 98] \\
+datetime\_query & 12 & 94 & [88, 98] & takeaway\_query & 4 & 97 & [86, 100] \\
+email\_sendemail & 12 & 93 & [87, 97] & transport\_ticket & 4 & 86$\downarrow$ & [71, 94] \\
+calendar\_remove & 11 & 91 & [82, 96] & transport\_traffic & 4 & 100 & [85, 100] \\
+play\_radio & 10 & 99 & [93, 100] & alarm\_remove & 3 & 100 & [85, 100] \\
+social\_post & 10 & 95 & [88, 98] & general\_joke & 3 & 95 & [77, 99] \\
+qa\_definition & 9 & 85$\downarrow$ & [74, 92] & iot\_cleaning & 3 & 89 & [72, 96] \\
+transport\_query & 8 & 96 & [87, 99] & iot\_hue\_lightdim & 3 & 92 & [74, 98] \\
+cooking\_recipe & 7 & 91 & [82, 96] & iot\_hue\_lightup & 3 & 92 & [74, 98] \\
+lists\_query & 7 & 95 & [86, 98] & qa\_maths & 3 & 92 & [74, 98] \\
+play\_podcasts & 7 & 89 & [79, 95] & transport\_taxi & 3 & 87$\downarrow$ & [70, 95] \\
+recommendation\_events & 7 & 100 & [92, 100] & audio\_volume\_down & 2 & 92 & [65, 99] \\
+alarm\_set & 6 & 98 & [88, 100] & datetime\_convert & 2 & 93 & [70, 99] \\
+lists\_createoradd & 6 & 100 & [91, 100] & email\_addcontact & 2 & 100 & [74, 100] \\
+lists\_remove & 6 & 94 & [85, 98] & iot\_wemo\_off & 2 & 87 & [62, 96] \\
+recommendation\_locations & 6 & 97 & [86, 100] & iot\_wemo\_on & 2 & 80$\downarrow$ & [49, 94] \\
+alarm\_query & 5 & 97 & [85, 99] & music\_settings & 2 & 89 & [56, 98] \\
+iot\_hue\_lightoff & 5 & 100 & [90, 100] & recommendation\_movies & 2 & 100 & [82, 100] \\
+music\_query & 5 & 97 & [87, 100] & audio\_volume\_other & 1 & 67$\downarrow$ & [21, 94] \\
+play\_audiobook & 5 & 98 & [88, 100] & general\_greet & 1 & 67$\downarrow$ & [21, 94] \\
+qa\_currency & 5 & 98 & [88, 100] & iot\_hue\_lighton & 1 & 100 & [61, 100] \\
+qa\_stock & 5 & 93 & [79, 98] & music\_dislikeness & 0 & 100 & [44, 100] \\
+takeaway\_order & 5 & 88 & [69, 96] & & & & \\
+\bottomrule
+\end{tabular}

@@ -1609,6 +1609,406 @@ def tabR(B):
 
 
 # ---------------------------------------------------------------------------
+# Post-review analyses (2026-10-09): size-matched narrowing, coverage vs F1,
+# hierarchical uncertainty, class-wise coverage, cost, Ohsumed control, label list
+# ---------------------------------------------------------------------------
+EXT = CORE + ["massive"]
+SHORT_NAME = {"yahoo-answers": "Yahoo", "sst": "SST-5", "semeval-18": "SemEval",
+              "go-emotions": "GoEmo", "ohsumed": "Ohsumed", "massive": "MASSIVE"}
+MATCHED_ROWS = [("yahoo-answers", 1), ("yahoo-answers", 10), ("yahoo-answers", 100),
+                ("sst", 1), ("sst", 10), ("sst", 100), ("semeval-18", 1), ("go-emotions", 1),
+                ("ohsumed", 1), ("massive", 1)]
+
+
+def row_label(d, imb):
+    return SHORT_NAME[d] + (f" {imb}$\\times$" if d in ("yahoo-answers", "sst") else "")
+
+
+def main_variant(d):
+    return "fixed" if d == "ohsumed" else "pc"
+
+
+def k4_cells(tag, comp, var):
+    """PC (Ohsumed Fixed) k=4 cells over 6 models x seeds 42-44 (+45/46 when complete)."""
+    extra = extra_seeds_complete(tag, ["cicle", comp], var) if "imb" in tag or tag in ("yahoo-answers", "sst") else []
+    return fd.grid_cells([var], SMALL, [4], SEEDS + extra), SEEDS + extra
+
+
+def tabM(B):
+    sec = "Table M (size-matched narrowing)"
+    head = [r"Data & Rule & size & cov.\ (\%) & worst class (\%) & $\Delta$ F1 (CICLe $-$ rule) \\"]
+    rows = []
+    for d, imb in MATCHED_ROWS:
+        tag = imb_tag(d, imb)
+        if not fd.has_results(tag):
+            pending(sec, f"{tag} (no results directory)")
+            continue
+        var = main_variant(d)
+        for i, m in enumerate(["cicle"] + MATCHED):
+            st = cpu_set_stats(tag, m)
+            if not st:
+                pending(sec, f"{tag} {m} sets")
+                continue
+            size = np.mean([x["size"] for _, _, x in st])
+            cov = np.mean([x["cov"] for _, _, x in st])
+            worst = np.mean([x["worst"] for _, _, x in st])
+            dcell = "--"
+            if m != "cicle":
+                cells, seeds = k4_cells(tag, m, var)
+                res = fd.paired_delta(tag, "cicle", m, var, None, cells=cells, B=B)
+                if res is None:
+                    pending(sec, f"{tag} CICLe − {m} {var} k=4")
+                    dcell = "[pending]"
+                else:
+                    dcell = delta_tex(res, inline=True)
+                    note(sec, f"{tag} {var} k=4 CICLe − {m} (seeds {seeds}): {delta_txt(res)}")
+            note(sec, f"{tag} {m}: mean set size {size:.2f}, coverage {cov:.1f}%, worst-class "
+                      f"coverage {worst:.1f}% ({len(st)} seeds)")
+            rows.append(f"{row_label(d, imb) if i == 0 else ''} & {METHOD_NAME[m].replace(' (matched)', '')} & "
+                        f"{size:.2f} & {cov:.1f} & {worst:.1f} & {dcell} \\\\")
+        rows.append(r"\addlinespace")
+    if rows and rows[-1] == r"\addlinespace":
+        rows.pop()
+    write_table("body_matched", "llrrrc", head, rows,
+                comment="Size-matched narrowing. Top-m, probability mass and marginal CP with their "
+                        "threshold set so the mean test-set size equals CICLe's (labels unused). Set "
+                        "statistics from the candidate sets of every seed with results (3; 5 for "
+                        "Yahoo/SST once seeds 45/46 land), worst class = min over classes of the "
+                        "class coverage, averaged over seeds. Δ F1: paired over 6 models x seeds at "
+                        "Per-Class k=4 (Ohsumed Fixed k=4), 95% bootstrap CI over test instances; "
+                        "bold when the interval excludes zero.")
+
+
+def coverage_cells(B):
+    """(tag, rule, variant, k, ΔF1 rule − CICLe, Δoverall, Δworst, Δmacro) for every
+    cell with complete runs (6 models x seeds 42-44)."""
+    out = []
+    for tag in ALL_TAGS + ["massive"]:
+        if not fd.has_results(tag):
+            continue
+        for rule in ["topk", "mass", "marginal", "massmatch", "margmatch"]:
+            stats = None
+            for var in ("fixed", "pc"):
+                for k in (1, 4):
+                    res = fd.paired_delta(tag, rule, "cicle", var, [k], B=B)
+                    if res is None:
+                        continue
+                    if stats is None:
+                        r_st = {s: x for s, _, x in cpu_set_stats(tag, rule, SEEDS)}
+                        c_st = {s: x for s, _, x in cpu_set_stats(tag, "cicle", SEEDS)}
+                        common = sorted(set(r_st) & set(c_st))
+                        stats = tuple(np.mean([r_st[s][key] - c_st[s][key] for s in common])
+                                      for key in ("cov", "worst", "macro"))
+                    out.append((tag, rule, var, k, res["mean"]) + stats)
+    return out
+
+
+def tabCorr(B):
+    from scipy.stats import pearsonr, spearmanr
+    sec = "Coverage vs F1 (item 2)"
+    cells = coverage_cells(B)
+    if len(cells) < 5:
+        pending(sec, "fewer than 5 complete cells")
+        return
+    y = np.array([c[4] for c in cells])
+    X = {"overall coverage": np.array([c[5] for c in cells]),
+         "worst-class coverage": np.array([c[6] for c in cells]),
+         "class-averaged coverage": np.array([c[7] for c in cells])}
+    rng = np.random.default_rng(11)
+    idx = rng.integers(0, len(y), (B, len(y)))
+    head = [r"Coverage difference & Pearson $r$ & 95\% CI & Spearman $\rho$ & 95\% CI \\"]
+    rows = []
+    for name, x in X.items():
+        pr, sr = pearsonr(x, y)[0], spearmanr(x, y)[0]
+        pb = np.array([np.corrcoef(x[i], y[i])[0, 1] for i in idx])
+        sb = np.array([spearmanr(x[i], y[i])[0] for i in idx])
+        pl, ph = np.nanpercentile(pb, [2.5, 97.5]); sl, sh = np.nanpercentile(sb, [2.5, 97.5])
+        rows.append(f"{name} & {pr:+.2f} & [{pl:+.2f}, {ph:+.2f}] & {sr:+.2f} & [{sl:+.2f}, {sh:+.2f}] \\\\")
+        note(sec, f"F1(rule) − F1(CICLe) vs Δ {name}: Pearson r = {pr:+.2f} [{pl:+.2f}, {ph:+.2f}], "
+                  f"Spearman rho = {sr:+.2f} [{sl:+.2f}, {sh:+.2f}] over {len(y)} cells (bootstrap over cells)")
+    by_rule = Counter(c[1] for c in cells)
+    note(sec, "cells per rule: " + ", ".join(f"{k} {v}" for k, v in sorted(by_rule.items()))
+              + "; cells = (dataset variant, rule, retrieval variant, k), 6 models x seeds 42-44 each; "
+              "oracle excluded (gold label inserted by construction)")
+    for c in cells:
+        if c[0] == "go-emotions" and c[1] == "topk":
+            note(sec, f"go-emotions topk {c[2]} k={c[3]}: ΔF1 {c[4]:+.2f}, Δoverall {c[5]:+.1f}, "
+                      f"Δworst {c[6]:+.1f}, Δclass-avg {c[7]:+.1f}")
+    write_table("body_coverage_f1", "lcccc", head, rows,
+                comment=f"Correlation over {len(y)} cells (dataset variant x rule x retrieval variant x "
+                        "k; rules top-m, mass, marginal CP and their size-matched versions; 6 models x 3 "
+                        "seeds per cell) between the macro-F1 difference rule − CICLe and the difference "
+                        "in coverage. 95% CI from 5,000 bootstrap resamples of the cells (cells sharing "
+                        "a dataset are not independent, so the intervals are optimistic).")
+    # figure
+    fig, ax = plt.subplots(figsize=(COLWIDTH, 3.4))
+    for rule in ["topk", "mass", "marginal", "massmatch", "margmatch"]:
+        pts = [(c[7], c[4]) for c in cells if c[1] == rule]
+        if not pts:
+            continue
+        hollow = rule in UNMATCHED
+        ax.scatter([p[0] for p in pts], [p[1] for p in pts], s=26, marker=MARKER[rule],
+                   facecolor="white" if hollow else COLOR[rule], edgecolor=COLOR[rule],
+                   linewidth=1.0, label=METHOD_NAME[rule] + (" (unmatched)" if hollow else ""), zorder=3)
+    ax.axhline(0, color=MUTED, lw=0.8, zorder=1); ax.axvline(0, color=MUTED, lw=0.8, zorder=1)
+    ax.set_xlabel("class-averaged coverage, rule $-$ CICLe (pp)")
+    ax.set_ylabel("macro-F1, rule $-$ CICLe (pp)")
+    fig.legend(*ax.get_legend_handles_labels(), loc="lower center", ncol=2, fontsize=8,
+               handletextpad=0.3, columnspacing=1.0, bbox_to_anchor=(0.55, -0.01))
+    fig.subplots_adjust(left=0.17, right=0.98, top=0.97, bottom=0.30)
+    save_fig(fig, "fig_app_coverage_f1")
+
+
+def tabH(B):
+    sec = "Table H (hierarchical bootstrap)"
+    head = [r"Comparison & $\Delta$ & instances only & hierarchical & $\Delta>0$ \\"]
+    rows = []
+    for d in CORE:
+        for var in ("fixed", "pc"):
+            cells = fd.grid_cells([var], SMALL, ks_for(d, var), SEEDS)
+            res = fd.paired_delta(d, "cicle", "fewshot", var, None, cells=cells, B=B)
+            h = fd.hierarchical_delta(d, "cicle", "fewshot", cells, B=B)
+            label = f"{SHORT_NAME[d]} {VARIANT_NAME[var]}, CICLe $-$ few-shot"
+            if res is None or h is None:
+                pending(sec, f"{d} {var}")
+                continue
+            rows.append(f"{label} & {res['mean']:+.2f} & {ci_str(res)} & [{h['lo']:+.2f}, {h['hi']:+.2f}] & "
+                        f"{h['sign_pos']}/{h['sign_n']} \\\\")
+            note(sec, f"{d} {var} CICLe − few-shot (all k): {res['mean']:+.2f}, instance CI {ci_str(res)}, "
+                      f"hierarchical CI [{h['lo']:+.2f}, {h['hi']:+.2f}] ({h['n_models']} models, "
+                      f"{h['n_seeds']} seeds), positive in {h['sign_pos']}/{h['sign_n']} (model, seed) cells")
+    rows.append(r"\midrule")
+    for d in ("yahoo-answers", "sst"):
+        tag = imb_tag(d, 100)
+        for comp in MATCHED:
+            cells, seeds = k4_cells(tag, comp, "pc")
+            res = fd.paired_delta(tag, "cicle", comp, "pc", None, cells=cells, B=B)
+            h = fd.hierarchical_delta(tag, "cicle", comp, cells, B=B) if res else None
+            label = f"{SHORT_NAME[d]} 100$\\times$ PC $k$=4, CICLe $-$ {METHOD_NAME[comp].replace(' (matched)', ' (m.)')}"
+            if res is None or h is None:
+                pending(sec, f"{tag} CICLe − {comp}")
+                rows.append(f"{label} & [pending] & & & \\\\")
+                continue
+            rows.append(f"{label} & {res['mean']:+.2f} & {ci_str(res)} & [{h['lo']:+.2f}, {h['hi']:+.2f}] & "
+                        f"{h['sign_pos']}/{h['sign_n']} \\\\")
+            note(sec, f"{tag} pc k=4 CICLe − {comp} (seeds {seeds}): {res['mean']:+.2f}, instance CI "
+                      f"{ci_str(res)}, hierarchical CI [{h['lo']:+.2f}, {h['hi']:+.2f}], positive in "
+                      f"{h['sign_pos']}/{h['sign_n']} (model, seed) cells")
+    write_table("body_hierarchical", "lcccc", head, rows,
+                comment="Instance-only interval: paired bootstrap over test instances (models and seeds "
+                        "fixed). Hierarchical interval: resample the 6 models and the seeds with "
+                        "replacement, and test instances within each drawn seed (5,000 resamples). Last "
+                        "column: (model, seed) cells whose difference (mean over k / variant) is positive.")
+
+
+def wilson(succ, n, z=1.96):
+    if n == 0:
+        return float("nan"), float("nan")
+    p = succ / n
+    den = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / den
+    h = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
+    return 100 * (c - h), 100 * (c + h)
+
+
+def tabCC(B):
+    sec = "Table CC (class-wise CICLe coverage with Wilson intervals)"
+    specs = [("yahoo-answers", 100, True), ("sst", 100, True), ("go-emotions", 1, False),
+             ("ohsumed", 1, False), ("massive", 1, False)]
+    rows = []
+    for d, imb, by_rank in specs:
+        tag = imb_tag(d, imb)
+        st = cpu_set_stats(tag, "cicle", SEEDS)
+        if not st:
+            pending(sec, f"{tag} sets")
+            continue
+        agg = defaultdict(lambda: [0, 0, []])   # key -> [successes, trials, cal counts]
+        for s, S, x in st:
+            order = [lab for lab, _ in sorted(S["train_counts"].items(), key=lambda kv: -kv[1])]
+            gold, gis = S["gold"], x["gis"]
+            for c, lab in enumerate(S["classes"]):
+                key = order.index(lab) + 1 if by_rank else lab
+                mask = gold == c
+                agg[key][0] += int(gis[mask].sum()); agg[key][1] += int(mask.sum())
+                agg[key][2].append(S["cal_counts"].get(lab, 0))
+        entries, flagged = [], 0
+        for key in sorted(agg, key=lambda k: (k if by_rank else -np.mean(agg[k][2]))):
+            succ, n, cal = agg[key]
+            if n == 0:
+                continue
+            lo, hi = wilson(succ, n)
+            flag = r"$\downarrow$" if hi < 95 else (r"$\uparrow$" if lo > 95 else "")
+            flagged += bool(flag)
+            name = f"rank {key}" if by_rank else tex_escape(str(key))
+            entries.append((name, np.mean(cal), 100 * succ / n, lo, hi, flag, n))
+            note(sec, f"{tag} {('rank ' + str(key)) if by_rank else key}: calibration examples "
+                      f"{np.mean(cal):.1f} (mean over seeds), test coverage {100 * succ / n:.1f}% "
+                      f"[{lo:.1f}, {hi:.1f}] over {n} test instances (3 seeds pooled){' FLAG' if flag else ''}")
+        note(sec, f"{tag}: {flagged}/{len(entries)} classes with a Wilson interval excluding 95%")
+        rows.append(r"\multicolumn{8}{l}{\emph{" + NAME[d] + (f" {imb}$\\times$ (by class rank)" if by_rank else "")
+                    + f"}}: {flagged} of {len(entries)} classes flagged}} \\\\")
+        half = -(-len(entries) // 2)
+        for i in range(half):
+            parts = []
+            for e in (entries[i], entries[i + half] if i + half < len(entries) else None):
+                if e is None:
+                    parts.append("& & &")
+                else:
+                    parts.append(f"{e[0]} & {e[1]:.0f} & {e[2]:.0f}{e[5]} & [{e[3]:.0f}, {e[4]:.0f}]")
+            rows.append(" & ".join(parts) + r" \\")
+        rows.append(r"\addlinespace")
+    if rows and rows[-1] == r"\addlinespace":
+        rows.pop()
+    head = [r"Class & cal. & cov. & 95\% CI & Class & cal. & cov. & 95\% CI \\"]
+    write_table("body_classcov", "lrrl|lrrl", head, rows,
+                comment="CICLe (alpha = 0.05) class-wise coverage: calibration examples per class (mean "
+                        "over 3 seeds) and test coverage (%) pooled over the 3 seeds with a Wilson 95% "
+                        "interval. Under controlled imbalance the class order is seed-dependent, so classes "
+                        "are aggregated by frequency rank. Arrow: interval entirely below / above 95%.")
+
+
+def expected_tokens(tag, method, var, k, models=SMALL, seeds=SEEDS, **kw):
+    """Mean over runs of input tokens per test instance (0 when no LLM call) and of the
+    no-call share (%); (None, None) unless the models x seeds grid is complete."""
+    v = fd.variant(tag)
+    runs = [v.get(method, var, k, m, seed=s, **kw) for m in models for s in seeds]
+    if any(r is None for r in runs):
+        return None, None
+    return (float(np.mean([r["prompt_tokens"].mean() for r in runs])),
+            float(100 * np.mean([1 - r["llm_called"].mean() for r in runs])))
+
+
+def tabCost(B):
+    sec = "Table Cost (expected input tokens per test instance)"
+    head = [r"Data & ZS & FS F & CICLe F & FS PC & CICLe PC & no call (\%) & saved F & saved PC \\"]
+    rows = []
+    for d in EXT:
+        if not fd.has_results(d):
+            continue
+        kpc = ks_for(d, "pc")[-1] if d != "ohsumed" else 1
+        cfgs = [("zeroshot", None, None), ("fewshot", "fixed", 4), ("cicle", "fixed", 4),
+                ("fewshot", "pc", kpc), ("cicle", "pc", kpc)]
+        kpc = 4 if d != "ohsumed" else 1
+        cfgs[3:] = [("fewshot", "pc", kpc), ("cicle", "pc", kpc)]
+        vals = [expected_tokens(d, *c) for c in cfgs]
+        if any(t is None for t, _ in vals):
+            pending(sec, f"{d}: " + ", ".join(f"{c[0]} {c[1]} k={c[2]}" for c, (t, _) in zip(cfgs, vals) if t is None))
+        tok_ = [t for t, _ in vals]
+        skip = vals[4][1] if vals[4][1] is not None else vals[2][1]
+        sav = [(1 - tok_[2] / tok_[1]) * 100 if tok_[1] and tok_[2] else None,
+               (1 - tok_[4] / tok_[3]) * 100 if tok_[3] and tok_[4] else None]
+        cells = [f"{t:,.0f}" if t is not None else "--" for t in tok_]
+        if d == "ohsumed":
+            cells[3:5] = [c + r"$^{\dagger}$" if c != "--" else c for c in cells[3:5]]
+        rows.append(f"{SHORT_NAME[d]} & " + " & ".join(cells) + f" & {num(skip)} & "
+                    + " & ".join(f"{x:.0f}\\%" if x is not None else "--" for x in sav) + r" \\")
+        for c, (t, sk) in zip(cfgs, vals):
+            if t is not None:
+                note(sec, f"{d} {c[0]} {c[1] or ''} k={c[2] or 0}: expected {t:,.0f} tokens per instance, "
+                          f"no LLM call {sk:.1f}%")
+        for lab, x in zip(("Fixed", "Per-Class"), sav):
+            if x is not None:
+                note(sec, f"{d} CICLe saving over few-shot ({lab}, expected tokens per instance): {x:.1f}%")
+    write_table("body_cost", "lrrrrrrrr", head, rows,
+                comment="Expected input tokens per test instance (instances answered without an LLM "
+                        "call count 0), mean over 6 models x 3 seeds, k=4 (dagger: Ohsumed Per-Class "
+                        "k=1). no call: share of instances CICLe answers without the LLM (Per-Class). "
+                        "saved: 1 − CICLe / few-shot on the same basis.")
+    # alpha
+    head = [r"Data & few-shot & $\alpha$=0.01 & 0.05 & 0.10 & 0.20 \\"]
+    rows = []
+    for d in SHORT + ["massive"]:
+        if not fd.has_results(d):
+            continue
+        cells = fd.grid_cells(["fixed", "pc"], LLAMAS, [1, 4], SEEDS)
+        v = fd.variant(d)
+        fs = [v.get("fewshot", var, k, m, seed=s) for var, m, k, s in cells]
+        if any(r is None for r in fs):
+            pending(sec, f"{d} alpha few-shot reference"); continue
+        fs_tok = np.mean([r["prompt_tokens"].mean() for r in fs])
+        out = [f"{fs_tok:,.0f}"]
+        for a in ALPHAS:
+            cs = [v.get("cicle", var, k, m, seed=s, alpha=a) for var, m, k, s in cells]
+            if any(r is None for r in cs):
+                out.append("--"); pending(sec, f"{d} alpha {a}"); continue
+            t = np.mean([r["prompt_tokens"].mean() for r in cs])
+            sk = 100 * np.mean([1 - r["llm_called"].mean() for r in cs])
+            out.append(f"{t:,.0f}")
+            note(sec, f"{d} alpha={a}: CICLe expected {t:,.0f} tokens per instance vs few-shot "
+                      f"{fs_tok:,.0f} (saving {100 * (1 - t / fs_tok):.1f}%), no LLM call {sk:.1f}% "
+                      "(Llama-3.1-8B + 3.2-3B, Fixed + PC, k in {1,4}, 3 seeds)")
+        rows.append(f"{SHORT_NAME[d]} & " + " & ".join(out) + r" \\")
+    write_table("body_cost_alpha", "lrrrrr", head, rows,
+                comment="Expected input tokens per test instance for CICLe at each alpha and for "
+                        "few-shot, Llama-3.1-8B and Llama-3.2-3B, Fixed and Per-Class, k in {1,4}, "
+                        "3 seeds (24 runs per cell).")
+
+
+def ohsControl(B):
+    sec = "Ohsumed control (narrowing vs shorter prompt)"
+    v = fd.variant("ohsumed")
+    cfgs = {"CICLe PC k=1": ("cicle", "pc", 1), "few-shot PC k=1": ("fewshot", "pc", 1),
+            "CICLe Fixed k=4": ("cicle", "fixed", 4), "CICLe Fixed k=8": ("cicle", "fixed", 8),
+            "few-shot Fixed k=4": ("fewshot", "fixed", 4), "few-shot Fixed k=8": ("fewshot", "fixed", 8)}
+    runs = {}
+    for name, (m, var, k) in cfgs.items():
+        rs = {(mdl, s): v.get(m, var, k, mdl, seed=s) for mdl in SMALL for s in SEEDS}
+        if any(r is None for r in rs.values()):
+            pending(sec, f"{name}: {sum(r is not None for r in rs.values())}/18 runs")
+            continue
+        runs[name] = rs
+        note(sec, f"{name}: macro-F1 {np.mean([fd.f1(v, r) for r in rs.values()]):.2f}, "
+                  f"{np.mean([r['metrics']['mean_shots'] for r in rs.values()]):.1f} examples per prompt, "
+                  f"{np.mean([r['metrics']['mean_prompt_tokens'] for r in rs.values()]):,.0f} tokens per call "
+                  "(6 models x 3 seeds)")
+    for a, b in (("CICLe PC k=1", "few-shot Fixed k=8"), ("CICLe PC k=1", "few-shot Fixed k=4"),
+                 ("CICLe Fixed k=8", "few-shot Fixed k=8"), ("CICLe PC k=1", "few-shot PC k=1")):
+        if a in runs and b in runs:
+            res = fd.paired_runs("ohsumed", [(runs[a][c], runs[b][c]) for c in runs[a]], B)
+            note(sec, f"{a} − {b}: {delta_txt(res)}")
+
+
+def tabNL(B):
+    sec = "Table NL (label list ablation, seed 42)"
+    head = [r"Data & Retr. & Labels listed & inv.\ FS & inv.\ CICLe & F1 FS & F1 CICLe & $\Delta$ \\"]
+    rows = []
+    for d in EXT:
+        tag_nl = d + "-nolistprompt"
+        if not fd.has_results(tag_nl):
+            pending(sec, f"{tag_nl} (no results directory)")
+            continue
+        for var in (("fixed", "pc") if d != "ohsumed" else ("fixed", "pc")):
+            ks = ks_for(d, var)[:2] if d != "ohsumed" else ([1, 4] if var == "fixed" else [1])
+            ks = [k for k in (1, 4) if k in ks] or ks
+            first = True
+            for tag, cond in ((d, "yes"), (tag_nl, "no")):
+                cells = fd.grid_cells([var], SMALL, ks, [42])
+                res = fd.paired_delta(tag, "cicle", "fewshot", var, None, cells=cells, B=B)
+                inv = [fd.mean_metric(tag, m, var, k, seeds=[42], metric="invalid_rate")[0]
+                       for m in ("fewshot", "cicle") for k in ks]
+                if res is None or any(x is None for x in inv):
+                    pending(sec, f"{tag} {var}")
+                    rows.append(f"{SHORT_NAME[d] if first else ''} & {VARIANT_NAME[var] if first else ''} & {cond} & "
+                                + " & ".join(["[pending]"] * 5) + r" \\")
+                    first = False
+                    continue
+                inv_fs, inv_c = np.mean(inv[:len(ks)]), np.mean(inv[len(ks):])
+                rows.append(f"{SHORT_NAME[d] if first else ''} & {VARIANT_NAME[var] if first else ''} & {cond} & "
+                            f"{inv_fs:.1f} & {inv_c:.1f} & {res['mean_b']:.1f} & {res['mean_a']:.1f} & "
+                            f"{delta_tex(res, inline=True)} \\\\")
+                note(sec, f"{tag} {var} k={ks} seed 42: invalid few-shot {inv_fs:.1f}%, CICLe {inv_c:.1f}%; "
+                          f"F1 few-shot {res['mean_b']:.2f}, CICLe {res['mean_a']:.2f}; Δ {delta_txt(res)}")
+                first = False
+        rows.append(r"\addlinespace")
+    if rows and rows[-1] == r"\addlinespace":
+        rows.pop()
+    write_table("body_nolist", "lllrrrrc", head, rows,
+                comment="Prompts with and without the list of admissible labels (seed 42, six small "
+                        "models, k in {1,4}; Ohsumed Per-Class k=1): invalid-output rate (%), macro-F1 and "
+                        "the paired Δ CICLe − few-shot with its 95% bootstrap CI over test instances.")
+
+
+# ---------------------------------------------------------------------------
 # NUMBERS.md
 # ---------------------------------------------------------------------------
 def write_numbers(B, built):
@@ -1672,6 +2072,14 @@ STEPS = {
     "figP": ("Figure P: macro-F1 vs pool size -> fig_main_poolsize.pdf", figP),
     "tabL": ("Table L: legacy vs corrected protocol -> tables/legacy.tex, legacy_delta.tex", tabL),
     "tabR": ("Table R: alternative prompt / random retrieval -> tables/robustness.tex", tabR),
+    "figAU": ("Figure 2 appendix: unmatched mass / marginal -> fig_app_narrowing_unmatched.pdf", figAU),
+    "tabM": ("Table M: size-matched narrowing -> tables/body_matched.tex", tabM),
+    "tabCorr": ("Coverage vs F1: correlations + figure -> tables/body_coverage_f1.tex, fig_app_coverage_f1.pdf", tabCorr),
+    "tabH": ("Hierarchical bootstrap -> tables/body_hierarchical.tex", tabH),
+    "tabCC": ("Class-wise coverage (Wilson) -> tables/body_classcov.tex", tabCC),
+    "tabCost": ("Expected tokens per instance -> tables/body_cost.tex, body_cost_alpha.tex", tabCost),
+    "ohsCtl": ("Ohsumed control: narrowing vs shorter prompt (NUMBERS.md only)", ohsControl),
+    "tabNL": ("Label-list ablation -> tables/body_nolist.tex", tabNL),
 }
 
 

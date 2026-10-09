@@ -1,0 +1,10 @@
+% Correlation over 156 cells (dataset variant x rule x retrieval variant x k; rules top-m, mass, marginal CP and their size-matched versions; 6 models x 3 seeds per cell) between the macro-F1 difference rule − CICLe and the difference in coverage. 95% CI from 5,000 bootstrap resamples of the cells (cells sharing a dataset are not independent, so the intervals are optimistic).
+\begin{tabular}{lcccc}
+\toprule
+Coverage difference & Pearson $r$ & 95\% CI & Spearman $\rho$ & 95\% CI \\
+\midrule
+overall coverage & +0.87 & [+0.80, +0.92] & +0.36 & [+0.18, +0.53] \\
+worst-class coverage & +0.53 & [+0.39, +0.65] & +0.41 & [+0.24, +0.56] \\
+class-averaged coverage & +0.76 & [+0.63, +0.85] & +0.41 & [+0.24, +0.56] \\
+\bottomrule
+\end{tabular}
