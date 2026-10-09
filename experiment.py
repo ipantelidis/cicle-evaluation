@@ -464,12 +464,16 @@ def build_alt_prompt(task, text, examples, candidates):
     return "\n\n".join(lines)
 
 
-def build_prompt(task, text, examples, candidates):
+def build_prompt(task, text, examples, candidates, list_labels=True):
     """examples: list of (text, label), most similar first.
-    candidates: labels the LLM may answer with."""
+    candidates: labels the LLM may answer with. list_labels=False leaves
+    the label list out (the labels are then only visible through the
+    examples, as in the original CICLe prompt)."""
     # label names that contain commas are separated by semicolons
     sep = "; " if any("," in str(c) for c in candidates) else ", "
-    context = f"{task} The possible classes are: {sep.join(candidates)}."
+    context = task
+    if list_labels:
+        context += f" The possible classes are: {sep.join(candidates)}."
     if examples:
         context += " Here are some labelled examples:\n"
         for x, y in examples:
@@ -656,7 +660,8 @@ def run_config(cfg, data, llm, legacy=False, limit=None, batched=True):
             shuffled = [candidates[j] for j in rng.permutation(len(candidates))]
             prompts.append(build_alt_prompt(task, data.X_test[i], examples[::-1], shuffled))
         else:
-            prompts.append(build_prompt(task, data.X_test[i], examples, candidates))
+            prompts.append(build_prompt(task, data.X_test[i], examples, candidates,
+                                        list_labels=cfg.get("prompt") != "nolist"))
         prompt_rows.append(len(records))
         records.append(rec)
 
@@ -749,9 +754,10 @@ def parse_args():
     p.add_argument("--n-train", type=int, default=2000,
                    help="size of the labelled pool (train + calibration); results go to "
                         "<dataset>-n<size>/ when not 2000")
-    p.add_argument("--prompt", choices=["default", "alt"], default="default",
+    p.add_argument("--prompt", choices=["default", "alt", "nolist"], default="default",
                    help="alt: second template, labels in random order, most similar example "
-                        "last; results go to <dataset>-altprompt/")
+                        "last; nolist: the default template without the label list; results "
+                        "go to <dataset>-<prompt>prompt/")
     p.add_argument("--retrieval", choices=["similar", "random"], default="similar",
                    help="random: examples drawn at random from the allowed classes; "
                         "results go to <dataset>-random/")
