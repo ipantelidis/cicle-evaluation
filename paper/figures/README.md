@@ -101,7 +101,11 @@ Table 1 (datasets) is not generated here.
 
 Matplotlib only, PDF with embedded TrueType (`pdf.fonttype 42`), DejaVu Sans, no titles inside
 the figures beyond the dataset names, tick/legend text 8 pt and axis labels 9 pt at the printed
-size (text width 6.5 in or column width 3.3 in), 1.6 pt lines, markers >= 5.5 pt. One colour per method in every figure, from the dataviz reference palette and
+size, 1.6 pt lines, markers >= 5.5 pt. `scaled_rc(printed_scale)` enlarges fonts and marks by
+1/printed_scale so that a figure the manuscript scales down still prints at these sizes:
+`fig_main_tokens.pdf` is drawn for 0.7 text width, `fig_main_narrowing.pdf` for 0.8 text width,
+`fig_main_poolsize.pdf` for column width (3.3 in; legend below the panels). The appendix
+figures are drawn 1:1 at text width (`fig_app_narrowing_*`) or column width (`fig_app_alpha`). One colour per method in every figure, from the dataviz reference palette and
 checked for colour-vision separation (OKLab Delta E under protan/deutan/tritan simulation):
 few-shot grey `#6b6a66`, CICLe blue `#2a78d6`, top-m orange `#eb6834`, probability mass aqua
 `#1baf7a`, marginal CP violet `#4a3aa7` (dashed, triangle), oracle black dashed with x marks,

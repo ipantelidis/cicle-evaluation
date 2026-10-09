@@ -8,9 +8,12 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 
 - Table F1 (12B / 32B models): mistral-nemo-2407 ohsumed pc k=1 (few-shot n=0, CICLe n=0)
 - Table F1 (12B / 32B models): mistral-nemo-2407 ohsumed pc k=4 (few-shot n=0, CICLe n=0)
-- Table F1 (12B / 32B models): qwen-2.5-32b ohsumed
+- Table F1 (12B / 32B models): qwen-2.5-32b ohsumed fixed k=1 (few-shot n=0, CICLe n=0)
+- Table F1 (12B / 32B models): qwen-2.5-32b ohsumed fixed k=4 (few-shot n=0, CICLe n=0)
+- Table F1 (12B / 32B models): qwen-2.5-32b ohsumed pc k=1 (few-shot n=0, CICLe n=0)
+- Table F1 (12B / 32B models): qwen-2.5-32b ohsumed pc k=4 (few-shot n=0, CICLe n=0)
 
-## Table 2 (main results, k=4; Δ over all k) (B=500, development build)
+## Table 2 (main results, k=4; Δ over all k)
 
 - yahoo-answers zeroshot  k=: macro-F1 55.32 (n=18)
 - sst zeroshot  k=: macro-F1 40.35 (n=18)
@@ -52,16 +55,16 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - semeval-18 finetuned  k=: macro-F1 24.53 (n=3)
 - go-emotions finetuned  k=: macro-F1 36.98 (n=3)
 - ohsumed finetuned  k=: macro-F1 55.43 (n=3)
-- Δ CICLe − few-shot yahoo-answers fixed (all k): -0.19 pp [-0.59, +0.20] p=0.328 n=72 n.s.
-- Δ CICLe − few-shot sst fixed (all k): +1.77 pp [+1.16, +2.45] p=0.000 n=72
-- Δ CICLe − few-shot semeval-18 fixed (all k): +0.52 pp [+0.28, +0.73] p=0.000 n=72
-- Δ CICLe − few-shot go-emotions fixed (all k): +0.59 pp [+0.20, +1.11] p=0.000 n=72
-- Δ CICLe − few-shot ohsumed fixed (all k): +1.15 pp [+0.58, +1.88] p=0.000 n=36
-- Δ CICLe − few-shot yahoo-answers pc (all k): +1.40 pp [+1.05, +1.80] p=0.000 n=72
-- Δ CICLe − few-shot sst pc (all k): +1.07 pp [+0.48, +1.75] p=0.000 n=72
-- Δ CICLe − few-shot semeval-18 pc (all k): +0.46 pp [+0.20, +0.69] p=0.000 n=72
-- Δ CICLe − few-shot go-emotions pc (all k): +0.92 pp [+0.53, +1.40] p=0.000 n=72
-- Δ CICLe − few-shot ohsumed pc (all k): +5.21 pp [+4.38, +6.04] p=0.000 n=18
+- Δ CICLe − few-shot yahoo-answers fixed (all k): -0.19 pp [-0.57, +0.20] p=0.349 n=72 n.s.
+- Δ CICLe − few-shot sst fixed (all k): +1.77 pp [+1.14, +2.39] p=0.000 n=72
+- Δ CICLe − few-shot semeval-18 fixed (all k): +0.52 pp [+0.30, +0.73] p=0.000 n=72
+- Δ CICLe − few-shot go-emotions fixed (all k): +0.59 pp [+0.19, +1.07] p=0.006 n=72
+- Δ CICLe − few-shot ohsumed fixed (all k): +1.15 pp [+0.54, +1.87] p=0.000 n=36
+- Δ CICLe − few-shot yahoo-answers pc (all k): +1.40 pp [+1.04, +1.76] p=0.000 n=72
+- Δ CICLe − few-shot sst pc (all k): +1.07 pp [+0.42, +1.71] p=0.001 n=72
+- Δ CICLe − few-shot semeval-18 pc (all k): +0.46 pp [+0.22, +0.71] p=0.000 n=72
+- Δ CICLe − few-shot go-emotions pc (all k): +0.92 pp [+0.50, +1.38] p=0.000 n=72
+- Δ CICLe − few-shot ohsumed pc (all k): +5.21 pp [+4.43, +6.08] p=0.000 n=18
 - yahoo-answers tokens saved by CICLe Per-Class at k=4: 36.4% (2,166 -> 1,378 tokens per call)
 - sst tokens saved by CICLe Per-Class at k=4: 17.6% (746 -> 615 tokens per call)
 - semeval-18 tokens saved by CICLe Per-Class at k=4: 13.5% (2,209 -> 1,911 tokens per call)
@@ -108,91 +111,91 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - go-emotions cicle pc k=4: macro-F1 26.03 (n=18, tokens 1,942)
 - ohsumed cicle pc k=1: macro-F1 49.81 (n=18, tokens 4,159)
 
-## Figure 1 (macro-F1 vs prompt tokens) (B=500, development build)
+## Figure 1 (macro-F1 vs prompt tokens)
 
-- yahoo-answers zeroshot  k=0: F1 55.32 [53.74, 56.63], tokens 221 (n=18)
-- yahoo-answers fewshot fixed k=1: F1 54.79 [53.22, 56.14], tokens 285 (n=18)
-- yahoo-answers fewshot fixed k=2: F1 56.37 [54.85, 57.70], tokens 343 (n=18)
-- yahoo-answers fewshot fixed k=4: F1 58.35 [56.77, 59.69], tokens 455 (n=18)
-- yahoo-answers fewshot fixed k=8: F1 59.79 [58.31, 61.12], tokens 674 (n=18)
-- yahoo-answers cicle fixed k=1: F1 54.25 [52.83, 55.45], tokens 276 (n=18)
-- yahoo-answers cicle fixed k=2: F1 56.46 [55.04, 57.69], tokens 334 (n=18)
-- yahoo-answers cicle fixed k=4: F1 58.20 [56.66, 59.49], tokens 447 (n=18)
-- yahoo-answers cicle fixed k=8: F1 59.65 [58.07, 60.91], tokens 666 (n=18)
-- yahoo-answers fewshot pc k=1: F1 57.93 [56.31, 59.25], tokens 700 (n=18)
-- yahoo-answers fewshot pc k=2: F1 59.54 [58.01, 60.86], tokens 1,183 (n=18)
-- yahoo-answers fewshot pc k=4: F1 61.65 [60.03, 63.02], tokens 2,166 (n=18)
-- yahoo-answers fewshot pc k=8: F1 62.20 [60.48, 63.51], tokens 4,168 (n=18)
-- yahoo-answers cicle pc k=1: F1 59.48 [57.99, 60.75], tokens 503 (n=18)
-- yahoo-answers cicle pc k=2: F1 60.92 [59.39, 62.25], tokens 792 (n=18)
-- yahoo-answers cicle pc k=4: F1 62.74 [61.12, 64.01], tokens 1,378 (n=18)
-- yahoo-answers cicle pc k=8: F1 63.78 [62.12, 65.10], tokens 2,566 (n=18)
+- yahoo-answers zeroshot  k=0: F1 55.32 [53.77, 56.61], tokens 221 (n=18)
+- yahoo-answers fewshot fixed k=1: F1 54.79 [53.25, 56.05], tokens 285 (n=18)
+- yahoo-answers fewshot fixed k=2: F1 56.37 [54.87, 57.65], tokens 343 (n=18)
+- yahoo-answers fewshot fixed k=4: F1 58.35 [56.83, 59.58], tokens 455 (n=18)
+- yahoo-answers fewshot fixed k=8: F1 59.79 [58.29, 60.99], tokens 674 (n=18)
+- yahoo-answers cicle fixed k=1: F1 54.25 [52.73, 55.48], tokens 276 (n=18)
+- yahoo-answers cicle fixed k=2: F1 56.46 [54.98, 57.70], tokens 334 (n=18)
+- yahoo-answers cicle fixed k=4: F1 58.20 [56.71, 59.41], tokens 447 (n=18)
+- yahoo-answers cicle fixed k=8: F1 59.65 [58.13, 60.88], tokens 666 (n=18)
+- yahoo-answers fewshot pc k=1: F1 57.93 [56.45, 59.15], tokens 700 (n=18)
+- yahoo-answers fewshot pc k=2: F1 59.54 [58.04, 60.75], tokens 1,183 (n=18)
+- yahoo-answers fewshot pc k=4: F1 61.65 [60.11, 62.85], tokens 2,166 (n=18)
+- yahoo-answers fewshot pc k=8: F1 62.20 [60.68, 63.47], tokens 4,168 (n=18)
+- yahoo-answers cicle pc k=1: F1 59.48 [57.98, 60.75], tokens 503 (n=18)
+- yahoo-answers cicle pc k=2: F1 60.92 [59.44, 62.16], tokens 792 (n=18)
+- yahoo-answers cicle pc k=4: F1 62.74 [61.23, 63.99], tokens 1,378 (n=18)
+- yahoo-answers cicle pc k=8: F1 63.78 [62.26, 65.08], tokens 2,566 (n=18)
 - yahoo-answers base: 65.44
 - yahoo-answers finetuned: 61.82
-- sst zeroshot  k=0: F1 40.35 [39.15, 41.38], tokens 184 (n=18)
-- sst fewshot fixed k=1: F1 40.59 [39.29, 41.69], tokens 217 (n=18)
-- sst fewshot fixed k=2: F1 43.17 [41.85, 44.27], tokens 244 (n=18)
-- sst fewshot fixed k=4: F1 44.11 [42.83, 45.21], tokens 298 (n=18)
-- sst fewshot fixed k=8: F1 45.80 [44.43, 46.98], tokens 407 (n=18)
-- sst cicle fixed k=1: F1 43.04 [41.83, 44.20], tokens 214 (n=18)
-- sst cicle fixed k=2: F1 45.19 [43.85, 46.42], tokens 241 (n=18)
-- sst cicle fixed k=4: F1 45.75 [44.44, 46.98], tokens 295 (n=18)
-- sst cicle fixed k=8: F1 46.77 [45.39, 47.98], tokens 404 (n=18)
-- sst fewshot pc k=1: F1 44.87 [43.63, 45.93], tokens 327 (n=18)
-- sst fewshot pc k=2: F1 46.37 [45.04, 47.51], tokens 466 (n=18)
-- sst fewshot pc k=4: F1 46.60 [45.25, 47.84], tokens 746 (n=18)
-- sst fewshot pc k=8: F1 46.31 [45.03, 47.54], tokens 1,311 (n=18)
-- sst cicle pc k=1: F1 46.23 [44.94, 47.48], tokens 292 (n=18)
-- sst cicle pc k=2: F1 47.59 [46.33, 48.83], tokens 399 (n=18)
-- sst cicle pc k=4: F1 47.51 [46.13, 48.74], tokens 615 (n=18)
-- sst cicle pc k=8: F1 47.10 [45.83, 48.33], tokens 1,050 (n=18)
+- sst zeroshot  k=0: F1 40.35 [39.08, 41.49], tokens 184 (n=18)
+- sst fewshot fixed k=1: F1 40.59 [39.35, 41.77], tokens 217 (n=18)
+- sst fewshot fixed k=2: F1 43.17 [41.85, 44.39], tokens 244 (n=18)
+- sst fewshot fixed k=4: F1 44.11 [42.81, 45.34], tokens 298 (n=18)
+- sst fewshot fixed k=8: F1 45.80 [44.45, 47.09], tokens 407 (n=18)
+- sst cicle fixed k=1: F1 43.04 [41.75, 44.19], tokens 214 (n=18)
+- sst cicle fixed k=2: F1 45.19 [43.83, 46.41], tokens 241 (n=18)
+- sst cicle fixed k=4: F1 45.75 [44.37, 47.01], tokens 295 (n=18)
+- sst cicle fixed k=8: F1 46.77 [45.41, 48.07], tokens 404 (n=18)
+- sst fewshot pc k=1: F1 44.87 [43.54, 46.04], tokens 327 (n=18)
+- sst fewshot pc k=2: F1 46.37 [45.04, 47.55], tokens 466 (n=18)
+- sst fewshot pc k=4: F1 46.60 [45.27, 47.80], tokens 746 (n=18)
+- sst fewshot pc k=8: F1 46.31 [45.00, 47.50], tokens 1,311 (n=18)
+- sst cicle pc k=1: F1 46.23 [44.90, 47.45], tokens 292 (n=18)
+- sst cicle pc k=2: F1 47.59 [46.22, 48.84], tokens 399 (n=18)
+- sst cicle pc k=4: F1 47.51 [46.15, 48.77], tokens 615 (n=18)
+- sst cicle pc k=8: F1 47.10 [45.74, 48.31], tokens 1,050 (n=18)
 - sst base: 35.50
 - sst finetuned: 51.19
-- semeval-18 zeroshot  k=0: F1 12.21 [11.42, 12.79], tokens 236 (n=18)
-- semeval-18 fewshot fixed k=1: F1 14.35 [13.41, 15.06], tokens 266 (n=18)
-- semeval-18 fewshot fixed k=2: F1 14.59 [13.67, 15.36], tokens 290 (n=18)
-- semeval-18 fewshot fixed k=4: F1 15.29 [14.30, 16.07], tokens 338 (n=18)
-- semeval-18 fewshot fixed k=8: F1 15.42 [14.39, 16.23], tokens 436 (n=18)
-- semeval-18 cicle fixed k=1: F1 14.71 [13.78, 15.45], tokens 255 (n=18)
-- semeval-18 cicle fixed k=2: F1 15.06 [14.13, 15.78], tokens 279 (n=18)
-- semeval-18 cicle fixed k=4: F1 15.89 [14.87, 16.64], tokens 328 (n=18)
-- semeval-18 cicle fixed k=8: F1 16.07 [15.08, 16.82], tokens 425 (n=18)
-- semeval-18 fewshot pc k=1: F1 15.16 [14.20, 15.90], tokens 731 (n=18)
-- semeval-18 fewshot pc k=2: F1 15.09 [14.16, 15.82], tokens 1,223 (n=18)
-- semeval-18 fewshot pc k=4: F1 15.38 [14.39, 16.08], tokens 2,209 (n=18)
-- semeval-18 fewshot pc k=8: F1 15.66 [14.63, 16.33], tokens 4,189 (n=18)
-- semeval-18 cicle pc k=1: F1 15.75 [14.72, 16.46], tokens 648 (n=18)
-- semeval-18 cicle pc k=2: F1 15.65 [14.63, 16.40], tokens 1,069 (n=18)
-- semeval-18 cicle pc k=4: F1 15.72 [14.69, 16.46], tokens 1,911 (n=18)
-- semeval-18 cicle pc k=8: F1 16.04 [15.01, 16.67], tokens 3,603 (n=18)
+- semeval-18 zeroshot  k=0: F1 12.21 [11.46, 12.80], tokens 236 (n=18)
+- semeval-18 fewshot fixed k=1: F1 14.35 [13.43, 15.05], tokens 266 (n=18)
+- semeval-18 fewshot fixed k=2: F1 14.59 [13.68, 15.32], tokens 290 (n=18)
+- semeval-18 fewshot fixed k=4: F1 15.29 [14.31, 16.02], tokens 338 (n=18)
+- semeval-18 fewshot fixed k=8: F1 15.42 [14.44, 16.16], tokens 436 (n=18)
+- semeval-18 cicle fixed k=1: F1 14.71 [13.81, 15.42], tokens 255 (n=18)
+- semeval-18 cicle fixed k=2: F1 15.06 [14.13, 15.79], tokens 279 (n=18)
+- semeval-18 cicle fixed k=4: F1 15.89 [14.92, 16.65], tokens 328 (n=18)
+- semeval-18 cicle fixed k=8: F1 16.07 [15.06, 16.81], tokens 425 (n=18)
+- semeval-18 fewshot pc k=1: F1 15.16 [14.21, 15.89], tokens 731 (n=18)
+- semeval-18 fewshot pc k=2: F1 15.09 [14.13, 15.81], tokens 1,223 (n=18)
+- semeval-18 fewshot pc k=4: F1 15.38 [14.43, 16.10], tokens 2,209 (n=18)
+- semeval-18 fewshot pc k=8: F1 15.66 [14.73, 16.37], tokens 4,189 (n=18)
+- semeval-18 cicle pc k=1: F1 15.75 [14.78, 16.51], tokens 648 (n=18)
+- semeval-18 cicle pc k=2: F1 15.65 [14.67, 16.39], tokens 1,069 (n=18)
+- semeval-18 cicle pc k=4: F1 15.72 [14.76, 16.46], tokens 1,911 (n=18)
+- semeval-18 cicle pc k=8: F1 16.04 [15.10, 16.77], tokens 3,603 (n=18)
 - semeval-18 base: 9.72
 - semeval-18 finetuned: 24.53
-- go-emotions zeroshot  k=0: F1 24.86 [22.80, 26.01], tokens 220 (n=18)
-- go-emotions fewshot fixed k=1: F1 24.60 [22.56, 25.85], tokens 246 (n=18)
-- go-emotions fewshot fixed k=2: F1 26.37 [24.38, 27.69], tokens 266 (n=18)
-- go-emotions fewshot fixed k=4: F1 26.45 [24.46, 27.86], tokens 305 (n=18)
-- go-emotions fewshot fixed k=8: F1 26.56 [24.48, 27.87], tokens 385 (n=18)
-- go-emotions cicle fixed k=1: F1 25.52 [23.61, 26.78], tokens 233 (n=18)
-- go-emotions cicle fixed k=2: F1 26.77 [24.94, 27.96], tokens 253 (n=18)
-- go-emotions cicle fixed k=4: F1 26.76 [24.87, 28.00], tokens 293 (n=18)
-- go-emotions cicle fixed k=8: F1 27.27 [25.22, 28.54], tokens 373 (n=18)
-- go-emotions fewshot pc k=1: F1 25.00 [23.12, 26.26], tokens 796 (n=18)
-- go-emotions fewshot pc k=2: F1 25.42 [23.36, 26.74], tokens 1,351 (n=18)
-- go-emotions fewshot pc k=4: F1 24.78 [22.85, 25.90], tokens 2,422 (n=18)
-- go-emotions fewshot pc k=8: F1 24.79 [22.78, 26.11], tokens 4,365 (n=18)
-- go-emotions cicle pc k=1: F1 25.95 [24.07, 27.37], tokens 665 (n=18)
-- go-emotions cicle pc k=2: F1 26.38 [24.35, 27.67], tokens 1,102 (n=18)
-- go-emotions cicle pc k=4: F1 26.03 [24.01, 27.24], tokens 1,942 (n=18)
-- go-emotions cicle pc k=8: F1 25.31 [23.37, 26.67], tokens 3,443 (n=18)
+- go-emotions zeroshot  k=0: F1 24.86 [22.84, 26.19], tokens 220 (n=18)
+- go-emotions fewshot fixed k=1: F1 24.60 [22.73, 25.88], tokens 246 (n=18)
+- go-emotions fewshot fixed k=2: F1 26.37 [24.41, 27.68], tokens 266 (n=18)
+- go-emotions fewshot fixed k=4: F1 26.45 [24.46, 27.78], tokens 305 (n=18)
+- go-emotions fewshot fixed k=8: F1 26.56 [24.59, 27.88], tokens 385 (n=18)
+- go-emotions cicle fixed k=1: F1 25.52 [23.66, 26.86], tokens 233 (n=18)
+- go-emotions cicle fixed k=2: F1 26.77 [24.89, 28.12], tokens 253 (n=18)
+- go-emotions cicle fixed k=4: F1 26.76 [24.95, 28.06], tokens 293 (n=18)
+- go-emotions cicle fixed k=8: F1 27.27 [25.34, 28.59], tokens 373 (n=18)
+- go-emotions fewshot pc k=1: F1 25.00 [23.15, 26.35], tokens 796 (n=18)
+- go-emotions fewshot pc k=2: F1 25.42 [23.45, 26.77], tokens 1,351 (n=18)
+- go-emotions fewshot pc k=4: F1 24.78 [22.81, 26.10], tokens 2,422 (n=18)
+- go-emotions fewshot pc k=8: F1 24.79 [22.80, 26.13], tokens 4,365 (n=18)
+- go-emotions cicle pc k=1: F1 25.95 [23.97, 27.40], tokens 665 (n=18)
+- go-emotions cicle pc k=2: F1 26.38 [24.32, 27.74], tokens 1,102 (n=18)
+- go-emotions cicle pc k=4: F1 26.03 [24.04, 27.42], tokens 1,942 (n=18)
+- go-emotions cicle pc k=8: F1 25.31 [23.42, 26.75], tokens 3,443 (n=18)
 - go-emotions base: 11.22
 - go-emotions finetuned: 36.98
-- ohsumed zeroshot  k=0: F1 35.90 [34.09, 37.07], tokens 579 (n=18)
-- ohsumed fewshot fixed k=1: F1 46.66 [44.68, 47.88], tokens 897 (n=18)
-- ohsumed fewshot fixed k=4: F1 50.35 [48.34, 51.68], tokens 1,826 (n=18)
-- ohsumed cicle fixed k=1: F1 47.65 [45.89, 48.95], tokens 828 (n=18)
-- ohsumed cicle fixed k=4: F1 51.67 [49.57, 52.96], tokens 1,756 (n=18)
-- ohsumed fewshot pc k=1: F1 44.59 [42.62, 45.80], tokens 7,518 (n=18)
-- ohsumed cicle pc k=1: F1 49.81 [47.78, 51.07], tokens 4,159 (n=18)
+- ohsumed zeroshot  k=0: F1 35.90 [34.09, 36.98], tokens 579 (n=18)
+- ohsumed fewshot fixed k=1: F1 46.66 [44.54, 47.92], tokens 897 (n=18)
+- ohsumed fewshot fixed k=4: F1 50.35 [48.28, 51.70], tokens 1,826 (n=18)
+- ohsumed cicle fixed k=1: F1 47.65 [45.71, 48.90], tokens 828 (n=18)
+- ohsumed cicle fixed k=4: F1 51.67 [49.59, 53.02], tokens 1,756 (n=18)
+- ohsumed fewshot pc k=1: F1 44.59 [42.59, 45.84], tokens 7,518 (n=18)
+- ohsumed cicle pc k=1: F1 49.81 [47.74, 51.17], tokens 4,159 (n=18)
 - ohsumed base: 45.24
 - ohsumed finetuned: 55.43
 
@@ -340,7 +343,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - ohsumed-relabel fewshot fixed k=4: 40.19 (n=18)
 - ohsumed-relabel cicle fixed k=4: 41.51 (n=18)
 
-## Table 4 (supervised vs pipelines) (B=500, development build)
+## Table 4 (supervised vs pipelines)
 
 - yahoo-answers base   k=: 65.44 (n=3)
 - yahoo-answers-imb10 base   k=: 50.39 (n=3)
@@ -942,6 +945,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - Qwen2.5-32B go-emotions zero-shot: 31.5 (3 seeds)
 - Qwen2.5-32B go-emotions Δ fixed: -0.05 pp [-1.01, +0.93] p=0.967 n=6 n.s.
 - Qwen2.5-32B go-emotions Δ pc: -0.20 pp [-1.01, +0.64] p=0.665 n=6 n.s.
+- Qwen2.5-32B ohsumed zero-shot: 49.2 (1 seeds)
 - yahoo-answers seed 42: best 3B + CICLe PC k=4 = Llama-3.2-3B 61.5; Qwen2.5-32B zero-shot 60.7
 - sst seed 42: best 3B + CICLe PC k=4 = Ministral-3B 51.0; Qwen2.5-32B zero-shot 48.8
 - semeval-18 seed 42: best 3B + CICLe PC k=4 = Ministral-3B 14.9; Qwen2.5-32B zero-shot 15.3
@@ -1091,6 +1095,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - Qwen2.5-32B go-emotions zeroshot: mean 2.8%, max 3.1% over 3 runs
 - Qwen2.5-32B go-emotions fewshot: mean 2.7%, max 4.0% over 12 runs
 - Qwen2.5-32B go-emotions cicle: mean 1.8%, max 2.7% over 12 runs
+- Qwen2.5-32B ohsumed zeroshot: mean 1.1%, max 1.1% over 1 runs
 - Llama-3.2-3B most frequent invalid raw outputs (1,392 invalid in total): 'discomfort' x90; '🎃' x81; 'Neurological Diseases' x77; '🎉' x69; 'I cannot predict the class for' x40; '💔' x39; '🤔' x35; '🏈' x30
 - Ministral-3B most frequent invalid raw outputs (704 invalid in total): 'Religion' x52; '😠 *(Note: While not in your provided' x41; 'Mycoses' x40; '**Mycoses**' x18; '😠 *(Note: The provided emoji list' x11; '🎉' x10; '🎨 *(Note: The provided emoji list' x9; 'nostalgia *(not listed in your' x9
 - Qwen2.5-3B most frequent invalid raw outputs (18,367 invalid in total): '👏' x1338; 'Neurological Diseases' x1328; '🎉' x1023; 'Relationships' x666; '💡' x648; '😭' x617; '🌟' x565; '💪' x528
@@ -1098,7 +1103,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - Qwen2.5-7B most frequent invalid raw outputs (8,853 invalid in total): '🎉' x758; 'disbelief' x418; 'advice' x311; 'discomfort' x265; 'Neurological Diseases' x235; '😋' x220; 'Religion' x213; '☕' x168
 - Llama-3.1-8B most frequent invalid raw outputs (870 invalid in total): 'anxiety' x87; 'discomfort' x65; '😋' x64; 'concern' x40; 'nostalgia' x30; 'Neurological Diseases' x25; '😴' x21; 'nostalgia is not in the list' x19
 - Mistral-Nemo-12B most frequent invalid raw outputs (1,397 invalid in total): '💪' x94; 'gratuity' x54; 'History' x46; 'Religion' x46; '😌' x42; 'disbelief' x37; '🍻' x36; '🎉' x36
-- Qwen2.5-32B most frequent invalid raw outputs (2,561 invalid in total): '🌞' x319; '🎉' x103; 'disbelief' x88; '💪' x85; '😋' x79; 'nostalgia\n\nIt seems that the' x65; 'disbelief\n\nHowever, since "dis' x37; '🎃' x35
+- Qwen2.5-32B most frequent invalid raw outputs (2,572 invalid in total): '🌞' x319; '🎉' x103; 'disbelief' x88; '💪' x85; '😋' x79; 'nostalgia\n\nIt seems that the' x65; 'disbelief\n\nHowever, since "dis' x37; '🎃' x35
 
 ## Table G3 (qualitative examples; Llama-3.1-8B, seed 42, PC k=4)
 

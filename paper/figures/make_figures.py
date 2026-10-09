@@ -108,6 +108,24 @@ plt.rcParams.update({
     "pdf.fonttype": 42, "figure.dpi": 150, "axes.unicode_minus": True,
 })
 ERR = dict(capsize=2.5, elinewidth=1.0, capthick=1.0)
+FS = [1.0]  # font/mark scale of the figure being drawn (1 / printed scale)
+
+
+def pt(x):
+    """A point size that prints at x pt after the manuscript scales the figure."""
+    return x * FS[0]
+
+
+def scaled_rc(printed_scale):
+    """rc overrides so that a figure printed at `printed_scale` of its drawn size keeps
+    8 pt ticks/legend, 9 pt axis labels, 1.6 pt lines and 5.5 pt markers."""
+    f = 1.0 / printed_scale
+    FS[0] = f
+    return {"font.size": 8 * f, "axes.titlesize": 9 * f, "axes.labelsize": 9 * f,
+            "legend.fontsize": 8 * f, "xtick.labelsize": 8 * f, "ytick.labelsize": 8 * f,
+            "lines.linewidth": 1.6 * f, "lines.markersize": 5.5 * f, "axes.linewidth": 0.6 * f,
+            "grid.linewidth": 0.5 * f, "xtick.major.width": 0.6 * f, "ytick.major.width": 0.6 * f,
+            "xtick.major.size": 2.5 * f, "ytick.major.size": 2.5 * f}
 
 
 # ---------------------------------------------------------------------------
@@ -332,8 +350,14 @@ def tab2(B):
 # Figure 1 -- macro-F1 against prompt tokens (fig_main_tokens.pdf, 2 x 3, legend in the 6th cell)
 # ---------------------------------------------------------------------------
 def fig1(B):
+    with plt.rc_context(scaled_rc(0.7)):  # printed at 0.7 text width
+        _fig1(B)
+    FS[0] = 1.0
+
+
+def _fig1(B):
     sec = "Figure 1 (macro-F1 vs prompt tokens)"
-    fig, axes = plt.subplots(2, 3, figsize=(TEXTWIDTH, 4.7))
+    fig, axes = plt.subplots(2, 3, figsize=(TEXTWIDTH, 4.9))
     axes = axes.ravel()
     for ax, d in zip(axes, CORE):
         ks = ks_for(d)
@@ -359,22 +383,22 @@ def fig1(B):
                     zorder=3)
             if method == "cicle" and var == "pc" and len(xs) > 1:
                 ax.annotate(f"$k$={kl[0]}", (xs[0], ys[0]), textcoords="offset points",
-                            xytext=(3, -10), fontsize=8, color="#52514e", ha="left", va="top")
+                            xytext=(3, -10 * FS[0]), fontsize=pt(8), color="#52514e", ha="left", va="top")
                 ax.annotate(f"$k$={kl[-1]}", (xs[-1], ys[-1]), textcoords="offset points",
-                            xytext=(5, -3), fontsize=8, color="#52514e", ha="left", va="top")
+                            xytext=(5, -3), fontsize=pt(8), color="#52514e", ha="left", va="top")
         refs = []
         for ref, ls, lab in (("base", ":", "MiniLM + LR"), ("finetuned", "-.", "RoBERTa-base")):
             v, _ = fd.mean_metric(d, ref)
             if v is None:
                 pending(sec, f"{d} {ref}")
                 continue
-            ax.axhline(v, color=COLOR[ref], ls=ls, lw=1.1, zorder=1)
+            ax.axhline(v, color=COLOR[ref], ls=ls, lw=pt(1.1), zorder=1)
             refs.append((v, lab))
             note(sec, f"{d} {ref}: {v:.2f}")
         ax.set_xscale("log")
         ax.set_xlim(140, 12000)
-        ax.set_xticks([200, 500, 1000, 2000, 5000])
-        ax.set_xticklabels(["200", "500", "1k", "2k", "5k"])
+        ax.set_xticks([200, 1000, 5000])
+        ax.set_xticklabels(["200", "1k", "5k"])
         lo_y, hi_y = ax.get_ylim()
         pad = 0.05 * (hi_y - lo_y)
         if refs:
@@ -383,25 +407,25 @@ def fig1(B):
         lo_y, hi_y = ax.get_ylim()
         for v, lab in refs:  # label at the left edge, below the line when it is near the top
             above = v < hi_y - 0.12 * (hi_y - lo_y)
-            ax.annotate(lab, xy=(0.02, v), xycoords=("axes fraction", "data"), fontsize=8,
+            ax.annotate(lab, xy=(0.02, v), xycoords=("axes fraction", "data"), fontsize=pt(8),
                         color="#52514e", ha="left", va="bottom" if above else "top",
                         xytext=(0, 2 if above else -2), textcoords="offset points")
         ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
-        ax.set_title(NAME[d], fontsize=9, pad=4)
+        ax.set_title(NAME[d], fontsize=pt(9), pad=4)
         ax.set_xlabel("")
         ax.set_ylabel("")
     handles = [legend_handle("zeroshot"), legend_handle("fewshot", "fixed", "Few-shot, Fixed"),
                legend_handle("cicle", "fixed", "CICLe, Fixed"),
                legend_handle("fewshot", "pc", "Few-shot, Per-Class"),
                legend_handle("cicle", "pc", "CICLe, Per-Class"),
-               Line2D([], [], color=COLOR["base"], ls=":", lw=1.1, label="MiniLM + LR (no LLM)"),
-               Line2D([], [], color=COLOR["finetuned"], ls="-.", lw=1.1, label="RoBERTa-base, fine-tuned")]
+               Line2D([], [], color=COLOR["base"], ls=":", lw=pt(1.1), label="MiniLM + LR"),
+               Line2D([], [], color=COLOR["finetuned"], ls="-.", lw=pt(1.1), label="RoBERTa-base")]
     axes[-1].axis("off")
-    axes[-1].legend(handles=handles, loc="center", ncol=1, fontsize=9, handlelength=2.4,
-                    labelspacing=0.9, borderaxespad=0)
-    fig.supxlabel("mean prompt tokens per LLM call (log scale)", fontsize=9, y=0.015)
-    fig.supylabel("macro-F1 (pp)", fontsize=9, x=0.012)
-    fig.subplots_adjust(wspace=0.22, hspace=0.30, left=0.075, right=0.99, top=0.96, bottom=0.095)
+    axes[-1].legend(handles=handles, loc="center", ncol=1, fontsize=pt(8.5), handlelength=2.2,
+                    labelspacing=0.8, borderaxespad=0, handletextpad=0.6)
+    fig.supxlabel("mean prompt tokens per LLM call (log scale)", fontsize=pt(9), y=0.012)
+    fig.supylabel("macro-F1 (pp)", fontsize=pt(9), x=0.01)
+    fig.subplots_adjust(wspace=0.28, hspace=0.36, left=0.095, right=0.99, top=0.95, bottom=0.12)
     save_fig(fig, "fig_main_tokens")
 
 
@@ -486,7 +510,7 @@ def panel_b(ax, d, variant, B, sec, drawn):
             for x, y, size, imb in pts:
                 if imb in (1, 100):
                     ax.annotate(f"{imb}$\\times$", (x, y), textcoords="offset points",
-                                xytext=(0, -13), fontsize=8, color="#52514e", ha="center")
+                                xytext=(0, -13 * FS[0]), fontsize=pt(8), color="#52514e", ha="center")
     ax.axhline(95, color=MUTED, lw=0.8, ls=":", zorder=1)
     ax.set_ylabel("coverage (%)" if COMPACT[0] else "coverage of the gold label (%)")
     ax.set_xlabel("mean set size" if COMPACT[0] else "mean candidate-set size")
@@ -523,8 +547,8 @@ def panel_c(ax, d, variant, B, sec, drawn, methods=("cicle", "topk", "mass", "ma
         _rank_ticks(ax, n)
     else:
         ax.text(0.5, 0.5, "pending", ha="center", va="center", transform=ax.transAxes)
-    ax.set_ylabel(r"class coverage, 100$\times$ (%)" if COMPACT[0] else r"per-class coverage at 100$\times$ (%)")
-    ax.set_xlabel("class rank" if COMPACT[0] else "class rank in the pool (frequent to rare)")
+    ax.set_ylabel(r"class coverage, 100$\times$ (%)" if COMPACT[0] else r"coverage at 100$\times$ (%)")
+    ax.set_xlabel("class rank" if COMPACT[0] else "class rank (frequent to rare)")
 
 
 def panel_d(ax, d, variant, B, sec, drawn):
@@ -588,22 +612,24 @@ def narrowing_figure(B, variant, panels, name, sec, height):
                ("fewshot", "cicle", "topk", "mass", "marginal") if m in drawn]
     if "oracle" in drawn:
         handles.append(Line2D([], [], color=COLOR["oracle"], ls="--", marker="x",
-                              label="Oracle (in (a): oracle $-$ few-shot, the ceiling)" if "a" in panels
+                              label="Oracle $-$ few-shot (ceiling, left)" if "a" in panels
                               else "Oracle"))
     ncol = 3 if len(handles) > 4 else len(handles)
     fig.legend(handles=handles, loc="lower center", ncol=ncol, bbox_to_anchor=(0.5, -0.01),
-               fontsize=9, handlelength=2.2, columnspacing=1.6)
+               fontsize=pt(8.5), handlelength=2.2, columnspacing=1.4)
     legend_rows = -(-len(handles) // ncol)
-    fig.subplots_adjust(wspace=0.32 if len(panels) <= 2 else 0.6, hspace=0.25,
-                        left=0.11 if len(panels) <= 2 else 0.09, right=0.99, top=0.98,
+    fig.subplots_adjust(wspace=0.36 if len(panels) <= 2 else 0.6, hspace=0.25,
+                        left=0.12 if len(panels) <= 2 else 0.09, right=0.98, top=0.97,
                         bottom=0.10 + 0.045 * legend_rows)
     COMPACT[0] = False
     save_fig(fig, name)
 
 
 def fig2(B):
-    narrowing_figure(B, "pc", "ac", "fig_main_narrowing",
-                     "Figure 2 (Per-Class; narrowing under imbalance, panels a and c)", 5.6)
+    with plt.rc_context(scaled_rc(0.8)):  # printed at 0.8 text width
+        narrowing_figure(B, "pc", "ac", "fig_main_narrowing",
+                         "Figure 2 (Per-Class; narrowing under imbalance, panels a and c)", 5.8)
+    FS[0] = 1.0
 
 
 def figAN(B):
@@ -1363,6 +1389,12 @@ def tabP(B):
 
 
 def figP(B):
+    with plt.rc_context(scaled_rc(0.9)):  # margin for the tight bounding box at column width
+        _figP(B)
+    FS[0] = 1.0
+
+
+def _figP(B):
     sec = "Figure P (macro-F1 vs pool size)"
     vals = pool_values(sec)
     style = {"MiniLM + LR": dict(color=COLOR["base"], ls=":", marker="v"),
@@ -1370,7 +1402,7 @@ def figP(B):
              "RoBERTa-large": dict(color=COLOR["finetuned"], ls="--", marker="D", mfc="white"),
              "Few-shot PC, $k$=4": dict(color=COLOR["fewshot"], ls="-", marker="o"),
              "CICLe PC, $k$=4": dict(color=COLOR["cicle"], ls="-", marker="o")}
-    fig, axes = plt.subplots(2, 1, figsize=(COLWIDTH, 5.4), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(COLWIDTH, 5.6), sharex=True)
     for ax, d in zip(axes, ("yahoo-answers", "sst")):
         for lab, st in style.items():
             pts = [(n, vals[(d, n, lab)][0]) for n in POOL_SIZES if (d, n, lab) in vals]
@@ -1379,17 +1411,18 @@ def figP(B):
         zs, _ = fd.mean_metric(d, "zeroshot")
         if zs is not None:
             ax.axhline(zs, color=COLOR["zeroshot"], lw=0.8, ls=(0, (1, 2)))
-            ax.annotate("zero-shot", xy=(0.02, zs), xycoords=("axes fraction", "data"), fontsize=8,
+            ax.annotate("zero-shot", xy=(0.02, zs), xycoords=("axes fraction", "data"), fontsize=pt(8),
                         color="#52514e", va="bottom", xytext=(0, 2), textcoords="offset points")
         ax.set_xscale("log"); ax.set_xticks(POOL_SIZES)
         ax.set_xticklabels([f"{n:,}" for n in POOL_SIZES])
         ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
-        ax.set_title(NAME[d], fontsize=9, pad=4)
+        ax.set_title(NAME[d], fontsize=pt(9), pad=4)
         ax.set_ylabel("macro-F1 (pp)")
     axes[1].set_xlabel("labelled pool size (train + calibration)")
     handles, labels = axes[0].get_legend_handles_labels()
-    axes[0].legend(handles, labels, loc="lower right", fontsize=8, handlelength=2.2)
-    fig.subplots_adjust(hspace=0.22, left=0.16, right=0.98, top=0.96, bottom=0.08)
+    fig.legend(handles, labels, loc="lower center", ncol=2, fontsize=pt(8), handlelength=2.2,
+               bbox_to_anchor=(0.54, -0.005), columnspacing=1.2)
+    fig.subplots_adjust(hspace=0.22, left=0.17, right=0.98, top=0.96, bottom=0.21)
     save_fig(fig, "fig_main_poolsize")
 
 
