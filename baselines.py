@@ -85,6 +85,8 @@ def main():
     p.add_argument("--imbalance", type=float, default=1.0)
     p.add_argument("--n-train", type=int, default=2000)
     p.add_argument("--finetune", default=None, help="encoder to fine-tune, e.g. FacebookAI/roberta-base")
+    p.add_argument("--lr", type=float, default=2e-5, help="learning rate for --finetune")
+    p.add_argument("--force", action="store_true", help="re-run existing results")
     p.add_argument("--gpu", default=None, help="sets CUDA_VISIBLE_DEVICES")
     p.add_argument("--out-dir", default=os.path.join(BASE_DIR, "results"))
     args = p.parse_args()
@@ -102,10 +104,10 @@ def main():
             name = (f"{data.tag}-finetuned-{emb}" if args.finetune
                     else f"{data.tag}-base-{emb}-{clf}")
             path = os.path.join(args.out_dir, data.tag, f"seed-{seed}", name + ".json")
-            if os.path.exists(path):
+            if os.path.exists(path) and not args.force:
                 continue
             if args.finetune:
-                pred = finetune(data, args.finetune)
+                pred = finetune(data, args.finetune, lr=args.lr)
             else:
                 # the classifier is fitted on the 1,600 training examples only,
                 # exactly as it is inside CICLe
@@ -118,6 +120,7 @@ def main():
             cfg = {"dataset": data.tag, "model": "none",
                    "method": "finetuned" if args.finetune else "base", "emb": emb,
                    "clf": clf, "seed": seed, "imbalance": data.imbalance, "n_train": data.n_train,
+                   "lr": args.lr if args.finetune else None,
                    "legacy_prompt": False, "n_test": len(records)}
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, "w") as f:
