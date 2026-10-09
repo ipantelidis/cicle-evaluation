@@ -7,4 +7,4 @@ Narrowing gives a small, reliable gain over few-shot prompting and a shorter pro
 
 An LLM pipeline pays when labels are skewed or scarce, and a fine-tuned encoder or the base classifier wins when they are plentiful and balanced. Rule: fine-tune on a large balanced pool, otherwise prompt with a narrowed list and loosen $\alpha$ as the classifier improves.
 
-Protocol choices decide which models appear to benefit. Rule: hold the label list and the example pool equal and report invalid outputs before comparing prompting methods.
+Prompts with different label information compare formats, not methods. Rule: list the admissible labels, or the candidate set for very large label spaces, in every prompt.

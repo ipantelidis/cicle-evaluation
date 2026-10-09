@@ -4,7 +4,7 @@
 \section{Protocol Details, Prompt Template and Output Parsing}
 \label{app:prompt}
 
-This appendix gives the reasoning behind the sample sizes, the five protocol changes in detail, the prompt template, the parser and the original prompt format. It supports the protocol claim of Section~\ref{sec:res-protocol} and makes every run reproducible.
+This appendix gives the reasoning behind the sample sizes, the five protocol changes in detail, the prompt template, the parser and the original prompt format. It supports the label-information claim of Section~\ref{sec:res-protocol} and makes every run reproducible.
 
 \paragraph{Why these sizes.}
 Two thousand labelled examples per dataset are enough for a usable base classifier on 5 to 28 classes and few enough that every configuration runs for six models and three seeds, at about one GPU-minute per Fixed configuration and up to 17 for Per-Class retrieval at $k = 8$ on a 24\,GB GPU. The 400-example calibration split is the 20\% of the original CICLe paper. The 1,000-instance test sample is shared by every method on a seed, and its bootstrap interval for a single run is one to two points of macro-F1. Three seeds change the subsample, the calibration split and the conformal tie-breaking. The Per-Class runs at $k = 8$ cost half of all compute, which is why every follow-up experiment uses $k \in \{1, 4\}$. Ohsumed abstracts average 270 tokens, so a Per-Class prompt at $k = 4$ with 23 classes would hold about 28,000 tokens, and Per-Class retrieval is run at $k = 1$ only (23 abstracts, 7,500 tokens). The 70B model of the Llama 3 family does not fit the available GPUs.
@@ -23,19 +23,20 @@ Please predict the correct class for the following sample. Only provide the clas
 \end{quote}
 Zero-shot and few-shot prompts list all classes, narrowing methods list the candidate set, and $k = 0$ omits the example block. Examples are ordered from most to least similar. Labels that contain commas are separated by semicolons. Generation is greedy with a budget of the longest label's token length plus four.
 The parser takes the first non-empty line of the output, applies NFKC normalisation, strips quotes, markdown markers and punctuation, and lower-cases it. An exact match to a label is accepted, then a label that is a prefix of the output followed by a word boundary (so that ``Sports (football)'' parses as Sports). Anything else is an invalid output and counts as wrong.
-The original prompt format of the released CICLe implementation, rerun in Appendix~\ref{app:original}, differs in three ways. Its few-shot and CICLe prompts contain no label list and use different wording (``Here are some labelled examples sorted from most probable to least probable'' for CICLe), generation is capped at five tokens, and the output must match a label exactly.
+The original prompt format of the released CICLe implementation, rerun in Appendix~\ref{app:original}, differs in three ways, and its missing label list is a design choice that fits Per-Class retrieval, where every candidate class appears among the examples, and saves context for label spaces with hundreds of classes. Its few-shot and CICLe prompts contain no label list and use different wording (``Here are some labelled examples sorted from most probable to least probable'' for CICLe), generation is capped at five tokens, and the output must match a label exactly.
 
 \section{Original Prompt Format Against the Corrected Protocol}
 \label{app:original}
+% PENDING: label-list ablation (only the list removed, same parser and token budget; every dataset, seed 42, Fixed and Per-Class, k in {1,4}) will replace the original-format comparison as the main evidence and separate the list from the parser and the 5-token cap
 
-Table~\ref{tab:original} gives, per dataset and model on seed 42 with Fixed retrieval and $k \in \{1, 4\}$, the invalid-output rate and macro-F1 under the original prompt format and under the corrected protocol, together with the per-model paired difference between CICLe and few-shot prompting under both. It supports the protocol claim of Section~\ref{sec:res-protocol}: the invalid outputs concentrate in Ministral-3B, Qwen2.5-3B and Mistral-7B and in the datasets whose label names are not common words, and the sign of the per-model difference changes with the format in 11 of 30 cells.
+Table~\ref{tab:original} gives, per dataset and model on seed 42 with Fixed retrieval and $k \in \{1, 4\}$, the invalid-output rate and macro-F1 under the original prompt format and under the corrected protocol, together with the per-model paired difference between CICLe and few-shot prompting under both. It supports the label-information claim of Section~\ref{sec:res-protocol}: with Fixed retrieval, where only the retrieved labels appear, the invalid outputs concentrate in Ministral-3B, Qwen2.5-3B and Mistral-7B and in the datasets whose label names are not common words, and the sign of the per-model difference changes with the format in 11 of 30 cells.
 
 \input{tables/original_prompt}
 
 \section{Per-Model Results}
 \label{app:models}
 
-Table~\ref{tab:per_model} breaks the main comparison down by model, with 12 paired cells per dataset and retrieval variant over three seeds. It supports the protocol claim of Section~\ref{sec:res-protocol}: under the corrected protocol Per-Class CICLe never significantly hurts any of the six models, and Fixed CICLe hurts two models on Yahoo Answers only, which is a smaller and different model dependence from the one the original prompt format produces in Table~\ref{tab:original}.
+Table~\ref{tab:per_model} breaks the main comparison down by model, with 12 paired cells per dataset and retrieval variant over three seeds. It supports the label-information claim of Section~\ref{sec:res-protocol}: under the corrected protocol Per-Class CICLe never significantly hurts any of the six models, and Fixed CICLe hurts two models on Yahoo Answers only, which is a smaller and different model dependence from the one the original prompt format produces in Table~\ref{tab:original}.
 
 \input{tables/per_model}
 
@@ -85,7 +86,7 @@ Table~\ref{tab:large} runs Mistral-NeMo-12B and Qwen2.5-32B with and without CIC
 \section{Per-Instance Analyses}
 \label{app:instances}
 
-Table~\ref{tab:fixes} pairs every test instance between CICLe and few-shot prompting at $k = 4$ and splits the fixes and breaks by whether the gold label was in the candidate set and by whether the few-shot answer was, Table~\ref{tab:invalid} gives the invalid-output rate per model and dataset, Table~\ref{tab:invalid_raw} the most frequent unparseable outputs (emoji replaced by ``[emoji]'' for typesetting), and Table~\ref{tab:examples} qualitative examples of instances that narrowing fixed or broke. They support the narrowing claim of Section~\ref{sec:res-narrowing}, since the breaks concentrate on instances whose gold label the set missed, and the protocol claim of Section~\ref{sec:res-protocol}, since the unparseable outputs are labels of the wrong granularity, emoji outside the label set and refusals rather than failures of the method.
+Table~\ref{tab:fixes} pairs every test instance between CICLe and few-shot prompting at $k = 4$ and splits the fixes and breaks by whether the gold label was in the candidate set and by whether the few-shot answer was, Table~\ref{tab:invalid} gives the invalid-output rate per model and dataset, Table~\ref{tab:invalid_raw} the most frequent unparseable outputs (emoji replaced by ``[emoji]'' for typesetting), and Table~\ref{tab:examples} qualitative examples of instances that narrowing fixed or broke. They support the narrowing claim of Section~\ref{sec:res-narrowing}, since the breaks concentrate on instances whose gold label the set missed, and the label-information claim of Section~\ref{sec:res-protocol}, since the unparseable outputs are labels of the wrong granularity, emoji outside the label set and refusals rather than failures of the method.
 
 \input{tables/fixes_breaks}
 \input{tables/invalid}

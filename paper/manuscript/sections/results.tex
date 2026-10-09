@@ -4,12 +4,12 @@
 All numbers are at the reference setting and averaged over the six small models and three seeds unless stated.
 A gain is CICLe minus an alternative in macro-F1 points, with a 95\% paired bootstrap interval where it is the key number.
 
-\subsection{The Protocol Decides the Conclusion}
+\subsection{Comparisons Must Hold the Label Information Constant}
 \label{sec:res-protocol}
 
-Under the original prompt format, which outputs parse decides which models appear to benefit from narrowing.
-We ran the prompt format of the released CICLe implementation, with no label list and exact string matching, for the six models on seed 42 with Fixed retrieval and compared it with the corrected protocol on the same test sample (Table~\ref{tab:original}, Appendix~\ref{app:original}).
-Without a label list, up to 65\% of a model's few-shot outputs matched no label and were scored as errors, and the per-model effect of narrowing changed sign between the two formats in a third of the cells. % PENDING: MASSIVE original-prompt rerun
+A comparison of prompting methods must hold the label information constant, because prompts that show few labels produce unparseable outputs that decide the comparison.
+The prompt format of the released CICLe implementation lists no labels, which suits its Per-Class retrieval, and we ran it with Fixed retrieval, which shows only the retrieved labels, on seed 42 (Table~\ref{tab:original}, Appendix~\ref{app:original}).
+Up to 65\% of a model's few-shot outputs then matched no label, and the per-model effect of narrowing changed sign between the two formats in a third of the cells. % PENDING: MASSIVE original-prompt rerun; label-list ablation (only the list removed, same parser and token budget; every dataset, seed 42, Fixed and Per-Class, k in {1,4}) will replace the original-format comparison as the main evidence and separate the list from the parser and the 5-token cap
 Under the corrected protocol Per-Class CICLe never significantly hurts any of the six models (Table~\ref{tab:per_model}, Appendix~\ref{app:models}), which leaves the question of how large its gain is.
 
 \subsection{Narrowing Gives a Small Gain and a Shorter Prompt}
@@ -79,7 +79,6 @@ At 100 times imbalance the order flips.
 Both encoders lose about 20 points on Yahoo Answers while the pipeline loses seven (Table~\ref{tab:main_supervised}, 100$\times$ rows), because retrieval and the LLM's knowledge of the labels carry the rare classes.
 The pool-size sweep agrees (Figure~\ref{fig:main_poolsize}).
 The pipelines are nearly flat between 250 and 2,000 labels, while RoBERTa-base climbs with the pool and overtakes them on SST-5 between 500 and 1,000 labels (Table~\ref{tab:pool}, Appendix~\ref{app:pool}). % PENDING (rerun): RoBERTa-large at the smallest pools
-Narrowing itself needs calibration data, and with 50 calibration examples CICLe's margin over few-shot prompting is not significant (Appendix~\ref{app:pool}).
 What remains is how tight the narrowing should be.
 
 \subsection{Choosing $\alpha$ and the Components}
@@ -88,5 +87,4 @@ What remains is how tight the narrowing should be.
 The miscoverage level should follow the strength of the base classifier.
 Figure~\ref{fig:alpha} and Table~\ref{tab:ablation} (Appendix~\ref{app:ablations}) vary $\alpha$, the embedding and the classifier with two Llama models.
 Loosening $\alpha$ from 0.05 to 0.20 on Yahoo Answers, where the classifier is strong, turns a null difference into a gain of $+3.6$ [$+2.7$, $+4.5$] points while a third of the inputs never reach the LLM, and it also helps where the sets are otherwise large, at the price of the coverage guarantee.
-The embedding matters more than the classifier (Table~\ref{tab:ablation}).
 The gain survives a second prompt template and random retrieval (Table~\ref{tab:robust}), and larger models gain less but do not lose (Table~\ref{tab:large}). % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed; 12B and 32B on Ohsumed

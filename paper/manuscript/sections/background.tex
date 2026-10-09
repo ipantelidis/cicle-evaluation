@@ -33,3 +33,4 @@ All rules share the prompt, the retrieval and the singleton and empty-set behavi
 \emph{Fixed} retrieval places the $k$ training examples most similar to the input (cosine similarity in the embedding space) among those whose label is in the candidate set.
 \emph{Per-Class} retrieval places the $k$ most similar examples of each candidate class, so the prompt holds $k \times |\mathcal{C}(x)|$ examples and shrinks with the set.
 Few-shot prompting is the case in which the candidate set is the full label set.
+Narrowing also makes listing labels affordable, since few-shot prompting must list every class and CICLe only the candidate set.

@@ -1,7 +1,7 @@
 \section*{Limitations}
 \label{sec:limitations}
 
-Our study covers single-label classification in English, and GoEmotions is restricted to its single-label comments. CICLe is defined for a single label per input, so multi-label narrowing would need a different set construction.
+Our study covers single-label classification in English, and GoEmotions is restricted to its single-label comments. Our label spaces have at most 59 classes, so listing every label costs little here, and for label spaces with hundreds or thousands of classes only the candidate set can be listed. CICLe is defined for a single label per input, so multi-label narrowing would need a different set construction.
 Every test sample holds 1,000 instances per seed. The paired bootstrap resolves differences of about half a point over the six-model grid, but per-model intervals (12 or 6 pairs) are two to three points wide, and the seed-42 checks of Section~\ref{sec:res-alpha} are directional only.
 In the controlled-imbalance experiments the labelled pool is long-tailed but the test sample stays balanced, so the reported macro-F1 describes a deployment whose test distribution differs from its training distribution. A test sample with the same skew would weight the rare classes less.
 The LLM configurations are not selected on held-out data. We report one fixed configuration (Per-Class, $k=4$, $\alpha=0.05$) as the main number and state when a best configuration is chosen on the test set. The miscoverage level is likewise reported as an ablation, and the rule for choosing it is a heuristic.

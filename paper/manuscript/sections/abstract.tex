@@ -6,5 +6,5 @@ We compare narrowing rules built from the same classifier on six English dataset
 When the labelled pool is long-tailed, class-conditional conformal sets, as used by Conformal In-Context Learning (CICLe), keep about 90\% coverage or more on every class, while top-$k$, probability-mass and marginal conformal sets lose the rarest classes and 4 to 13 macro-F1 points.
 Narrowing also gives a small, reliable gain over few-shot prompting, 0.5 to 1.8 points with 11 to 45\% shorter prompts, largest when label names carry no meaning. % PENDING: MASSIVE changes both ranges
 With plentiful balanced labels a fine-tuned encoder is the better choice.
-Without a label list in the prompt, up to 65\% of outputs do not parse, which changes which models appear to benefit. % PENDING: MASSIVE original-prompt rerun
+Comparisons across prompting methods must also hold the label information constant, since prompts that show only a few labels leave up to 65\% of outputs unparseable. % PENDING: label-list ablation (only the list removed, same parser and token budget; every dataset, seed 42, Fixed and Per-Class, k in {1,4}) will replace the original-format comparison as the main evidence and separate the list from the parser and the 5-token cap; MASSIVE
 \end{abstract}
