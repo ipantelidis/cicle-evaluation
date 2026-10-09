@@ -1,0 +1,16 @@
+% Table P. Macro-F1 against the size of the labelled pool (train + calibration; the base classifier, retrieval pool and fine-tuned models all see 80% of it). Supervised rows mean over 3 seeds, LLM rows over 6 models x 3 seeds; the test sample is the same at every pool size. Best pipeline: argmax over (method, variant, k) of the 18-run mean (k in {1,4} below 2,000). Bold = best per row.
+\begin{tabular}{lrcccccc}
+\toprule
+Dataset & labelled pool & MiniLM + LR & RoBERTa-base & RoBERTa-large & Few-shot PC, $k$=4 & CICLe PC, $k$=4 & best LLM pipeline \\
+\midrule
+Yahoo Answers & 250 & 54.6 & 52.2 & 54.3 & \textbf{60.6} & 60.5 & \textbf{60.6} {\scriptsize FS PC $k$=4} \\
+ & 500 & 60.0 & 59.0 & 43.1 & 60.3 & \textbf{61.2} & \textbf{61.2} {\scriptsize CICLe PC $k$=4} \\
+ & 1,000 & \textbf{63.4} & 62.0 & 62.9 & 61.2 & 62.4 & 62.4 {\scriptsize CICLe PC $k$=4} \\
+ & 2,000 & \textbf{65.4} & 61.8 & 64.6 & 61.6 & 62.7 & 63.8 {\scriptsize CICLe PC $k$=8} \\
+\midrule
+SST-5 & 250 & 23.3 & 38.8 & 31.5 & \textbf{45.9} & 45.0 & \textbf{45.9} {\scriptsize FS PC $k$=4} \\
+ & 500 & 29.7 & 46.4 & 36.2 & 47.1 & \textbf{47.6} & \textbf{47.6} {\scriptsize CICLe PC $k$=4} \\
+ & 1,000 & 32.5 & \textbf{48.8} & 39.7 & 46.1 & 46.6 & 46.6 {\scriptsize CICLe PC $k$=4} \\
+ & 2,000 & 35.5 & \textbf{51.2} & 39.9 & 46.6 & 47.5 & 47.6 {\scriptsize CICLe PC $k$=2} \\
+\bottomrule
+\end{tabular}

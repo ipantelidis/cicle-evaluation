@@ -2,42 +2,34 @@
 \label{sec:background}
 
 \paragraph{Split conformal prediction, in plain terms.}
-Take any classifier that gives a score to each class.
-Hold out a calibration split that the classifier has not seen.
-For each calibration example, record how low the classifier scored the true label.
-These recorded values tell us how wrong the classifier tends to be.
+Take any classifier that scores each class.
+Hold out a calibration split it has not seen and record, for each calibration example, how low the classifier scored the true label.
 For a new input, include in the candidate set every class whose score is no worse than what the true label received on all but a fraction $\alpha$ of the calibration examples.
-If the new input comes from the same distribution as the calibration split, the true label is in the set with probability at least $1-\alpha$ \citep{vovk2005algorithmic,papadopoulos2002inductive}.
-The guarantee holds for any classifier and any sample size, but it is a guarantee on average over inputs.
-The set adapts to the input. Easy inputs get small sets, hard inputs get large ones.
+If the new input is exchangeable with the calibration split, the true label is in the set with probability at least $1-\alpha$, for any classifier and any sample size \citep{vovk2005algorithmic,papadopoulos2002inductive}.
+A weak classifier does not lower the coverage, it makes the sets larger.
 
 \paragraph{Class-conditional calibration.}
-The guarantee above is marginal. On a long-tailed dataset the set can cover 95\% of inputs overall while missing most inputs of a rare class, because rare classes contribute few calibration examples to the shared threshold.
-Class-conditional (label-conditional) conformal prediction computes one threshold per class, using only the calibration examples of that class \citep{vovk2012conditional}.
-Coverage then holds within each class. Top-$k$ selection and probability thresholds give no such guarantee, the first because it ignores the classifier's confidence, the second because it trusts a confidence that is rarely calibrated.
-The price is that each class needs enough calibration examples to set its threshold, which is why our smallest classes keep at least one calibration example (Section~\ref{sec:protocol}).
-We call the sets from this procedure \emph{conformal sets} and the whole procedure CP.
+The guarantee above is marginal.
+On a long-tailed dataset the set can cover 95\% of inputs overall while missing most inputs of a rare class, because the rare class contributes few calibration examples to the shared threshold.
+Class-conditional conformal prediction computes one threshold per class from the calibration examples of that class only \citep{vovk2012conditional}, so coverage holds within each class.
+Top-$k$ selection and probability thresholds give no such guarantee, the first because it ignores the classifier's confidence, the second because it trusts a confidence that is rarely calibrated.
 
 \paragraph{The CICLe pipeline.}
-CICLe \citep{randl2024cicle} runs in two stages.
-First, a base classifier (logistic regression on sentence embeddings) is trained on the labelled pool and calibrated with class-conditional CP on the calibration split.
+CICLe \citep{randl2024cicle} trains a base classifier (logistic regression on sentence embeddings) on the labelled pool and calibrates it class-conditionally.
 For a test input it yields a candidate set $\mathcal{C}(x)$.
-Second, if $|\mathcal{C}(x)| = 1$ that label is returned and the LLM is not called.
-If $|\mathcal{C}(x)| = 0$ the classifier's top label is returned.
-Otherwise the LLM is prompted with the task description, the list of candidate labels, and labelled examples retrieved from the candidate classes only, and asked for one label.
-The prompt is identical to a few-shot prompt except that the label list and the example pool are restricted.
+If $|\mathcal{C}(x)| = 1$ that label is returned without calling the LLM, and if the set is empty the classifier's top label is.
+Otherwise the LLM is prompted with the task description, the candidate labels and labelled examples retrieved from the candidate classes only.
 
-\paragraph{Narrowing rules compared.}
-To separate the effect of narrowing as such from the effect of conformal calibration, we build candidate sets from the same base classifier with five rules.
+\paragraph{Narrowing rules compared.}\label{sec:rules}
+To separate narrowing as such from conformal calibration, we build candidate sets from the same classifier with five rules.
 \emph{CP} is the class-conditional conformal set at miscoverage $\alpha$.
-\emph{Marginal CP} is the conformal set with one threshold shared by all classes.
-\emph{Top-$k$} keeps the $m$ most probable classes, where $m$ is the mean CP set size on that dataset and seed, so the average budget matches CP but the size does not adapt per input.
-\emph{Probability mass} keeps the most probable classes until their predicted probabilities sum to $1-\alpha$. It adapts per input but trusts the classifier's uncalibrated confidence.
-\emph{Oracle} contains the gold label plus $m-1$ random other classes and gives the ceiling for any rule at that set size.
-All rules use the same prompt, the same retrieval and the same singleton and empty-set behaviour.
+\emph{Marginal CP} shares one threshold across classes.
+\emph{Top-$m$} keeps the $m$ most probable classes, where $m$ is the mean CP set size on that dataset and seed, so the budget matches but the size does not adapt to the input.
+\emph{Probability mass} keeps the most probable classes until their predicted probabilities sum to $1-\alpha$, which adapts but trusts the uncalibrated confidence.
+\emph{Oracle} contains the gold label plus $m-1$ random classes and bounds any rule at that size.
+All rules share the prompt, the retrieval and the singleton and empty-set behaviour.
 
 \paragraph{Fixed and Per-Class retrieval.}
-Given a candidate set and a shot count $k$, \emph{Fixed} retrieval places the $k$ training examples most similar to the input (cosine similarity in the embedding space) among those whose label is in the candidate set.
+\emph{Fixed} retrieval places the $k$ training examples most similar to the input (cosine similarity in the embedding space) among those whose label is in the candidate set.
 \emph{Per-Class} retrieval places the $k$ most similar examples of each candidate class, so the prompt holds $k \times |\mathcal{C}(x)|$ examples and shrinks with the set.
-Examples are ordered from most to least similar.
-Few-shot prompting is the special case in which the candidate set is the full label set.
+Few-shot prompting is the case in which the candidate set is the full label set.

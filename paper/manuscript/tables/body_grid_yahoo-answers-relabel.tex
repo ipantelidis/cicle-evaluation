@@ -1,0 +1,33 @@
+% Table B: yahoo-answers-relabel, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
+\begin{tabular}{llrrrrrrr}
+\toprule
+Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+\midrule
+Few-shot & Fixed & 1 & 18 & 25.3 & 26.1 & 0.6 & 1.0 & 300 \\
+Few-shot & Fixed & 4 & 18 & 40.6 & 41.2 & 0.4 & 4.0 & 474 \\
+Few-shot & Per-Class & 1 & 18 & 34.1 & 35.5 & 0.2 & 10.0 & 727 \\
+Few-shot & Per-Class & 4 & 18 & 47.8 & 49.0 & 0.0 & 40.0 & 2,236 \\
+CICLe & Fixed & 0 & 18 & 18.9 & 21.3 & 1.5 & 0.0 & 220 \\
+CICLe & Fixed & 1 & 18 & 34.3 & 34.5 & 0.6 & 1.0 & 286 \\
+CICLe & Fixed & 4 & 18 & 44.6 & 44.8 & 0.3 & 4.0 & 461 \\
+CICLe & Per-Class & 1 & 18 & 41.1 & 41.3 & 0.2 & 5.8 & 521 \\
+CICLe & Per-Class & 4 & 18 & 52.0 & 52.6 & 0.0 & 23.4 & 1,420 \\
+\midrule
+Top-$m$ & Fixed & 1 & 18 & 31.1 & 31.9 & 0.7 & 1.0 & 286 \\
+Top-$m$ & Fixed & 4 & 18 & 42.7 & 43.0 & 0.3 & 4.0 & 462 \\
+Top-$m$ & Per-Class & 1 & 18 & 37.4 & 37.9 & 0.3 & 5.7 & 521 \\
+Top-$m$ & Per-Class & 4 & 18 & 50.5 & 51.0 & 0.0 & 22.7 & 1,420 \\
+Prob. mass & Fixed & 1 & 18 & 27.9 & 28.7 & 0.6 & 1.0 & 293 \\
+Prob. mass & Fixed & 4 & 18 & 40.9 & 41.3 & 0.4 & 4.0 & 468 \\
+Prob. mass & Per-Class & 1 & 18 & 35.7 & 36.5 & 0.3 & 7.8 & 625 \\
+Prob. mass & Per-Class & 4 & 18 & 48.5 & 49.4 & 0.0 & 31.4 & 1,832 \\
+Marginal CP & Fixed & 1 & 3 & 47.0 & 47.3 & 0.0 & 1.0 & 204 \\
+Marginal CP & Fixed & 4 & 3 & 55.6 & 56.6 & 0.0 & 4.0 & 374 \\
+Marginal CP & Per-Class & 1 & 3 & 43.8 & 44.8 & 0.0 & 6.0 & 439 \\
+Marginal CP & Per-Class & 4 & 3 & 55.7 & 56.7 & 0.0 & 23.8 & 1,335 \\
+Oracle & Fixed & 1 & 3 & 52.5 & 52.6 & 0.0 & 1.0 & 204 \\
+Oracle & Fixed & 4 & 3 & 63.4 & 64.2 & 0.0 & 4.0 & 374 \\
+Oracle & Per-Class & 1 & 3 & 47.3 & 48.4 & 0.0 & 5.7 & 421 \\
+Oracle & Per-Class & 4 & 2 & 64.2 & 64.9 & 0.0 & 22.0 & 1,222 \\
+\bottomrule
+\end{tabular}

@@ -1,17 +1,9 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-% SKELETON (about 1.5 quarter pages). Rules of thumb for practitioners, one sentence per claim.
-% - Protocol: list the labels, share the pool, seed the sets, report invalid outputs; otherwise the comparison
-%   measures the prompt, not the method.
-% - Gain: narrowing with CICLe is worth +0.5 to +1.8 points over few-shot and shortens Per-Class prompts;
-%   it is not a large effect and it does not grow with k.
-% - How to narrow: class-conditional CP when the labelled pool is long-tailed (top-k and mass lose 4-11 points
-%   through missed rare classes); any rule on balanced data; narrowing matters most when label names are
-%   uninformative.
-% - When to call the LLM: with ~1,600 balanced labels fine-tune an encoder (or use the classifier alone when it
-%   is strong); use the in-context pipeline when the pool is skewed [or small, pending]; pick alpha by the
-%   strength of the classifier (looser when it is strong or when sets would otherwise be huge).
-% - One sentence: the pilot's "imbalance predicts CICLe's benefit" is retracted; imbalance separates narrowing
-%   rules, not CICLe from few-shot.
-% - Future work: multi-label, pool size (if pending), non-English, learned alpha.
+We evaluated conformal label narrowing for in-context text classification under a protocol that lists the admissible labels in every prompt, retrieves from one labelled pool for every method and pairs runs by seed.
+Four rules of thumb follow.
+First, compare prompting methods only with the label list and the example pool held equal and invalid outputs reported, or the comparison measures the prompt format.
+Second, narrowing with CICLe is worth 0.5 to 1.8 macro-F1 points over few-shot prompting on short texts and 5 points on long documents with Per-Class retrieval, and it shortens Per-Class prompts by 11 to 45\%. Third, once the labelled pool is long-tailed, class-conditional conformal sets keep their coverage on rare classes and top-$m$, probability-mass and marginal conformal sets do not, and the LLM cannot recover a label it was not offered. On balanced data any rule will do, and narrowing helps most when label names carry no meaning.
+Fourth, with a plentiful balanced pool, a fine-tuned encoder, or the base classifier alone when it is strong, beats every 3B to 8B pipeline. With a skewed or small pool the in-context pipelines degrade far less, and class-conditional narrowing is the rule to use once a few hundred calibration examples exist. A looser miscoverage level pays where the classifier is strong.
+Finally, class imbalance does not predict CICLe's benefit over few-shot prompting. It separates narrowing rules from each other.

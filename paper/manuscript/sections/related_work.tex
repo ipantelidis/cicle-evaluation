@@ -4,30 +4,24 @@
 \paragraph{Few-shot prompting and example selection.}
 In-context learning lets an LLM classify from labelled examples in the prompt \citep{brown2020language}.
 Its accuracy depends on which examples are shown and in what order \citep{lu2022fantastically}, and on biases toward frequent or recent labels that can be corrected after the fact \citep{zhao2021calibrate}.
-Retrieving examples that are similar to the test input is the standard remedy \citep{liu2022makes}, either with an off-the-shelf encoder or with a retriever trained for the purpose \citep{rubin2022learning}.
-Later work treats selection as a search problem over the labelled pool \citep{purohit2025sampleefficientdemonstrationselection}.
-We keep similarity-based retrieval fixed and vary only which classes are allowed to contribute examples.
+Retrieving similar examples is the standard remedy \citep{liu2022makes,rubin2022learning}, and selection can be cast as a search problem \citep{purohit2025sampleefficientdemonstrationselection}.
+We keep similarity-based retrieval fixed and vary only which classes may contribute examples.
 
 \paragraph{Two-stage pipelines.}
-Pairing a cheap model with an expensive one is an old idea in NLP efficiency.
 Cascades send an input to a stronger model only when a weaker one is not confident \citep{varshney2022model,chen2024frugalgpt,yue2024cascades}, and routers learn that decision from data \citep{ding2024hybrid}.
 \citet{fisch2021efficient} conformalise such a cascade so that implausible labels are pruned early with a coverage guarantee.
-For classification with many labels, a retriever can show the LLM only part of the label space \citep{milios2023incontext}, or the LLM can first generate candidate labels that are then re-ranked \citep{zhu2024icxml,doosterlinck2024incontext}.
-CICLe \citep{randl2024cicle} belongs to this family. Its first stage is a supervised classifier whose candidate set is calibrated by conformal prediction, and the LLM is called only when that set has more than one label.
-Our comparison of narrowing rules asks which part of this design carries the benefit.
+For classification with many labels, a retriever can show the LLM only part of the label space \citep{milios2023incontext}, or the LLM can first generate candidate labels that are then reranked \citep{zhu2024icxml,doosterlinck2024incontext}.
+CICLe \citep{randl2024cicle} belongs to this family, with a calibrated classifier as the first stage, and our comparison of narrowing rules asks which part of the design carries the benefit.
 
 \paragraph{Conformal prediction in NLP and for LLMs.}
 Conformal prediction turns any scoring model into a set-valued predictor with a finite-sample coverage guarantee \citep{vovk2005algorithmic,angelopoulos2023gentle}.
-Its split (inductive) form needs one held-out calibration set \citep{papadopoulos2002inductive}, and calibrating per class gives coverage that holds within each class rather than on average \citep{vovk2012conditional}.
-In NLP it has been applied to classifiers built on pretrained encoders \citep{maltoudoglou2020bert} and, more recently, to LLM outputs: to multiple-choice answers \citep{kumar2023conformal}, to generated text \citep{quach2024conformal}, to models without logit access \citep{su2024api}, and to deciding when an LLM-based agent should ask for help \citep{ren2023robots}.
-\citet{campos2024conformal} survey this work.
-These methods calibrate the LLM itself. CICLe calibrates a small classifier and uses its sets to shape the LLM's prompt.
+Its split form needs one held-out calibration set \citep{papadopoulos2002inductive}, and calibrating per class gives coverage within each class rather than on average \citep{vovk2012conditional}.
+In NLP it has been applied to classifiers on pretrained encoders \citep{maltoudoglou2020bert} and to LLM outputs, for multiple-choice answers \citep{kumar2023conformal}, generated text \citep{quach2024conformal}, models without logit access \citep{su2024api} and deciding when an agent should ask for help \citep{ren2023robots}, as surveyed by \citet{campos2024conformal}.
+These methods calibrate the LLM itself. CICLe calibrates a small classifier and uses its sets to shape the prompt.
 
 \paragraph{Labels in the prompt, and prompting versus fine-tuning.}
-Whether the LLM uses the examples or only the label names is contested.
-\citet{min2022rethinking} found that random labels barely hurt, and that showing the label space and the input distribution mattered more.
-\citet{yoo2022groundtruth} showed that the effect of correct labels depends on the model and the task.
+\citet{min2022rethinking} found that random labels barely hurt and that showing the label space mattered more, while \citet{yoo2022groundtruth} found the effect of correct labels to depend on model and task.
 With flipped or semantically unrelated labels, the ability to learn the new mapping grows with model size, and small models fall back on their priors about the label words \citep{wei2023larger,pan2023what,kossen2024incontext}.
-Our label renaming experiment uses this setting as a stress test for a narrowing pipeline with 3B to 8B models.
-Finally, several evaluations report that a fine-tuned encoder still beats few-shot LLM prompting on standard classification benchmarks when enough labelled data exist \citep{edwards2024language,bucher2024fine,yu2023open,sun2023text}.
-We include such a baseline and ask under which data conditions the LLM pipeline pays off.
+Our label renaming uses this setting as a stress test with 3B to 8B models.
+Several evaluations report that a fine-tuned encoder still beats few-shot LLM prompting when enough labelled data exist \citep{edwards2024language,bucher2024fine,yu2023open,sun2023text}.
+We include such baselines and ask under which data conditions the LLM pipeline pays off.

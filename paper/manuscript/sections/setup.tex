@@ -4,96 +4,65 @@
 \subsection{Datasets}
 \label{sec:datasets}
 
-\input{tables/datasets}
+Table~\ref{tab:datasets} lists the five English single-label datasets, chosen to vary the number of classes, the class imbalance, the input length and the information carried by the label names.
+SST-5 \citep{socher2013recursive} is the near-balanced five-class case, Yahoo Answers \citep{zhang2015character} has ten balanced topics with informative names and a strong base classifier, SemEval-18 Task~2 \citep{barbieri2018semeval} predicts the emoji of a tweet, so its twenty label names carry little meaning, GoEmotions \citep{demszky2020goemotions}, restricted to single-label comments, is the many-class long-tailed case, and Ohsumed \citep{hersh1994ohsumed} classifies medical abstracts of about 270 tokens into 23 disease categories.
+The two balanced datasets serve as the substrate for the controlled-imbalance and pool-size experiments, since the skewed ones cannot be rebalanced without changing the task.
 
-We use five English single-label classification datasets (Table~\ref{tab:datasets}).
-They were chosen to vary three properties, the number of classes, the imbalance of the label distribution and the input length, while keeping the task form fixed.
-\textbf{SST-5} \citep{socher2013recursive} has five ordered sentiment classes, short inputs and near balance. It is the easy case where a short label list leaves little to narrow.
-\textbf{Yahoo Answers} \citep{zhang2015character} has ten balanced topic classes with informative names and a base classifier that is strong on its own. It tests whether narrowing helps when the classifier alone is already good.
-\textbf{SemEval-18 Task 2} \citep{barbieri2018semeval} asks for the emoji that accompanies a tweet. Its twenty labels are symbols rather than words, so the label names carry little meaning to the LLM, and the classes are moderately imbalanced.
-\textbf{GoEmotions} \citep{demszky2020goemotions}, restricted to its single-label comments, has 28 emotion classes with a 185$\times$ natural imbalance. It is the many-class, long-tailed case.
-\textbf{Ohsumed} \citep{hersh1994ohsumed} classifies medical abstracts of about 190 words into 23 disease categories, with 65$\times$ imbalance. % CHECK
-It answers whether the findings carry from short texts to documents that fill a large part of the context window.
-% Ohsumed source: the single-label split published on the Hugging Face hub (joao-luz/ohsumed-single); cite or footnote the exact source before submission. % CHECK
-Because SST-5 and Yahoo Answers are balanced, they also serve as the substrate for the controlled imbalance experiment (Section~\ref{sec:protocol}), which varies imbalance alone while every other property stays fixed.
+\input{tables/datasets}
 
 \subsection{Models}
 \label{sec:models}
 
-Six open instruction-tuned LLMs form the main grid, two from each of three families and two sizes per family.
-These are Llama-3.2-3B and Llama-3.1-8B \citep{grattafiori2024llama3}, Qwen2.5-3B and Qwen2.5-7B \citep{qwen2024qwen25}, and Ministral-3-3B \citep{mistral2025ministral3} and Mistral-7B-v0.3 \citep{jiang2023mistral7b}. % CHECK that the Llama 3 herd report is the right citation for Llama-3.2-3B
-Two larger models, Mistral-NeMo-12B \citep{mistralai2024nemo} and Qwen2.5-32B \citep{qwen2024qwen25}, are run on a subset of the grid and reported in Appendix~\ref{app:large}.
-All models run in bfloat16 with greedy decoding through their chat templates.
-The generation budget is the token length of the longest label plus four tokens.
-
-The base classifier of every narrowing method is logistic regression on sentence embeddings from \texttt{all-MiniLM-L6-v2} \citep{reimers2019sentence,wang2020minilm}, a 384-dimensional encoder that is also used to retrieve the in-context examples by cosine similarity.
-MiniLM therefore plays two roles, as the feature space of the classifier and as the retriever. Both roles see the same 1,600 training examples.
-Contriever \citep{izacard2022unsupervised} and TF-IDF features replace MiniLM in the ablations, as does a support vector machine in place of logistic regression.
-Conformal calibration uses the \texttt{crepes} library \citep{bostrom2022crepes} with class-conditional calibration and seeded tie-breaking.
+The main grid uses six open instruction-tuned LLMs, two sizes from each of three families: Llama-3.2-3B and Llama-3.1-8B \citep{grattafiori2024llama3}, Qwen2.5-3B and Qwen2.5-7B \citep{qwen2024qwen25}, Ministral-3-3B \citep{mistral2025ministral3} and Mistral-7B-v0.3 \citep{jiang2023mistral7b}. % CHECK that the Llama 3 herd report is the right citation for Llama-3.2-3B
+Mistral-NeMo-12B \citep{mistralai2024nemo} and Qwen2.5-32B \citep{qwen2024qwen25} are run with and without CICLe on the four short-text datasets (Appendix~\ref{app:large}). % PENDING: 12B and 32B on Ohsumed
+All run in bfloat16 with greedy decoding through their chat templates.
+The base classifier of every narrowing method is logistic regression on \texttt{all-MiniLM-L6-v2} sentence embeddings \citep{reimers2019sentence,wang2020minilm}, and the same embeddings retrieve the examples by cosine similarity, so MiniLM is both the classifier's feature space and the retriever.
+Calibration uses \texttt{crepes} \citep{bostrom2022crepes} with seeded tie-breaking.
+Contriever \citep{izacard2022unsupervised}, TF-IDF and an SVM appear in the ablations.
 
 \subsection{Protocol}
 \label{sec:protocol}
 
 Every experiment uses a stratified subsample of 2,000 labelled and 1,000 test instances per dataset, drawn with three seeds (42, 43, 44).
-Of the 2,000 labelled instances, 400 are held out as the calibration split.
-The base classifier, the retrieval pool and the supervised baselines all see the same 1,600 training examples.
-The subsample keeps the cost of 18 LLM runs per configuration (six models, three seeds) tractable. The test sample of 1,000 instances lets the paired tests of Section~\ref{sec:metrics} resolve differences of half a point, and the three seeds capture the sampling noise that a single split hides.
+Of the 2,000, 400 form the calibration split, the proportion of \citet{randl2024cicle}, and the base classifier, the retrieval pool and the supervised baselines all see the same 1,600 training examples.
+One test sample per seed is shared by every method, which makes paired tests over instances possible, and the seeds change the subsample, the calibration split and the conformal tie-breaking (Appendix~\ref{app:prompt} gives the reasoning behind the sizes).
 
-\paragraph{Five fixes relative to the pilot.}
-The pilot (Section~\ref{sec:intro}) listed the admissible labels only in its zero-shot prompt, and its few-shot and CICLe prompts used different wording.
-Between 20\% and 35\% of the outputs of some models then matched no label and were scored as errors, which made CICLe appear to hurt Qwen2.5 and Ministral. % CHECK
-Its few-shot baseline retrieved from a different example pool than CICLe, and its conformal sets were not seeded, so runs could not be paired instance by instance.
-The present protocol makes five changes.
-(i) Every prompt lists the admissible labels, all classes for zero-shot and few-shot prompting and the candidate set for narrowing methods, with identical wording otherwise. The candidate list and the retrieved examples are the only difference between conditions.
-(ii) Every method retrieves from the same 1,600-example pool.
-(iii) The calibration split, the conformal sets and the test sample are seeded.
-(iv) The generation budget follows from the longest label, and the output is normalised (case, quotes, markdown, punctuation and trailing text after the label) before matching. Anything that still matches no label is counted as wrong and reported as an invalid output.
-(v) A per-instance record (gold label, raw output, prediction, candidate set, retrieved example ids and prompt length) is saved for every run.
-Appendix~\ref{app:prompt} gives the prompt template and the parser.
+Relative to the pilot, the protocol fixes five things.
+(i) Every prompt lists the admissible labels, all classes or the candidate set, with identical wording otherwise, so the list and the retrieved examples are the only difference between conditions.
+(ii) Every method retrieves from the same pool.
+(iii) Calibration split, conformal sets and test sample are seeded.
+(iv) The generation budget follows from the longest label, outputs are normalised before matching, and anything that still matches no label is counted as wrong and reported as an invalid output.
+(v) A per-instance record is saved for every run.
+Appendix~\ref{app:prompt} gives the template, the parser and the pilot's protocol, which we rerun inside the same framework on seed 42 with Fixed retrieval and $k \in \{1, 4\}$ (Appendix~\ref{app:legacy}).
 
-\paragraph{Shots and retrieval.}
-Both retrieval variants of Section~\ref{sec:background} are run for every prompting method.
-The shot count $k$ ranges over $\{1, 2, 4, 8\}$ on the four short-text datasets and over $\{1, 4\}$ on Ohsumed and on all dataset variants below.
-Ohsumed abstracts are long, so Per-Class retrieval with 23 classes exceeds the context budget at $k = 4$ and only Fixed retrieval is run there. % CHECK: PC k=1 pending
-The reference setting is MiniLM embeddings, logistic regression and $\alpha = 0.05$. Ablations vary $\alpha \in \{0.01, 0.05, 0.10, 0.20\}$, the embedding and the classifier on two models (Llama-3.1-8B and Llama-3.2-3B).
+Both retrieval variants are run for every prompting method, with $k \in \{1, 2, 4, 8\}$ on the four short-text datasets and $k \in \{1, 4\}$ in every other experiment. On Ohsumed a Per-Class prompt at $k = 4$ would hold about 90 abstracts, so Per-Class retrieval is run at $k = 1$ only.
+The reference setting is MiniLM, logistic regression and $\alpha = 0.05$, the choices of the original paper.
 
-\paragraph{Controlled imbalance.}
-On SST-5 and Yahoo Answers we replace the stratified labelled sample with a long-tailed one.
-Class sizes decay geometrically so that the largest class is 10$\times$ or 100$\times$ the smallest, with a minimum of five examples per class so that each class keeps at least one calibration example, and with a class order drawn from the seed.
-The test sample is left untouched, so results at every imbalance level are paired with the balanced run.
-Appendix~\ref{app:data} lists the class counts per seed.
+\subsection{Experiments}
+\label{sec:experiments}
 
-\paragraph{Label renaming.}
-On Yahoo Answers and GoEmotions we replace every class name with a pronounceable six-letter nonsense word, with the same mapping for all seeds.
-Texts, splits, embeddings and the base classifier are unchanged, so the LLM can learn what a label means only from the examples in the prompt.
+Each experiment beyond the main grid isolates one variable.
+\emph{Narrowing rules}: the four alternative rules of Section~\ref{sec:rules} on every dataset and variant, $k \in \{1, 4\}$.
+\emph{Controlled imbalance}: on SST-5 and Yahoo Answers the training sample is replaced by a long-tailed one whose class sizes decay geometrically to a ratio of 10 or 100, with at least five examples per class and a class order drawn from the seed, while the test sample is unchanged (Appendix~\ref{app:data}).
+\emph{Label renaming}: on all five datasets every class name is replaced by a nonsense word, the same for all seeds, leaving texts, splits and classifier unchanged.
+\emph{No examples}: CICLe with $k = 0$ shows the candidate list alone.
+\emph{Pool size}: on SST-5 and Yahoo Answers the labelled pool is reduced to 250, 500 and 1,000 examples, split 80/20 as before, with every pipeline and baseline rerun.
+\emph{Ablations}: $\alpha \in \{0.01, 0.05, 0.10, 0.20\}$, the embedding and the classifier, with Llama-3.1-8B and Llama-3.2-3B on the short-text datasets. % PENDING: Ohsumed and the remaining models for the SVM and embedding ablations
+\emph{Prompt robustness}: a second template with the labels in random order and the most similar example last, and random instead of similarity-based retrieval, on seed 42 with $k \in \{1, 4\}$. % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed
 
-% PENDING paragraph "Pool size": pools of 250, 500 and 1,000 labelled examples (train plus calibration,
-% split 80/20 as above) on Yahoo Answers and SST-5, with the supervised baselines retrained on the same
-% pool, test whether a small balanced pool behaves like a skewed one. Insert once the runs exist;
-% otherwise drop the pool-size columns of Table 4 and keep claim 4 to "skewed" only.
-
-\subsection{Methods Compared}
+\subsection{Methods and Baselines}
 \label{sec:methods}
 
-\emph{Zero-shot} prompting lists all labels and no examples.
-\emph{Few-shot} prompting adds retrieved examples from all classes.
-\emph{CICLe} restricts the label list and the retrieval to the class-conditional conformal set at miscoverage $\alpha$. A singleton set is returned without calling the LLM, and an empty set falls back to the classifier's top label.
-The \emph{top-$k$}, \emph{probability mass}, \emph{marginal CP} and \emph{oracle} rules of Section~\ref{sec:background} use the same classifier, the same prompt and the same fallbacks, and differ from CICLe only in how the candidate set is built. % CHECK: marginal and oracle LLM runs pending
-Two supervised baselines use no LLM.
-The first is the base classifier itself, MiniLM embeddings with logistic regression trained on the 1,600 training examples.
-The second is RoBERTa-base \citep{liu2019roberta} fine-tuned on the same 1,600 examples for ten epochs (AdamW, learning rate $2 \times 10^{-5}$, batch size 16, maximum length 256, linear warm-up over the first 10\% of steps and linear decay), with the epoch chosen by macro-F1 on the 400 calibration examples.
-Both baselines see exactly the labelled data that the LLM pipelines see, and both are run for all three seeds and all dataset variants.
+\emph{Zero-shot} prompting lists all labels and no examples, \emph{few-shot} prompting adds retrieved examples from all classes, and \emph{CICLe} restricts both to the class-conditional conformal set, returning a singleton set without an LLM call and the classifier's top label for an empty set.
+The alternative narrowing rules differ from CICLe only in the set.
+Three supervised baselines use no LLM, namely the base classifier itself, and RoBERTa-base and RoBERTa-large \citep{liu2019roberta} fine-tuned on the same 1,600 examples for ten epochs (AdamW, learning rate $2 \times 10^{-5}$, batch size 16, 256 tokens, linear warm-up and decay) with the epoch chosen on the 400 calibration examples.
+The recipe is not tuned per model and is unstable for RoBERTa-large on some datasets, so the encoder scores are a floor. % PENDING (rerun): RoBERTa-large with a lower learning rate All baselines are run for three seeds and every dataset variant.
 
 \subsection{Metrics and Statistics}
 \label{sec:metrics}
 
-We report macro-F1 over the classes present in the test sample. Several datasets are long-tailed, and macro-F1 is the quantity on which the narrowing rules differ (Section~\ref{sec:res-narrowing}). Accuracy is given in Appendix~\ref{app:full}.
-We also report the invalid-output rate, the mean number of prompt tokens per LLM call, the share of test instances the LLM never sees, and the empirical coverage and mean size of the candidate sets.
-
-Every comparison between two methods is paired. The two methods share the model, the seed, $k$ and the retrieval variant, hence the same 1,000 test instances, the same pool and the same conformal sets.
-We report the mean paired difference in macro-F1 over all such cells and a 95\% confidence interval from a bootstrap that resamples test instances \citep{koehn2004statistical,dror2018hitchhiker}.
-The same resample is applied to both methods and to every cell that shares the seed, so the interval reflects test-sample noise and not the spread over hyperparameters.
-The number of pairs is the number of (model, seed, $k$) cells, 72 for the main grid (six models, three seeds, four values of $k$) and 36 where $k \in \{1, 4\}$.
-Per-model comparisons use 12 or 6 pairs.
-Intervals use 5,000 resamples. % CHECK: the draft numbers were produced with 200 resamples
-A difference is called significant when its interval excludes zero. We print it in bold in the tables and otherwise mark it n.s.
+We report macro-F1 over the classes present in the test sample (accuracy is in Appendix~\ref{app:full}), the invalid-output rate, the mean prompt tokens per LLM call, the share of instances the LLM never sees, and the coverage, mean size and lowest per-class coverage of the candidate sets.
+Every comparison between two methods is paired, with both sharing the model, seed, $k$ and retrieval variant, hence the same test instances, pool and conformal sets.
+We report the mean paired macro-F1 difference over all such cells with a 95\% interval from a bootstrap with 5,000 resamples of the test instances \citep{koehn2004statistical,dror2018hitchhiker}, with the same resample applied to both methods in every cell, so the interval reflects test-sample noise and not the spread over hyperparameters.
+The number of pairs is 72 for the main grid (six models, three seeds, four values of $k$), 36 where $k \in \{1, 4\}$, 12 or 6 per model and 12 for the seed-42 checks.
+A difference is significant when its interval excludes zero, printed in bold in the tables, otherwise marked n.s.

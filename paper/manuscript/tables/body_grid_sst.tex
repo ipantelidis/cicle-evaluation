@@ -1,0 +1,46 @@
+% Table B: sst, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
+\begin{tabular}{llrrrrrrr}
+\toprule
+Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+\midrule
+MiniLM + LR & -- & -- & 3 & 35.5 & 40.8 & 0.0 & 0.0 & 0 \\
+RoBERTa-base (fine-tuned) & -- & -- & 6 & 45.5 & 49.4 & 0.0 & 0.0 & 0 \\
+\midrule
+Zero-shot & -- & -- & 18 & 40.3 & 44.7 & 0.0 & 0.0 & 184 \\
+\midrule
+Few-shot & Fixed & 1 & 18 & 40.6 & 42.8 & 0.0 & 1.0 & 217 \\
+Few-shot & Fixed & 2 & 18 & 43.2 & 45.1 & 0.0 & 2.0 & 244 \\
+Few-shot & Fixed & 4 & 18 & 44.1 & 46.2 & 0.0 & 4.0 & 298 \\
+Few-shot & Fixed & 8 & 18 & 45.8 & 48.0 & 0.0 & 8.0 & 407 \\
+Few-shot & Per-Class & 1 & 18 & 44.9 & 47.3 & 0.0 & 5.0 & 327 \\
+Few-shot & Per-Class & 2 & 18 & 46.4 & 48.3 & 0.0 & 10.0 & 466 \\
+Few-shot & Per-Class & 4 & 18 & 46.6 & 48.4 & 0.0 & 20.0 & 746 \\
+Few-shot & Per-Class & 8 & 18 & 46.3 & 48.0 & 0.0 & 40.0 & 1,311 \\
+CICLe & Fixed & 0 & 18 & 45.1 & 47.1 & 0.1 & 0.0 & 181 \\
+CICLe & Fixed & 1 & 18 & 43.0 & 44.4 & 0.0 & 1.0 & 214 \\
+CICLe & Fixed & 2 & 18 & 45.2 & 46.5 & 0.0 & 2.0 & 241 \\
+CICLe & Fixed & 4 & 18 & 45.8 & 47.4 & 0.0 & 4.0 & 295 \\
+CICLe & Fixed & 8 & 18 & 46.8 & 48.7 & 0.0 & 8.0 & 404 \\
+CICLe & Per-Class & 1 & 18 & 46.2 & 48.0 & 0.0 & 3.9 & 292 \\
+CICLe & Per-Class & 2 & 18 & 47.6 & 49.1 & 0.0 & 7.7 & 399 \\
+CICLe & Per-Class & 4 & 18 & 47.5 & 49.1 & 0.0 & 15.5 & 615 \\
+CICLe & Per-Class & 8 & 18 & 47.1 & 48.6 & 0.0 & 30.9 & 1,050 \\
+\midrule
+Top-$m$ & Fixed & 1 & 18 & 43.3 & 45.7 & 0.0 & 1.0 & 214 \\
+Top-$m$ & Fixed & 4 & 18 & 45.8 & 48.7 & 0.0 & 4.0 & 295 \\
+Top-$m$ & Per-Class & 1 & 18 & 46.0 & 48.7 & 0.0 & 4.0 & 296 \\
+Top-$m$ & Per-Class & 4 & 18 & 47.2 & 49.8 & 0.0 & 16.0 & 629 \\
+Prob. mass & Fixed & 1 & 18 & 41.8 & 43.8 & 0.0 & 1.0 & 215 \\
+Prob. mass & Fixed & 4 & 18 & 44.9 & 47.1 & 0.0 & 4.0 & 296 \\
+Prob. mass & Per-Class & 1 & 18 & 45.2 & 47.5 & 0.0 & 4.5 & 312 \\
+Prob. mass & Per-Class & 4 & 18 & 47.1 & 49.1 & 0.0 & 18.0 & 688 \\
+Marginal CP & Fixed & 1 & 18 & 43.8 & 45.7 & 0.0 & 1.0 & 213 \\
+Marginal CP & Fixed & 4 & 18 & 46.2 & 48.6 & 0.0 & 4.0 & 294 \\
+Marginal CP & Per-Class & 1 & 18 & 46.4 & 48.9 & 0.0 & 3.7 & 286 \\
+Marginal CP & Per-Class & 4 & 18 & 47.4 & 49.7 & 0.0 & 14.7 & 592 \\
+Oracle & Fixed & 1 & 18 & 49.9 & 51.3 & 0.0 & 1.0 & 214 \\
+Oracle & Fixed & 4 & 18 & 53.1 & 55.0 & 0.0 & 4.0 & 296 \\
+Oracle & Per-Class & 1 & 18 & 53.6 & 55.6 & 0.0 & 4.0 & 297 \\
+Oracle & Per-Class & 4 & 18 & 55.3 & 57.2 & 0.0 & 16.0 & 632 \\
+\bottomrule
+\end{tabular}

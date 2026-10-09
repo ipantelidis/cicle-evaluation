@@ -1,45 +1,117 @@
 \section{Results}
 \label{sec:results}
 
-% SKELETON. Prose is drafted in paper/plan/results_section_draft.md and will be inserted when the
-% pending runs (Ohsumed PC k=1, marginal CP, k=0, oracle, pool size, 32B seeds) are in.
-% Every subsection opens with its claim, then the float, then the numbers (see STYLE_NOTES.md).
-% All numbers at the reference setting (MiniLM, logistic regression, alpha = 0.05), six models x three seeds.
+All numbers are at the reference setting and averaged over the six small models and three seeds unless stated.
+$\Delta$ is CICLe minus an alternative in macro-F1 points with its 95\% bootstrap interval, over 72 paired cells for the main grid and 36 where $k \in \{1, 4\}$ unless stated.
 
 \subsection{The Protocol Decides the Conclusion}
 \label{sec:res-protocol}
-% CLAIM: Listing the labels, sharing the pool and seeding the sets reverse the pilot's model-level picture;
-% invalid outputs fall to 0-6% and no model is significantly hurt by Per-Class CICLe (Appendix D, G).
+
+Under the original prompts, which outputs parse decides which models appear to benefit.
+We reran the pilot's protocol for the six models on seed 42 with Fixed retrieval at $k \in \{1, 4\}$ against the corrected one on the same test sample (Table~\ref{tab:legacy}).
+Without a label list, 34 to 65\% of the few-shot outputs of Ministral-3B, Qwen2.5-3B and Mistral-7B matched no label on Yahoo Answers, SemEval-18, GoEmotions and Ohsumed, against 0 to 21\% under the corrected protocol, and macro-F1 rises accordingly.
+The pilot's two clearest negative results, Ministral-3B and Qwen2.5-7B on Yahoo Answers, are not reproduced over three seeds, $-0.17$ [$-1.09$, $+0.77$] and $+0.05$ [$-0.44$, $+0.54$] (Table~\ref{tab:per_model}, 12 pairs).
+Per-Class CICLe never significantly hurts any model, and Fixed CICLe hurts two on Yahoo Answers only, Llama-3.2-3B ($-2.33$ [$-3.13$, $-1.53$]) and Mistral-7B ($-0.69$ [$-1.31$, $-0.06$]).
+Residual invalid outputs (Appendix~\ref{app:instances}) count as errors throughout.
 
 \subsection{Narrowing the Label Set Helps a Little, and Reliably}
 \label{sec:res-gain}
-% CLAIM: CICLe beats few-shot in 8 of 9 dataset x variant cells by +0.5 to +1.8 points (72 pairs) and
-% Per-Class CICLe uses 11-38% fewer prompt tokens at equal k; the gain does not vanish at k=8.
+
+With wording, pool and seeds held equal, narrowing beats few-shot prompting by a small margin in nine of ten dataset and retrieval cells (Table~\ref{tab:main}, Figure~\ref{fig:tokens}).
+The gain is $+1.40$ [$+1.04$, $+1.76$] with Per-Class retrieval on Yahoo Answers, $+1.77$ [$+1.14$, $+2.39$] and $+1.07$ [$+0.42$, $+1.71$] on SST-5, $+0.52$ and $+0.46$ on SemEval-18, $+0.59$ and $+0.92$ on GoEmotions and $+1.15$ [$+0.54$, $+1.87$] Fixed on Ohsumed.
+The exception is Yahoo Answers with Fixed retrieval, $-0.19$ [$-0.57$, $+0.20$], where the set keeps 5.7 of 10 classes and one retrieved example already carries the label.
+The effects are small and do not grow with $k$ (Appendix~\ref{app:full}).
+The one large gain is Ohsumed with Per-Class retrieval, $+5.21$ [$+4.43$, $+6.08$] at $k = 1$ (18 pairs).
+A Per-Class few-shot prompt there holds 23 abstracts and 7,500 tokens and scores below a single-abstract prompt (44.6 against 46.7). CICLe halves it to 12.3 abstracts and reaches 49.8, which is context dilution repaired by a smaller example budget.
+
 \input{tables/main_results}
 \input{figures/fig_tokens}
 
+The list alone is worth about one example.
+With the candidate set and no examples ($k = 0$), CICLe scores 0.8 to 4.8 points above zero-shot prompting on every dataset, and on Yahoo Answers, SST-5 and GoEmotions it matches or beats few-shot prompting with one Fixed example.
+The second effect is on the prompt.
+Per-Class retrieval places $k$ examples per admissible class, so at equal $k$ Per-Class CICLe uses 28 to 38\% fewer tokens than Per-Class few-shot prompting on Yahoo Answers (1,378 against 2,166 at $k = 4$), 11 to 21\% on the other short-text datasets and 45\% on Ohsumed, at the same or higher macro-F1 (Figure~\ref{fig:tokens}, filled markers).
+Fixed retrieval is cheaper still, and on GoEmotions it also scores higher (26.6 against 25.9 averaged over $k$) at a sixth of the tokens, because 22 admissible classes times $k$ examples dilute the prompt.
+
 \subsection{How You Narrow Matters}
 \label{sec:res-narrowing}
-% CLAIM: At equal mean set size CP = top-k = mass on balanced data; under a long-tailed labelled pool the
-% alternatives lose coverage on rare classes and 4-11 macro-F1 points. Imbalance does NOT widen the
-% CICLe-vs-few-shot gap (explicit retraction of the pilot's claim). Coverage bounds the damage (fixes vs breaks).
+
+Narrowing could help simply because a shorter list is easier to choose from, in which case any rule that produces sets of the same size would do.
+Figure~\ref{fig:imbalance} and Table~\ref{tab:narrowing} test this with top-$m$, probability-mass and marginal conformal sets built from the same classifier at the same mean size.
+On the two balanced datasets the rules are interchangeable.
+On SST-5 and SemEval-18 no difference between CICLe and top-$m$, probability mass or marginal CP exceeds 1.1 points, and most are not significant (Table~\ref{tab:narrowing}). % PENDING: marginal CP on SemEval-18
+On the naturally long-tailed datasets, calibrating per class is worth one to three points.
+GoEmotions gives $+2.51$ [$+1.49$, $+3.23$] over top-$m$, $+2.26$ over probability mass and $+1.92$ over marginal CP with Fixed retrieval ($+2.54$, $+1.91$ and $+1.28$ Per-Class), and Ohsumed $+1.08$, $+1.52$ and $+2.88$ [$+1.86$, $+4.08$].
+All rules cover 95 to 99\% of gold labels overall, but the lowest per-class coverage is 74\% on GoEmotions and 85\% on Ohsumed under CICLe and 0\% under each alternative (Table~\ref{tab:set_stats}).
+
 \input{figures/fig_imbalance}
+
+The controlled experiment pins the cause on the labelled pool.
+With the test sample fixed and the training sample made 10 or 100 times long-tailed, the conformal sets keep their coverage, 95.0, 94.9 and 96.7\% on Yahoo Answers and 95.4, 96.5 and 96.0\% on SST-5.
+Top-$m$ sets of the same size fall to 81.6 and 88.4\% at 100 times, probability-mass sets to 74.2 and 60.0\%, and marginal sets to 64.8 and 51.9\% while shrinking to 3.8 and 2.3 classes, because the shared threshold is set by the confident head classes (Figure~\ref{fig:imbalance}b).
+The missing coverage is all on the tail.
+At 100 times the rarest Yahoo Answers class is in the CICLe set for 98\% of its instances, in the top-$m$ set for 9\%, the probability-mass set for 1\% and the marginal set for 0\% (Figure~\ref{fig:imbalance}c), and per-class F1 collapses on the tail for the three alternatives only (Figure~\ref{fig:imbalance}d).
+An LLM cannot recover a label it is not offered.
+At 100 times with Per-Class retrieval, CICLe minus top-$m$ is $+7.44$ [$+6.72$, $+8.17$] on Yahoo Answers and $+4.21$ [$+3.37$, $+5.01$] on SST-5, minus probability mass $+9.44$ and $+10.70$, and minus marginal CP $+11.94$ [$+10.98$, $+12.89$] and $+12.92$ [$+11.72$, $+14.10$] (Fixed in Appendix~\ref{app:narrowing}).
+At 10 times the gaps are $+0.6$ to $+4.0$ points.
+
+An oracle set that always contains the gold label beats few-shot prompting by $+8.39$ [$+7.68$, $+9.13$] on balanced Yahoo Answers and $+8.73$ on SST-5 (Per-Class), of which CICLe realises $+1.32$ and $+1.14$, and it is 2.4 and 1.3 points above CICLe on GoEmotions and SemEval-18. On balanced data the bottleneck is ranking, not coverage.
+
+Two things do not happen.
+CICLe's margin over few-shot prompting does not grow with imbalance.
+With Per-Class retrieval it is $+1.32$, $+1.09$ and $+0.89$ at 1, 10 and 100 times on Yahoo Answers and $+1.14$, $+1.82$ and $+1.16$ on SST-5, all significant.
+Few-shot prompting lists every label and cannot lose coverage. What imbalance predicts is the gap between narrowing rules.
+Second, narrowing is not free of harm.
+Over 18,000 instance pairs at $k = 4$ (Table~\ref{tab:fixes}), Per-Class CICLe fixes 4.7\% of Yahoo Answers instances and breaks 3.4\%.
+Among the 5.0\% whose gold label the set misses, it fixes none and breaks 4.1\% that few-shot prompting had right, and on SST-5 that share is 35.6\%.
+The $1 - \alpha$ coverage is a direct bound on this damage, which is the argument for calibrating per class.
 
 \subsection{Uninformative Label Names}
 \label{sec:res-relabel}
-% CLAIM: With every label renamed to a nonsense word, CICLe's margin over few-shot is the largest measured
-% (+6.5 Fixed / +5.6 PC on Yahoo; +0.7 / +1.0 on GoEmotions, 36 pairs).
-\input{tables/relabel}
+
+Few-shot prompting with informative names can succeed without reading the examples, since the word Sports is a strong hint.
+Renaming every class to a nonsense word, identically for all seeds and on all five datasets, removes that hint while keeping the task (Table~\ref{tab:relabel}).
+With one Fixed example on Yahoo Answers, few-shot prompting scores 25.3 against 54.8 with the original names, while CICLe keeps 34.3.
+The candidate list without examples is useless when its words mean nothing ($k = 0$ falls from 56.3 to 18.9 on Yahoo Answers), so what CICLe adds here is examples from the right classes.
+Its advantage over few-shot prompting is the largest we measure, $+6.52$ [$+5.96$, $+7.09$] Fixed and $+5.62$ [$+5.00$, $+6.25$] Per-Class on Yahoo Answers and $+3.75$ and $+2.10$ on SST-5, against $-0.35$ (n.s.), $+1.32$, $+2.05$ and $+1.14$ with the original names.
+On SemEval-18 ($+0.79$, $+0.72$), GoEmotions ($+0.66$, $+0.98$) and Ohsumed ($+1.00$) the gain is close to the original one, as the names were weak hints to begin with.
+On renamed Yahoo Answers CICLe also beats top-$m$ and probability-mass sets of the same size by 2.6 and 4.5 to 5.0 points (Table~\ref{tab:narrowing}), while on renamed Ohsumed the smaller marginal sets (4.8 against 12.3 labels) beat it by $3.33$ [$2.05$, $4.21$] points.
+% PENDING: marginal and oracle narrowing on the renamed short-text datasets
 
 \subsection{When the LLM Pipeline Is Worth It}
 \label{sec:res-baselines}
-% CLAIM: With 1,600 balanced labels fine-tuned RoBERTa-base beats every pipeline on 4 of 5 datasets and the
-% base classifier alone wins on Yahoo; at 100x imbalance the order flips. [PENDING pool size.] Decision rule.
-\input{tables/baselines}
 
-\subsection{Choosing $\alpha$, and Robustness Across Models}
+Table~\ref{tab:baselines} (Appendix~\ref{app:pool}) puts the pipelines next to models that never call an LLM.
+The fixed configuration, Per-Class retrieval at $k = 4$, is the main number, and the best configuration per column, which is selected on the test set, is secondary.
+With 1,600 balanced labels a fine-tuned RoBERTa-base beats CICLe at the fixed configuration on four of five datasets (51.2 against 47.5 on SST-5, 24.5 against 15.7 on SemEval-18, 37.0 against 26.0 on GoEmotions, 55.4 against 51.7 on Ohsumed).
+On Yahoo Answers the logistic regression that CICLe narrows with scores 65.4 on its own, above every 3B to 8B pipeline (62.7, best 63.8) and above RoBERTa-base (61.8).
+The qualification is model size.
+Qwen2.5-32B with CICLe reaches 66.9 on Yahoo Answers and 55.9 on SST-5 (Appendix~\ref{app:large}), above both encoders and the logistic regression, but stays below RoBERTa-base on SemEval-18 (20.2) and GoEmotions (33.6).
+RoBERTa-large beats RoBERTa-base on Yahoo Answers and Ohsumed (64.6 and 66.1) and loses elsewhere under our recipe. % PENDING (rerun): RoBERTa-large is being retrained with a lower learning rate because two seeds collapsed; update these two numbers and Tables 4 and P
+
+The order flips when the labelled pool is skewed.
+At 100 times imbalance RoBERTa-base falls to 41.2 on Yahoo Answers and 31.9 on SST-5 and the logistic regression to 31.4 and 12.6, while CICLe loses 7.3 and 5.6 points (55.4 and 41.9) with few-shot prompting close behind (54.6 and 40.8).
+The pool-size sweep agrees (Figure~\ref{fig:pool} and Table~\ref{tab:pool} in Appendix~\ref{app:pool}).
+The pipelines are nearly flat between 250 and 2,000 labels, 60.5 to 62.7 on Yahoo Answers and 45.0 to 47.5 on SST-5, while RoBERTa-base climbs from 52.2 to 61.8 and from 38.8 to 51.2.
+On SST-5 the encoder overtakes the pipelines between 500 and 1,000 labels. On Yahoo Answers it never does, but the logistic regression does at 1,000.
+Narrowing itself needs calibration data.
+With 250 labels, 50 of them for calibration, CICLe's coverage is 92\% on SST-5 and its Per-Class margin is $-0.63$ [$-1.33$, $+0.13$], turning positive at 500 and 1,000 labels ($+0.60$ and $+0.83$ [$+0.20$, $+1.47$]). % CHECK: from paper/reference/analysis_2026-10-08_final.txt (B=2000); NUMBERS.md has no pool-size deltas
+With a plentiful balanced pool, fine-tune an encoder, or use the base classifier alone when it is strong.
+With a skewed or small pool, use an in-context pipeline, and narrow it with class-conditional conformal sets once a few hundred calibration examples are available.
+
+\subsection{Choosing $\alpha$, Components and Models}
 \label{sec:res-alpha}
-% CLAIM: A looser alpha pays where the classifier is strong (Yahoo) or sets are otherwise huge (GoEmotions),
-% is flat on SST; embedding matters more than classifier; no model is hurt by PC CICLe; 12B and 32B models
-% also gain (Appendix F); a 3B model with CICLe PC matches 32B zero-shot on the same seed.
-\input{figures/fig_alpha}
+
+$\alpha$ sets the coverage of the candidate set, its size and the share of instances the classifier answers alone (Figure~\ref{fig:alpha} and Table~\ref{tab:ablation} in Appendix~\ref{app:ablations}, two Llama models, 24 cells).
+Loosening it from 0.05 to 0.20 on Yahoo Answers turns $-0.37$ (n.s.) against few-shot prompting into $+3.57$ [$+2.67$, $+4.48$] while 35\% of the instances never reach the LLM.
+On GoEmotions and SemEval-18, where sets at 0.05 hold 22 of 28 and 17 of 20 classes, it adds $+3.02$ and $+1.36$, and on SST-5 the gain is flat at $+2.5$ to $+2.8$ for every $\alpha \geq 0.05$.
+Among the other components the embedding matters more than the classifier.
+Contriever beats MiniLM on SST-5 and GoEmotions ($+3.69$ against $+2.65$ and $+2.46$ against $+0.92$ over few-shot prompting) but not on Yahoo Answers, TF-IDF is weakest everywhere, and an SVM is within 0.4 points of the logistic regression.
+
+The gain does not depend on one prompt.
+With a second template on seed 42 (Table~\ref{tab:robust}), CICLe's Per-Class margin is $+1.88$ [$+0.78$, $+3.00$] on SST-5, $+0.71$ on SemEval-18 and $+1.32$ Fixed on Ohsumed, and not significant on Yahoo Answers and GoEmotions.
+With random instead of retrieved examples, few-shot prompting loses about 5 points on Yahoo Answers and CICLe's Per-Class margin grows to $+2.26$ [$+1.24$, $+3.29$]. % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed
+
+Larger models gain less but do not lose (Table~\ref{tab:large}, six pairs per cell).
+Mistral-NeMo-12B gains $+4.20$ [$+3.08$, $+5.26$] Fixed and $+4.39$ Per-Class on SST-5 and $+0.2$ to $+0.8$ (n.s.) elsewhere, and Qwen2.5-32B gains $+0.72$ and $+0.94$ on Yahoo Answers, $+1.53$ Fixed on SST-5 and $+0.2$ to $+0.5$ (n.s.) otherwise.
+On seed 42, a 3B model with Per-Class CICLe at $k = 4$ beats the 32B model's zero-shot score on Yahoo Answers (61.5 against 60.7) and SST-5 (51.0 against 48.8) and loses on SemEval-18 (14.9 against 15.3) and GoEmotions (24.4 against 32.0). % PENDING: 12B and 32B on Ohsumed
