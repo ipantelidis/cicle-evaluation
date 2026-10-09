@@ -1,7 +1,7 @@
 % Table C2. Candidate sets at the reference setting (MiniLM, LR, alpha 0.05), one run per seed (sets do not depend on the LLM, k or variant), mean over 3 seeds. Min. per-class coverage = min over classes of the coverage of that gold class, averaged over seeds.
 \begin{tabular}{llrrrr}
 \toprule
-Variant & Method & coverage (\%) & mean size & singleton (\%) & min.\ per-class coverage (\%) \\
+Variant & Method & coverage (\%) & mean size & singleton (\%) & min.\ class cov.\ (\%) \\
 \midrule
 Yahoo Answers & CICLe & 95.0 & 5.67 & 3.4 & 90.6 \\
  & Top-$m$ & 93.7 & 5.67 & 0.0 & 87.1 \\
@@ -54,6 +54,7 @@ SST-5 (renamed) & CICLe & 95.4 & 3.87 & 0.0 & 92.3 \\
 SemEval-18 & CICLe & 94.4 & 17.12 & 0.0 & 79.9 \\
  & Top-$m$ & 97.1 & 17.00 & 0.0 & 77.7 \\
  & Prob. mass & 97.2 & 16.87 & 0.0 & 80.8 \\
+ & Marginal CP & 96.2 & 16.02 & 0.0 & 73.5 \\
  & Oracle & 100.0 & 17.00 & 0.0 & 100.0 \\
 \addlinespace
 SemEval-18 (renamed) & CICLe & 94.4 & 17.16 & 0.0 & 81.1 \\
@@ -71,7 +72,7 @@ GoEmotions & CICLe & 95.4 & 22.10 & 0.0 & 73.9 \\
 GoEmotions (renamed) & CICLe & 95.5 & 22.13 & 0.0 & 75.6 \\
  & Top-$m$ & 98.8 & 22.00 & 0.0 & 0.0 \\
  & Prob. mass & 97.9 & 18.80 & 0.0 & 0.0 \\
- & Marginal CP & 95.2 & 14.34 & 0.1 & 0.0 \\
+ & Marginal CP & 95.0 & 14.35 & 0.1 & 0.0 \\
  & Oracle & 100.0 & 22.00 & 0.0 & 100.0 \\
 \addlinespace
 Ohsumed & CICLe & 96.4 & 12.27 & 0.0 & 84.9 \\

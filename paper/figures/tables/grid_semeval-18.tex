@@ -1,10 +1,10 @@
 % Table B: semeval-18, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
 \begin{tabular}{llrrrrrrr}
 \toprule
-Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 MiniLM + LR & -- & -- & 3 & 9.7 & 26.4 & 0.0 & 0.0 & 0 \\
-RoBERTa-base (fine-tuned) & -- & -- & 6 & 23.8 & 38.5 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 6 & 23.9 & 39.6 & 0.0 & 0.0 & 0 \\
 \midrule
 Zero-shot & -- & -- & 18 & 12.2 & 19.7 & 5.1 & 0.0 & 236 \\
 \midrule
@@ -34,6 +34,10 @@ Prob. mass & Fixed & 1 & 18 & 14.9 & 20.3 & 6.9 & 1.0 & 254 \\
 Prob. mass & Fixed & 4 & 18 & 15.6 & 21.2 & 5.0 & 4.0 & 326 \\
 Prob. mass & Per-Class & 1 & 18 & 15.8 & 21.0 & 3.8 & 16.9 & 640 \\
 Prob. mass & Per-Class & 4 & 18 & 15.6 & 22.1 & 2.3 & 67.5 & 1,883 \\
+Marginal CP & Fixed & 1 & 18 & 14.9 & 20.0 & 6.8 & 1.0 & 251 \\
+Marginal CP & Fixed & 4 & 18 & 15.7 & 21.1 & 4.9 & 4.0 & 323 \\
+Marginal CP & Per-Class & 1 & 18 & 16.0 & 21.3 & 3.7 & 16.0 & 616 \\
+Marginal CP & Per-Class & 4 & 18 & 15.9 & 22.4 & 2.3 & 64.1 & 1,795 \\
 Oracle & Fixed & 1 & 18 & 15.8 & 21.6 & 7.4 & 1.0 & 255 \\
 Oracle & Fixed & 4 & 18 & 17.0 & 23.1 & 5.9 & 4.0 & 328 \\
 Oracle & Per-Class & 1 & 18 & 16.9 & 22.6 & 4.7 & 17.0 & 647 \\

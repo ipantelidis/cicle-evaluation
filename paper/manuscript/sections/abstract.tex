@@ -2,8 +2,8 @@
 \begin{abstract}
 Narrowing the label set before prompting a large language model (LLM) is a cheap aid to in-context text classification.
 Conformal In-Context Learning (CICLe) does this with a small classifier calibrated by class-conditional conformal prediction.
-Earlier evidence for it came from a protocol with unlisted labels, unequal example pools and unseeded conformal sets, under which up to 65\% of outputs did not parse.
-We correct it and evaluate CICLe on five English datasets with eight open LLMs and paired bootstrap tests.
+Under the prompt format of the released implementation, which lists no admissible labels, up to 65\% of some models' outputs do not parse, and few-shot and CICLe runs are not paired.
+We give a corrected protocol and evaluate CICLe on five English datasets with eight open LLMs and paired bootstrap tests.
 Narrowing gives a small, reliable gain over few-shot prompting, 0.5 to 1.8 macro-F1 points, and 11 to 45\% shorter prompts.
 How one narrows matters.
 When the labelled pool is long-tailed, class-conditional sets keep their coverage while top-$k$, probability-mass and marginal sets lose 3 to 13 points.

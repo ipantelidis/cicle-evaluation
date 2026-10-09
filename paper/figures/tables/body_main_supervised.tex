@@ -1,0 +1,18 @@
+% Table 4 body (main text). Macro-F1 (pp): supervised columns mean over 3 seeds, LLM columns over 6 models x 3 seeds, Per-Class k=4 (Ohsumed: Fixed, marked F). The test sample is the same at every imbalance level. Bold = best per row. Pool sizes: tables/pool_size.tex.
+\begin{tabular}{lccccc}
+\toprule
+ & MiniLM+LR & RoB-base & RoB-large & FS PC & CICLe PC \\
+\midrule
+Yahoo 1$\times$ & \textbf{65.4} & 61.8 & 65.2 & 61.6 & 62.7 \\
+Yahoo 10$\times$ & 50.4 & 58.7 & \textbf{62.9} & 59.4 & 60.3 \\
+Yahoo 100$\times$ & 31.4 & 41.2 & 43.6 & 54.6 & \textbf{55.4} \\
+\midrule
+SST-5 1$\times$ & 35.5 & 51.2 & \textbf{52.9} & 46.6 & 47.5 \\
+SST-5 10$\times$ & 20.5 & 44.5 & \textbf{47.4} & 44.6 & 46.5 \\
+SST-5 100$\times$ & 12.6 & 31.9 & 32.5 & 40.8 & \textbf{41.9} \\
+\midrule
+SemEval & 9.7 & \textbf{24.5} & 23.2 & 15.4 & 15.7 \\
+GoEmo & 11.2 & \textbf{37.0} & 34.3 & 24.8 & 26.0 \\
+Ohsumed & 45.2 & 55.4 & \textbf{65.6} & 50.4$^{\mathrm{F}}$ & 51.7$^{\mathrm{F}}$ \\
+\bottomrule
+\end{tabular}

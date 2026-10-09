@@ -1,8 +1,8 @@
-% Table L. Original (DS2026) protocol vs the corrected one on the same seed-42 test sample: zero-shot, few-shot Fixed and CICLe Fixed at k in {1,4} (FS / CICLe cells are means over k). Legacy = no label list in the few-shot/CICLe prompts, different wording, 5-token generation cap, exact matching. Delta = CICLe - few-shot paired over the 1,000 instances and k in {1,4} (2 cells), 95% bootstrap CI.
+% Table L. Original prompt format vs the corrected protocol on the same seed-42 test sample: zero-shot, few-shot Fixed and CICLe Fixed at k in {1,4} (FS / CICLe cells are means over k). legacy = original prompt format (no label list in the few-shot/CICLe prompts, different wording, 5-token generation cap, exact matching). Delta = CICLe - few-shot paired over the 1,000 instances and k in {1,4} (2 cells), 95% bootstrap CI.
 \begin{tabular}{llcccccc}
 \toprule
 Dataset & Model & \multicolumn{2}{c}{invalid outputs (\%): ZS / FS / CICLe} & \multicolumn{2}{c}{macro-F1: ZS / FS / CICLe} & \multicolumn{2}{c}{$\Delta$ CICLe $-$ few-shot} \\
- & & legacy & corrected & legacy & corrected & legacy & corrected \\
+ & & original & corrected & original & corrected & original & corrected \\
 \midrule
 Yahoo Answers & Llama-3.2-3B & 0.6 / 2.9 / 4.6 & 1.9 / 0.6 / 0.5 & 51.0 / 54.5 / 55.6 & 50.6 / 49.4 / 45.6 & +1.07\,\textsuperscript{n.s.} {\scriptsize [-0.06, +2.19]} & \textbf{-3.79} {\scriptsize [-5.58, -2.04]} \\
  & Ministral-3B & 1.0 / 49.4 / 48.4 & 1.5 / 0.8 / 0.3 & 49.2 / 34.3 / 33.6 & 51.4 / 45.7 / 45.1 & -0.76\,\textsuperscript{n.s.} {\scriptsize [-2.36, +0.88]} & -0.59\,\textsuperscript{n.s.} {\scriptsize [-2.33, +1.19]} \\

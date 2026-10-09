@@ -1,0 +1,11 @@
+% Table 2b body (main text). Paired Δ CICLe − few-shot (pp) with the 95% bootstrap CI over test instances, pooled over all k: 72 (model, seed, k) pairs per cell; Ohsumed Fixed 36, Ohsumed Per-Class 18 (k=1 only, dagger). Bold: interval excludes zero. Last row: 1 - CICLe PC tokens / few-shot PC tokens per LLM call at k=4 (Ohsumed k=1).
+\begin{tabular}{lccccc}
+\toprule
+ & Yahoo Answers & SST-5 & SemEval-18 & GoEmotions & Ohsumed \\
+\midrule
+Fixed & -0.19 [-0.57, +0.20] & \textbf{+1.77 [+1.14, +2.39]} & \textbf{+0.52 [+0.30, +0.73]} & \textbf{+0.59 [+0.19, +1.07]} & \textbf{+1.15 [+0.54, +1.87]} \\
+Per-Class & \textbf{+1.40 [+1.04, +1.76]} & \textbf{+1.07 [+0.42, +1.71]} & \textbf{+0.46 [+0.22, +0.71]} & \textbf{+0.92 [+0.50, +1.38]} & \textbf{+5.21 [+4.43, +6.08]} \\
+\midrule
+Tokens saved & 36\% & 18\% & 14\% & 20\% & 45\%$^{\dagger}$ \\
+\bottomrule
+\end{tabular}

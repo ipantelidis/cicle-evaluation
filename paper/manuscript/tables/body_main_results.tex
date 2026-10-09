@@ -1,4 +1,5 @@
-% Table 2. Macro-F1 (pp) at k=4; LLM rows mean over 6 models x 3 seeds, small number = mean prompt tokens per LLM call; Delta rows pool all k (72 pairs; Ohsumed Fixed 36, Ohsumed Per-Class 18 at k=1 only), 95% paired bootstrap CI over test instances. Ohsumed Per-Class cells show k=1 (marked).
+% Panel A of Table 2: main_results.tex from make_figures.py with the Delta rows removed (they are in body_main_delta.tex).
+% Table 2 (appendix version with tokens). Macro-F1 (pp) at k=4; LLM rows mean over 6 models x 3 seeds, small number = mean prompt tokens per LLM call; Delta rows = CICLe - few-shot pooled over all k (72 pairs; Ohsumed Fixed 36, Ohsumed Per-Class 18 at k=1 only), 95% paired bootstrap CI over test instances. Ohsumed Per-Class cells show k=1 (marked).
 \begin{tabular}{lccccc}
 \toprule
  & Yahoo Answers & SST-5 & SemEval-18 & GoEmotions & Ohsumed \\
@@ -7,15 +8,11 @@ MiniLM + LR (no LLM) & 65.4 & 35.5 & 9.7 & 11.2 & 45.2 \\
 RoBERTa-base, fine-tuned & 61.8 & 51.2 & 24.5 & 37.0 & 55.4 \\
 \midrule
 Zero-shot & 55.3 {\scriptsize 221} & 40.3 {\scriptsize 184} & 12.2 {\scriptsize 236} & 24.9 {\scriptsize 220} & 35.9 {\scriptsize 579} \\
-CICLe, candidate set only ($k$=0) & 56.3 {\scriptsize 212} & 45.1 {\scriptsize 181} & 13.0 {\scriptsize 225} & 26.2 {\scriptsize 207} & 40.2 {\scriptsize 509} \\
+Candidate set only ($k$=0) & 56.3 {\scriptsize 212} & 45.1 {\scriptsize 181} & 13.0 {\scriptsize 225} & 26.2 {\scriptsize 207} & 40.2 {\scriptsize 509} \\
 Few-shot, Fixed & 58.4 {\scriptsize 455} & 44.1 {\scriptsize 298} & 15.3 {\scriptsize 338} & 26.4 {\scriptsize 305} & 50.4 {\scriptsize 1,826} \\
 CICLe, Fixed & 58.2 {\scriptsize 447} & 45.8 {\scriptsize 295} & 15.9 {\scriptsize 328} & 26.8 {\scriptsize 293} & 51.7 {\scriptsize 1,756} \\
 Few-shot, Per-Class & 61.6 {\scriptsize 2,166} & 46.6 {\scriptsize 746} & 15.4 {\scriptsize 2,209} & 24.8 {\scriptsize 2,422} & 44.6\textsuperscript{$k$=1} {\scriptsize 7,518} \\
 CICLe, Per-Class & 62.7 {\scriptsize 1,378} & 47.5 {\scriptsize 615} & 15.7 {\scriptsize 1,911} & 26.0 {\scriptsize 1,942} & 49.8\textsuperscript{$k$=1} {\scriptsize 4,159} \\
-\midrule
-$\Delta$ Fixed (CICLe $-$ few-shot, all $k$) & -0.19\,\textsuperscript{n.s.} & \textbf{+1.77} & \textbf{+0.52} & \textbf{+0.59} & \textbf{+1.15} \\
- & {\scriptsize [-0.57, +0.20], $n$=72} & {\scriptsize [+1.14, +2.39], $n$=72} & {\scriptsize [+0.30, +0.73], $n$=72} & {\scriptsize [+0.19, +1.07], $n$=72} & {\scriptsize [+0.54, +1.87], $n$=36} \\
-$\Delta$ Per-Class (CICLe $-$ few-shot, all $k$) & \textbf{+1.40} & \textbf{+1.07} & \textbf{+0.46} & \textbf{+0.92} & \textbf{+5.21} \\
- & {\scriptsize [+1.04, +1.76], $n$=72} & {\scriptsize [+0.42, +1.71], $n$=72} & {\scriptsize [+0.22, +0.71], $n$=72} & {\scriptsize [+0.50, +1.38], $n$=72} & {\scriptsize [+4.43, +6.08], $n$=18} \\
 \bottomrule
 \end{tabular}
+

@@ -27,15 +27,10 @@ Every experiment uses a stratified subsample of 2,000 labelled and 1,000 test in
 Of the 2,000, 400 form the calibration split, the proportion of \citet{randl2024cicle}, and the base classifier, the retrieval pool and the supervised baselines all see the same 1,600 training examples.
 One test sample per seed is shared by every method, which makes paired tests over instances possible, and the seeds change the subsample, the calibration split and the conformal tie-breaking (Appendix~\ref{app:prompt} gives the reasoning behind the sizes).
 
-Relative to the pilot, the protocol fixes five things.
-(i) Every prompt lists the admissible labels, all classes or the candidate set, with identical wording otherwise, so the list and the retrieved examples are the only difference between conditions.
-(ii) Every method retrieves from the same pool.
-(iii) Calibration split, conformal sets and test sample are seeded.
-(iv) The generation budget follows from the longest label, outputs are normalised before matching, and anything that still matches no label is counted as wrong and reported as an invalid output.
-(v) A per-instance record is saved for every run.
-Appendix~\ref{app:prompt} gives the template, the parser and the pilot's protocol, which we rerun inside the same framework on seed 42 with Fixed retrieval and $k \in \{1, 4\}$ (Appendix~\ref{app:legacy}).
+Relative to the prompt format of the released CICLe implementation, the protocol changes five things. Every prompt lists the admissible labels, all classes or the candidate set, with identical wording otherwise. Every method retrieves from the same pool. Calibration split, conformal sets and test sample are seeded. Outputs are normalised before matching, and anything that still matches no label counts as wrong and is reported as an invalid output. A per-instance record is saved for every run.
+Appendix~\ref{app:prompt} gives the template, the parser and the original prompt format, which we rerun inside the same framework (Appendix~\ref{app:original}).
 
-Both retrieval variants are run for every prompting method, with $k \in \{1, 2, 4, 8\}$ on the four short-text datasets and $k \in \{1, 4\}$ in every other experiment. On Ohsumed a Per-Class prompt at $k = 4$ would hold about 90 abstracts, so Per-Class retrieval is run at $k = 1$ only.
+Both retrieval variants are run for every prompting method, with $k \in \{1, 2, 4, 8\}$ on the four short-text datasets and $k \in \{1, 4\}$ elsewhere, and Per-Class retrieval on Ohsumed at $k = 1$ only (Appendix~\ref{app:prompt}).
 The reference setting is MiniLM, logistic regression and $\alpha = 0.05$, the choices of the original paper.
 
 \subsection{Experiments}
@@ -49,6 +44,12 @@ Each experiment beyond the main grid isolates one variable.
 \emph{Pool size}: on SST-5 and Yahoo Answers the labelled pool is reduced to 250, 500 and 1,000 examples, split 80/20 as before, with every pipeline and baseline rerun.
 \emph{Ablations}: $\alpha \in \{0.01, 0.05, 0.10, 0.20\}$, the embedding and the classifier, with Llama-3.1-8B and Llama-3.2-3B on the short-text datasets. % PENDING: Ohsumed and the remaining models for the SVM and embedding ablations
 \emph{Prompt robustness}: a second template with the labels in random order and the most similar example last, and random instead of similarity-based retrieval, on seed 42 with $k \in \{1, 4\}$. % PENDING: random retrieval on SST-5, SemEval-18 and Ohsumed
+
+\paragraph{Roadmap.}
+The protocol claim rests on the rerun of the original prompt format and the per-model comparison (Section~\ref{sec:res-protocol}).
+The gain claim rests on the main grid against few-shot prompting and the $k = 0$ runs (Section~\ref{sec:res-gain}).
+The narrowing claim rests on the alternative rules under controlled imbalance, on the naturally long-tailed datasets and under label renaming (Sections~\ref{sec:res-narrowing} and~\ref{sec:res-relabel}).
+The claim about when the LLM is worth it rests on the supervised baselines, the pool-size sweep, the $\alpha$ ablation and the larger models (Sections~\ref{sec:res-baselines} and~\ref{sec:res-alpha}).
 
 \subsection{Methods and Baselines}
 \label{sec:methods}

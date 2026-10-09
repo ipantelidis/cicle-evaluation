@@ -2,7 +2,7 @@
 \begin{table*}[t]
   \centering
   \small
-  \input{tables/body_pool_size}
+  \resizebox{\textwidth}{!}{\input{tables/body_pool_size}}
   \caption{Macro-F1 against the size of the labelled pool (training plus calibration, split 80/20). Supervised rows are means over three seeds, LLM rows over six models and three seeds, and the test sample is the same at every pool size. The best pipeline is selected on the test set among $k \in \{1, 4\}$ below 2,000 labels. Bold marks the best value per row. The RoBERTa-large rows are being rerun with a lower learning rate.}
   \label{tab:pool}
 \end{table*}

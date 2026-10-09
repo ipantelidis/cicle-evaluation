@@ -1,14 +1,18 @@
-% Table 4. Macro-F1; supervised rows mean over 3 seeds, LLM rows over 6 models x 3 seeds. Zero-shot does not depend on the pool (1x column only). F = Fixed retrieval (Ohsumed has no Per-Class runs). Bold = best per column.
-\begin{tabular}{lccccccccc}
+% Table 4 (appendix version). As the main body plus zero-shot (1x only; it does not depend on the pool) and the best LLM pipeline (argmax over method, variant, k of the 18-run mean; name in small type). Bold = best per row.
+\begin{tabular}{lccccccc}
 \toprule
- & Yahoo Answers 1$\times$ & Yahoo Answers 10$\times$ & Yahoo Answers 100$\times$ & SST-5 1$\times$ & SST-5 10$\times$ & SST-5 100$\times$ & SemEval-18 & GoEmotions & Ohsumed \\
+ & MiniLM + LR & RoBERTa-base & RoBERTa-large & Zero-shot & Few-shot PC $k$=4 & CICLe PC $k$=4 & best LLM pipeline \\
 \midrule
-MiniLM + LR & \textbf{65.4} & 50.4 & 31.4 & 35.5 & 20.5 & 12.6 & 9.7 & 11.2 & 45.2 \\
-RoBERTa-base, fine-tuned & 61.8 & 58.7 & 41.2 & \textbf{51.2} & 44.5 & 31.9 & \textbf{24.5} & \textbf{37.0} & 55.4 \\
-RoBERTa-large, fine-tuned & 64.6 & \textbf{61.6} & 44.9 & 39.9 & 35.8 & 32.2 & 23.0 & 27.3 & \textbf{66.1} \\
-Zero-shot & 55.3 & -- & -- & 40.3 & -- & -- & 12.2 & 24.9 & 35.9 \\
-Few-shot PC, $k$=4 & 61.6 & 59.4 & 54.6 & 46.6 & 44.6 & 40.8 & 15.4 & 24.8 & 50.4\textsuperscript{F} \\
-CICLe PC, $k$=4 & 62.7 & 60.3 & 55.4 & 47.5 & \textbf{46.5} & 41.9 & 15.7 & 26.0 & 51.7\textsuperscript{F} \\
-Best LLM pipeline & 63.8 {\scriptsize CICLe PC $k$=8} & 60.3 {\scriptsize CICLe PC $k$=4} & \textbf{56.0} {\scriptsize CICLe PC $k$=1} & 47.6 {\scriptsize CICLe PC $k$=2} & \textbf{46.5} {\scriptsize CICLe PC $k$=4} & \textbf{43.4} {\scriptsize CICLe PC $k$=1} & 16.1 {\scriptsize CICLe F $k$=8} & 27.3 {\scriptsize CICLe F $k$=8} & 53.1 {\scriptsize CICLe F $k$=8} \\
+Yahoo Answers 1$\times$ & \textbf{65.4} & 61.8 & 65.2 & 55.3 & 61.6 & 62.7 & 63.8 {\scriptsize C-PC-8} \\
+Yahoo Answers 10$\times$ & 50.4 & 58.7 & \textbf{62.9} & -- & 59.4 & 60.3 & 60.3 {\scriptsize C-PC-4} \\
+Yahoo Answers 100$\times$ & 31.4 & 41.2 & 43.6 & -- & 54.6 & 55.4 & \textbf{56.0} {\scriptsize C-PC-1} \\
+\midrule
+SST-5 1$\times$ & 35.5 & 51.2 & \textbf{52.9} & 40.3 & 46.6 & 47.5 & 47.6 {\scriptsize C-PC-2} \\
+SST-5 10$\times$ & 20.5 & 44.5 & \textbf{47.4} & -- & 44.6 & 46.5 & 46.5 {\scriptsize C-PC-4} \\
+SST-5 100$\times$ & 12.6 & 31.9 & 32.5 & -- & 40.8 & 41.9 & \textbf{43.4} {\scriptsize C-PC-1} \\
+\midrule
+SemEval-18 & 9.7 & \textbf{24.5} & 23.2 & 12.2 & 15.4 & 15.7 & 16.1 {\scriptsize C-F-8} \\
+GoEmotions & 11.2 & \textbf{37.0} & 34.3 & 24.9 & 24.8 & 26.0 & 27.3 {\scriptsize C-F-8} \\
+Ohsumed & 45.2 & 55.4 & \textbf{65.6} & 35.9 & 50.4$^{\mathrm{F}}$ & 51.7$^{\mathrm{F}}$ & 53.1 {\scriptsize C-F-8} \\
 \bottomrule
 \end{tabular}

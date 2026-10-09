@@ -1,17 +1,17 @@
 % Table 1. Classes and imbalance computed on the training data as loaded (non-empty texts; GoEmotions single-label comments only); mean input length in Llama-3.1 tokens over the seed-42 test sample.
 \begin{table}[t]
   \centering
-  \small
-  \setlength{\tabcolsep}{3.5pt}
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
   \begin{tabular}{llrrrl}
     \toprule
     \textbf{Dataset} & \textbf{Domain} & \textbf{Cls.} & \textbf{Imb.} & \textbf{Len.} & \textbf{Variants} \\
     \midrule
-    SST-5         & Sentiment, reviews &  5 & 2.1$\times$ &  23 & I, P, R \\
-    Yahoo Answers & Topic, Q\&A        & 10 & 1.4$\times$ &  50 & I, P, R \\
-    SemEval-18    & Emoji, tweets      & 20 & 8.7$\times$ &  20 & R \\
-    GoEmotions    & Emotion, Reddit    & 28 & 329$\times$ &  16 & R \\
-    Ohsumed       & Disease, abstracts & 23 & 65$\times$  & 271 & R, F \\
+    SST-5         & Sentiment &  5 & 2.1$\times$ &  23 & I, P, R \\
+    Yahoo Answers & Topic        & 10 & 1.4$\times$ &  50 & I, P, R \\
+    SemEval-18    & Emoji      & 20 & 8.7$\times$ &  20 & R \\
+    GoEmotions    & Emotion    & 28 & 329$\times$ &  16 & R \\
+    Ohsumed       & Medical & 23 & 65$\times$  & 271 & R, F \\
     \bottomrule
   \end{tabular}
   \caption{Datasets. \emph{Cls.} is the number of classes, \emph{Imb.} the ratio between the largest and the smallest class in the full training set, \emph{Len.} the mean input length in Llama-3.1 tokens. \emph{Variants}: I = controlled imbalance of the labelled pool (10$\times$, 100$\times$), P = pool size (250, 500, 1,000), R = label renaming, F = Fixed retrieval only beyond $k = 1$ (a Per-Class prompt at $k = 4$ would hold about 90 abstracts). Every dataset is subsampled to 1,600 training, 400 calibration and 1,000 test instances per seed (Section~\ref{sec:protocol}).}

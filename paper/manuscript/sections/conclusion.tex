@@ -1,9 +1,10 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We evaluated conformal label narrowing for in-context text classification under a protocol that lists the admissible labels in every prompt, retrieves from one labelled pool for every method and pairs runs by seed.
-Four rules of thumb follow.
-First, compare prompting methods only with the label list and the example pool held equal and invalid outputs reported, or the comparison measures the prompt format.
-Second, narrowing with CICLe is worth 0.5 to 1.8 macro-F1 points over few-shot prompting on short texts and 5 points on long documents with Per-Class retrieval, and it shortens Per-Class prompts by 11 to 45\%. Third, once the labelled pool is long-tailed, class-conditional conformal sets keep their coverage on rare classes and top-$m$, probability-mass and marginal conformal sets do not, and the LLM cannot recover a label it was not offered. On balanced data any rule will do, and narrowing helps most when label names carry no meaning.
-Fourth, with a plentiful balanced pool, a fine-tuned encoder, or the base classifier alone when it is strong, beats every 3B to 8B pipeline. With a skewed or small pool the in-context pipelines degrade far less, and class-conditional narrowing is the rule to use once a few hundred calibration examples exist. A looser miscoverage level pays where the classifier is strong.
-Finally, class imbalance does not predict CICLe's benefit over few-shot prompting. It separates narrowing rules from each other.
+The conclusions a prompting comparison reaches depend on its protocol. Listing the admissible labels, sharing the example pool and seeding the conformal sets change which models appear to benefit from narrowing. Rule: hold the label list and the pool equal and report invalid outputs before comparing prompting methods.
+
+Narrowing the label set with class-conditional conformal prediction gives a small, reliable gain over few-shot prompting and a shorter prompt. The gain is 0.5 to 1.8 points on short texts and larger on long documents with Per-Class retrieval. Rule: expect a point or two from narrowing, and a prompt that is a third shorter.
+
+How one narrows matters once the labelled pool is long-tailed. Class-conditional sets keep their coverage on rare classes, top-$m$, probability-mass and marginal sets do not, and the LLM cannot recover a label it was not offered. The gain is largest when the label names carry no meaning. Rule: calibrate per class when the pool is skewed, and use any rule when it is balanced.
+
+An LLM pipeline is worth its cost when labels are skewed or scarce, and a fine-tuned encoder, or the base classifier alone, wins when they are plentiful and balanced. Rule: fine-tune on a large balanced pool, prompt with a narrowed list otherwise, and loosen $\alpha$ as the classifier improves.

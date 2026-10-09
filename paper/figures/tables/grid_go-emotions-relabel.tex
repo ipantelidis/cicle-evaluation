@@ -1,7 +1,7 @@
 % Table B: go-emotions-relabel, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
 \begin{tabular}{llrrrrrrr}
 \toprule
-Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 Few-shot & Fixed & 1 & 18 & 8.0 & 10.8 & 0.7 & 1.0 & 286 \\
 Few-shot & Fixed & 4 & 18 & 11.8 & 16.7 & 1.3 & 4.0 & 351 \\
@@ -21,13 +21,13 @@ Prob. mass & Fixed & 1 & 18 & 8.1 & 11.8 & 3.1 & 1.0 & 254 \\
 Prob. mass & Fixed & 4 & 18 & 12.1 & 17.6 & 1.5 & 4.0 & 318 \\
 Prob. mass & Per-Class & 1 & 18 & 11.4 & 14.2 & 0.6 & 18.8 & 644 \\
 Prob. mass & Per-Class & 4 & 18 & 14.8 & 20.0 & 0.6 & 75.2 & 1,872 \\
-Marginal CP & Fixed & 1 & 2 & 10.9 & 15.0 & 0.2 & 1.0 & 159 \\
-Marginal CP & Fixed & 4 & 2 & 16.9 & 28.9 & 0.1 & 4.0 & 221 \\
-Marginal CP & Per-Class & 1 & 2 & 15.1 & 19.5 & 0.4 & 14.3 & 443 \\
-Marginal CP & Per-Class & 4 & 1 & 18.1 & 27.8 & 0.3 & 56.2 & 1,313 \\
-Oracle & Fixed & 1 & 1 & 10.7 & 13.6 & 0.0 & 1.0 & 185 \\
-Oracle & Fixed & 4 & 1 & 18.1 & 28.9 & 0.1 & 4.0 & 247 \\
-Oracle & Per-Class & 1 & 1 & 15.5 & 18.5 & 0.0 & 22.0 & 621 \\
-Oracle & Per-Class & 4 & 1 & 21.0 & 28.3 & 1.1 & 84.0 & 1,943 \\
+Marginal CP & Fixed & 1 & 18 & 8.7 & 13.1 & 2.2 & 1.0 & 239 \\
+Marginal CP & Fixed & 4 & 18 & 12.8 & 19.6 & 1.2 & 4.0 & 303 \\
+Marginal CP & Per-Class & 1 & 18 & 12.5 & 16.7 & 0.6 & 14.4 & 531 \\
+Marginal CP & Per-Class & 4 & 18 & 15.8 & 23.0 & 0.6 & 57.5 & 1,466 \\
+Oracle & Fixed & 1 & 18 & 9.7 & 12.6 & 1.3 & 1.0 & 265 \\
+Oracle & Fixed & 4 & 18 & 13.7 & 19.4 & 1.1 & 4.0 & 330 \\
+Oracle & Per-Class & 1 & 18 & 12.7 & 15.1 & 0.5 & 22.0 & 722 \\
+Oracle & Per-Class & 4 & 18 & 16.6 & 21.1 & 0.6 & 84.1 & 2,086 \\
 \bottomrule
 \end{tabular}

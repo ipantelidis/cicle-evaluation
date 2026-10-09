@@ -166,6 +166,8 @@ class Variant:
             c = d["config"]
             if bool(c.get("legacy_prompt")) != self.legacy or c["n_test"] != len(d["records"]):
                 continue  # same filters as analyze.load (inverted for the legacy directory)
+            if c.get("emb") == "roberta-large" and c.get("lr") != 1e-05:
+                continue  # RoBERTa-large: only the rerun at lr = 1e-5 counts
             run = _reduce(d, self.vocab)
             run["_path"] = p
             key = (c["method"], c.get("variant"), c.get("k"), c["model"], c.get("emb"),

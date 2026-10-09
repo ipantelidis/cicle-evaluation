@@ -1,0 +1,33 @@
+% Table C1b. Paired Δ macro-F1 (pp), CICLe minus alternative, 95% bootstrap CI over test instances; vs few-shot pools all k (72 cells on the four main sets, 36 elsewhere, 18 for Ohsumed Per-Class), the other comparators k in {1,4} (36 cells, Ohsumed Per-Class 18). Bold: CI excludes 0.
+\begin{tabular}{llcc}
+\toprule
+Variant & Retrieval & vs.\ marginal CP & vs.\ oracle \\
+\midrule
+Yahoo Answers & Fixed & \begin{tabular}[c]{@{}c@{}}-0.02\,\textsuperscript{n.s.}\\{\scriptsize [-0.37, +0.33]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-7.46}\\{\scriptsize [-8.21, -6.74]}\end{tabular} \\
+Yahoo Answers & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+0.35}\\{\scriptsize [+0.02, +0.68]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-7.07}\\{\scriptsize [-7.83, -6.33]}\end{tabular} \\
+Yahoo Answers 10$\times$ & Fixed & \begin{tabular}[c]{@{}c@{}}-0.31\,\textsuperscript{n.s.}\\{\scriptsize [-0.84, +0.22]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-6.85}\\{\scriptsize [-7.54, -6.19]}\end{tabular} \\
+Yahoo Answers 10$\times$ & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+0.56}\\{\scriptsize [+0.07, +1.07]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-6.80}\\{\scriptsize [-7.53, -6.12]}\end{tabular} \\
+Yahoo Answers 100$\times$ & Fixed & \begin{tabular}[c]{@{}c@{}}\textbf{+10.81}\\{\scriptsize [+9.81, +11.75]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-3.10}\\{\scriptsize [-3.69, -2.52]}\end{tabular} \\
+Yahoo Answers 100$\times$ & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+11.94}\\{\scriptsize [+10.98, +12.89]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-3.31}\\{\scriptsize [-3.86, -2.75]}\end{tabular} \\
+Yahoo Answers (renamed) & Fixed & \begin{tabular}[c]{@{}c@{}}-0.20\,\textsuperscript{n.s.}\\{\scriptsize [-0.65, +0.25]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-2.42}\\{\scriptsize [-3.15, -1.69]}\end{tabular} \\
+Yahoo Answers (renamed) & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+0.60}\\{\scriptsize [+0.14, +1.07]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-4.05}\\{\scriptsize [-4.83, -3.25]}\end{tabular} \\
+SST-5 & Fixed & \begin{tabular}[c]{@{}c@{}}-0.56\,\textsuperscript{n.s.}\\{\scriptsize [-1.18, +0.04]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-7.11}\\{\scriptsize [-8.06, -6.11]}\end{tabular} \\
+SST-5 & Per-Class & \begin{tabular}[c]{@{}c@{}}-0.03\,\textsuperscript{n.s.}\\{\scriptsize [-0.67, +0.62]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-7.60}\\{\scriptsize [-8.53, -6.61]}\end{tabular} \\
+SST-5 10$\times$ & Fixed & \begin{tabular}[c]{@{}c@{}}\textbf{+3.22}\\{\scriptsize [+2.39, +4.08]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-6.59}\\{\scriptsize [-7.56, -5.61]}\end{tabular} \\
+SST-5 10$\times$ & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+4.01}\\{\scriptsize [+3.09, +4.91]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-7.25}\\{\scriptsize [-8.24, -6.22]}\end{tabular} \\
+SST-5 100$\times$ & Fixed & \begin{tabular}[c]{@{}c@{}}\textbf{+10.28}\\{\scriptsize [+9.15, +11.36]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-5.33}\\{\scriptsize [-6.20, -4.43]}\end{tabular} \\
+SST-5 100$\times$ & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+12.92}\\{\scriptsize [+11.72, +14.10]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-5.70}\\{\scriptsize [-6.58, -4.82]}\end{tabular} \\
+SST-5 (renamed) & Fixed & \begin{tabular}[c]{@{}c@{}}+0.07\,\textsuperscript{n.s.}\\{\scriptsize [-0.39, +0.55]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-2.52}\\{\scriptsize [-3.21, -1.84]}\end{tabular} \\
+SST-5 (renamed) & Per-Class & \begin{tabular}[c]{@{}c@{}}-0.58\,\textsuperscript{n.s.}\\{\scriptsize [-1.16, +0.01]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-5.48}\\{\scriptsize [-6.29, -4.69]}\end{tabular} \\
+SemEval-18 & Fixed & \begin{tabular}[c]{@{}c@{}}+0.02\,\textsuperscript{n.s.}\\{\scriptsize [-0.27, +0.31]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-1.13}\\{\scriptsize [-1.51, -0.74]}\end{tabular} \\
+SemEval-18 & Per-Class & \begin{tabular}[c]{@{}c@{}}-0.21\,\textsuperscript{n.s.}\\{\scriptsize [-0.51, +0.12]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-1.32}\\{\scriptsize [-1.68, -0.94]}\end{tabular} \\
+SemEval-18 (renamed) & Fixed & \begin{tabular}[c]{@{}c@{}}-0.13\,\textsuperscript{n.s.}\\{\scriptsize [-0.40, +0.14]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-0.57}\\{\scriptsize [-0.90, -0.24]}\end{tabular} \\
+SemEval-18 (renamed) & Per-Class & \begin{tabular}[c]{@{}c@{}}-0.27\,\textsuperscript{n.s.}\\{\scriptsize [-0.56, +0.04]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-0.61}\\{\scriptsize [-0.95, -0.25]}\end{tabular} \\
+GoEmotions & Fixed & \begin{tabular}[c]{@{}c@{}}\textbf{+1.92}\\{\scriptsize [+0.79, +2.73]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-2.49}\\{\scriptsize [-3.12, -1.73]}\end{tabular} \\
+GoEmotions & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{+1.28}\\{\scriptsize [+0.02, +2.24]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-2.35}\\{\scriptsize [-2.98, -1.68]}\end{tabular} \\
+GoEmotions (renamed) & Fixed & \begin{tabular}[c]{@{}c@{}}-0.23\,\textsuperscript{n.s.}\\{\scriptsize [-0.79, +0.31]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-1.14}\\{\scriptsize [-1.55, -0.73]}\end{tabular} \\
+GoEmotions (renamed) & Per-Class & \begin{tabular}[c]{@{}c@{}}\textbf{-0.67}\\{\scriptsize [-1.30, -0.00]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-1.15}\\{\scriptsize [-1.58, -0.70]}\end{tabular} \\
+Ohsumed & Fixed & \begin{tabular}[c]{@{}c@{}}\textbf{+2.88}\\{\scriptsize [+1.86, +4.08]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-8.43}\\{\scriptsize [-9.44, -7.40]}\end{tabular} \\
+Ohsumed (renamed) & Fixed & \begin{tabular}[c]{@{}c@{}}\textbf{-3.33}\\{\scriptsize [-4.21, -2.05]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-4.17}\\{\scriptsize [-4.91, -3.21]}\end{tabular} \\
+\bottomrule
+\end{tabular}

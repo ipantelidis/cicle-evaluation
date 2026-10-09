@@ -1,10 +1,10 @@
 % Table B: ohsumed, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
 \begin{tabular}{llrrrrrrr}
 \toprule
-Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 MiniLM + LR & -- & -- & 3 & 45.2 & 65.0 & 0.0 & 0.0 & 0 \\
-RoBERTa-base (fine-tuned) & -- & -- & 6 & 60.8 & 72.4 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 6 & 60.5 & 71.9 & 0.0 & 0.0 & 0 \\
 \midrule
 Zero-shot & -- & -- & 18 & 35.9 & 43.2 & 5.2 & 0.0 & 579 \\
 \midrule

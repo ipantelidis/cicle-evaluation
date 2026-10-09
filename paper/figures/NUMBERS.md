@@ -6,56 +6,67 @@ Generated file; do not edit by hand. Every line is one value a figure or table s
 
 Specific slots first, then the incomplete grids behind them (present / expected runs or cells).
 
-- Table C1 (CICLe − alternative, all variants): yahoo-answers-relabel fixed vs marginal
-- Table C1 (CICLe − alternative, all variants): yahoo-answers-relabel fixed vs oracle
-- Table C1 (CICLe − alternative, all variants): yahoo-answers-relabel pc vs marginal
-- Table C1 (CICLe − alternative, all variants): yahoo-answers-relabel pc vs oracle
-- Table C1 (CICLe − alternative, all variants): sst-relabel fixed vs marginal
-- Table C1 (CICLe − alternative, all variants): sst-relabel fixed vs oracle
-- Table C1 (CICLe − alternative, all variants): sst-relabel pc vs marginal
-- Table C1 (CICLe − alternative, all variants): sst-relabel pc vs oracle
-- Table C1 (CICLe − alternative, all variants): semeval-18 fixed vs marginal
-- Table C1 (CICLe − alternative, all variants): semeval-18 pc vs marginal
-- Table C1 (CICLe − alternative, all variants): semeval-18-relabel fixed vs marginal
-- Table C1 (CICLe − alternative, all variants): semeval-18-relabel fixed vs oracle
-- Table C1 (CICLe − alternative, all variants): semeval-18-relabel pc vs marginal
-- Table C1 (CICLe − alternative, all variants): semeval-18-relabel pc vs oracle
-- Table C1 (CICLe − alternative, all variants): go-emotions-relabel fixed vs marginal
-- Table C1 (CICLe − alternative, all variants): go-emotions-relabel fixed vs oracle
-- Table C1 (CICLe − alternative, all variants): go-emotions-relabel pc vs marginal
-- Table C1 (CICLe − alternative, all variants): go-emotions-relabel pc vs oracle
-- Table F1 (12B / 32B models): mistral-nemo-2407 ohsumed
+- Table F1 (12B / 32B models): mistral-nemo-2407 ohsumed pc k=1 (few-shot n=0, CICLe n=0)
+- Table F1 (12B / 32B models): mistral-nemo-2407 ohsumed pc k=4 (few-shot n=0, CICLe n=0)
 - Table F1 (12B / 32B models): qwen-2.5-32b ohsumed
-- Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4}): sst-random fixed
-- Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4}): sst-random pc
-- Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4}): semeval-18-random fixed
-- Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4}): semeval-18-random pc
-- Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4}): ohsumed-random (no results directory)
-- mean_metric: sst-relabel cicle fixed k=0 macro_f1: 15/18 runs present, slot left empty
-- mean_metric: semeval-18-relabel cicle fixed k=0 macro_f1: 15/18 runs present, slot left empty
-- paired_delta: yahoo-answers-relabel cicle - marginal ['fixed'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: yahoo-answers-relabel cicle - oracle ['fixed'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: yahoo-answers-relabel cicle - marginal ['pc'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: yahoo-answers-relabel cicle - oracle ['pc'] k=[1, 4]: 5/36 cells present, slot left empty
-- paired_delta: sst-relabel cicle - marginal ['fixed'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: sst-relabel cicle - oracle ['fixed'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: sst-relabel cicle - marginal ['pc'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: sst-relabel cicle - oracle ['pc'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: semeval-18-relabel cicle - marginal ['fixed'] k=[1, 4]: 6/36 cells present, slot left empty
-- paired_delta: semeval-18-relabel cicle - oracle ['fixed'] k=[1, 4]: 4/36 cells present, slot left empty
-- paired_delta: semeval-18-relabel cicle - marginal ['pc'] k=[1, 4]: 5/36 cells present, slot left empty
-- paired_delta: semeval-18-relabel cicle - oracle ['pc'] k=[1, 4]: 4/36 cells present, slot left empty
-- paired_delta: go-emotions-relabel cicle - marginal ['fixed'] k=[1, 4]: 4/36 cells present, slot left empty
-- paired_delta: go-emotions-relabel cicle - oracle ['fixed'] k=[1, 4]: 2/36 cells present, slot left empty
-- paired_delta: go-emotions-relabel cicle - marginal ['pc'] k=[1, 4]: 3/36 cells present, slot left empty
-- paired_delta: go-emotions-relabel cicle - oracle ['pc'] k=[1, 4]: 2/36 cells present, slot left empty
-- paired_delta: sst-random cicle - fewshot ['fixed'] k=[1, 4]: 10/12 cells present, slot left empty
-- paired_delta: sst-random cicle - fewshot ['pc'] k=[1, 4]: 9/12 cells present, slot left empty
-- paired_delta: semeval-18-random cicle - fewshot ['fixed'] k=[1, 4]: 8/12 cells present, slot left empty
-- paired_delta: semeval-18-random cicle - fewshot ['pc'] k=[1, 4]: 7/12 cells present, slot left empty
 
-## Table 2 (main results, k=4; Δ over all k)
+## Table 2 (main results, k=4; Δ over all k) (B=500, development build)
 
+- yahoo-answers zeroshot  k=: macro-F1 55.32 (n=18)
+- sst zeroshot  k=: macro-F1 40.35 (n=18)
+- semeval-18 zeroshot  k=: macro-F1 12.21 (n=18)
+- go-emotions zeroshot  k=: macro-F1 24.86 (n=18)
+- ohsumed zeroshot  k=: macro-F1 35.90 (n=18)
+- yahoo-answers cicle fixed k=: macro-F1 56.27 (n=18)
+- sst cicle fixed k=: macro-F1 45.11 (n=18)
+- semeval-18 cicle fixed k=: macro-F1 13.03 (n=18)
+- go-emotions cicle fixed k=: macro-F1 26.20 (n=18)
+- ohsumed cicle fixed k=: macro-F1 40.17 (n=18)
+- yahoo-answers fewshot fixed k=4: macro-F1 58.35 (n=18)
+- sst fewshot fixed k=4: macro-F1 44.11 (n=18)
+- semeval-18 fewshot fixed k=4: macro-F1 15.29 (n=18)
+- go-emotions fewshot fixed k=4: macro-F1 26.45 (n=18)
+- ohsumed fewshot fixed k=4: macro-F1 50.35 (n=18)
+- yahoo-answers cicle fixed k=4: macro-F1 58.20 (n=18)
+- sst cicle fixed k=4: macro-F1 45.75 (n=18)
+- semeval-18 cicle fixed k=4: macro-F1 15.89 (n=18)
+- go-emotions cicle fixed k=4: macro-F1 26.76 (n=18)
+- ohsumed cicle fixed k=4: macro-F1 51.67 (n=18)
+- yahoo-answers fewshot pc k=4: macro-F1 61.65 (n=18)
+- sst fewshot pc k=4: macro-F1 46.60 (n=18)
+- semeval-18 fewshot pc k=4: macro-F1 15.38 (n=18)
+- go-emotions fewshot pc k=4: macro-F1 24.78 (n=18)
+- ohsumed fewshot pc k=1: macro-F1 44.59 (n=18)
+- yahoo-answers cicle pc k=4: macro-F1 62.74 (n=18)
+- sst cicle pc k=4: macro-F1 47.51 (n=18)
+- semeval-18 cicle pc k=4: macro-F1 15.72 (n=18)
+- go-emotions cicle pc k=4: macro-F1 26.03 (n=18)
+- ohsumed cicle pc k=1: macro-F1 49.81 (n=18)
+- yahoo-answers base  k=: macro-F1 65.44 (n=3)
+- sst base  k=: macro-F1 35.50 (n=3)
+- semeval-18 base  k=: macro-F1 9.72 (n=3)
+- go-emotions base  k=: macro-F1 11.22 (n=3)
+- ohsumed base  k=: macro-F1 45.24 (n=3)
+- yahoo-answers finetuned  k=: macro-F1 61.82 (n=3)
+- sst finetuned  k=: macro-F1 51.19 (n=3)
+- semeval-18 finetuned  k=: macro-F1 24.53 (n=3)
+- go-emotions finetuned  k=: macro-F1 36.98 (n=3)
+- ohsumed finetuned  k=: macro-F1 55.43 (n=3)
+- Δ CICLe − few-shot yahoo-answers fixed (all k): -0.19 pp [-0.59, +0.20] p=0.328 n=72 n.s.
+- Δ CICLe − few-shot sst fixed (all k): +1.77 pp [+1.16, +2.45] p=0.000 n=72
+- Δ CICLe − few-shot semeval-18 fixed (all k): +0.52 pp [+0.28, +0.73] p=0.000 n=72
+- Δ CICLe − few-shot go-emotions fixed (all k): +0.59 pp [+0.20, +1.11] p=0.000 n=72
+- Δ CICLe − few-shot ohsumed fixed (all k): +1.15 pp [+0.58, +1.88] p=0.000 n=36
+- Δ CICLe − few-shot yahoo-answers pc (all k): +1.40 pp [+1.05, +1.80] p=0.000 n=72
+- Δ CICLe − few-shot sst pc (all k): +1.07 pp [+0.48, +1.75] p=0.000 n=72
+- Δ CICLe − few-shot semeval-18 pc (all k): +0.46 pp [+0.20, +0.69] p=0.000 n=72
+- Δ CICLe − few-shot go-emotions pc (all k): +0.92 pp [+0.53, +1.40] p=0.000 n=72
+- Δ CICLe − few-shot ohsumed pc (all k): +5.21 pp [+4.38, +6.04] p=0.000 n=18
+- yahoo-answers tokens saved by CICLe Per-Class at k=4: 36.4% (2,166 -> 1,378 tokens per call)
+- sst tokens saved by CICLe Per-Class at k=4: 17.6% (746 -> 615 tokens per call)
+- semeval-18 tokens saved by CICLe Per-Class at k=4: 13.5% (2,209 -> 1,911 tokens per call)
+- go-emotions tokens saved by CICLe Per-Class at k=4: 19.8% (2,422 -> 1,942 tokens per call)
+- ohsumed tokens saved by CICLe Per-Class at k=1: 44.7% (7,518 -> 4,159 tokens per call)
 - yahoo-answers base  k=: macro-F1 65.44 (n=3)
 - sst base  k=: macro-F1 35.50 (n=3)
 - semeval-18 base  k=: macro-F1 9.72 (n=3)
@@ -96,106 +107,96 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - semeval-18 cicle pc k=4: macro-F1 15.72 (n=18, tokens 1,911)
 - go-emotions cicle pc k=4: macro-F1 26.03 (n=18, tokens 1,942)
 - ohsumed cicle pc k=1: macro-F1 49.81 (n=18, tokens 4,159)
-- Δ CICLe − few-shot yahoo-answers fixed (all k): -0.19 pp [-0.57, +0.20] p=0.349 n=72 n.s.
-- Δ CICLe − few-shot sst fixed (all k): +1.77 pp [+1.14, +2.39] p=0.000 n=72
-- Δ CICLe − few-shot semeval-18 fixed (all k): +0.52 pp [+0.30, +0.73] p=0.000 n=72
-- Δ CICLe − few-shot go-emotions fixed (all k): +0.59 pp [+0.19, +1.07] p=0.006 n=72
-- Δ CICLe − few-shot ohsumed fixed (all k): +1.15 pp [+0.54, +1.87] p=0.000 n=36
-- Δ CICLe − few-shot yahoo-answers pc (all k): +1.40 pp [+1.04, +1.76] p=0.000 n=72
-- Δ CICLe − few-shot sst pc (all k): +1.07 pp [+0.42, +1.71] p=0.001 n=72
-- Δ CICLe − few-shot semeval-18 pc (all k): +0.46 pp [+0.22, +0.71] p=0.000 n=72
-- Δ CICLe − few-shot go-emotions pc (all k): +0.92 pp [+0.50, +1.38] p=0.000 n=72
-- Δ CICLe − few-shot ohsumed pc (all k): +5.21 pp [+4.43, +6.08] p=0.000 n=18
 
-## Figure 1 (macro-F1 vs prompt tokens)
+## Figure 1 (macro-F1 vs prompt tokens) (B=500, development build)
 
-- yahoo-answers zeroshot  k=0: F1 55.32 [53.77, 56.61], tokens 221 (n=18)
-- yahoo-answers fewshot fixed k=1: F1 54.79 [53.25, 56.05], tokens 285 (n=18)
-- yahoo-answers fewshot fixed k=2: F1 56.37 [54.87, 57.65], tokens 343 (n=18)
-- yahoo-answers fewshot fixed k=4: F1 58.35 [56.83, 59.58], tokens 455 (n=18)
-- yahoo-answers fewshot fixed k=8: F1 59.79 [58.29, 60.99], tokens 674 (n=18)
-- yahoo-answers cicle fixed k=1: F1 54.25 [52.73, 55.48], tokens 276 (n=18)
-- yahoo-answers cicle fixed k=2: F1 56.46 [54.98, 57.70], tokens 334 (n=18)
-- yahoo-answers cicle fixed k=4: F1 58.20 [56.71, 59.41], tokens 447 (n=18)
-- yahoo-answers cicle fixed k=8: F1 59.65 [58.13, 60.88], tokens 666 (n=18)
-- yahoo-answers fewshot pc k=1: F1 57.93 [56.45, 59.15], tokens 700 (n=18)
-- yahoo-answers fewshot pc k=2: F1 59.54 [58.04, 60.75], tokens 1,183 (n=18)
-- yahoo-answers fewshot pc k=4: F1 61.65 [60.11, 62.85], tokens 2,166 (n=18)
-- yahoo-answers fewshot pc k=8: F1 62.20 [60.68, 63.47], tokens 4,168 (n=18)
-- yahoo-answers cicle pc k=1: F1 59.48 [57.98, 60.75], tokens 503 (n=18)
-- yahoo-answers cicle pc k=2: F1 60.92 [59.44, 62.16], tokens 792 (n=18)
-- yahoo-answers cicle pc k=4: F1 62.74 [61.23, 63.99], tokens 1,378 (n=18)
-- yahoo-answers cicle pc k=8: F1 63.78 [62.26, 65.08], tokens 2,566 (n=18)
+- yahoo-answers zeroshot  k=0: F1 55.32 [53.74, 56.63], tokens 221 (n=18)
+- yahoo-answers fewshot fixed k=1: F1 54.79 [53.22, 56.14], tokens 285 (n=18)
+- yahoo-answers fewshot fixed k=2: F1 56.37 [54.85, 57.70], tokens 343 (n=18)
+- yahoo-answers fewshot fixed k=4: F1 58.35 [56.77, 59.69], tokens 455 (n=18)
+- yahoo-answers fewshot fixed k=8: F1 59.79 [58.31, 61.12], tokens 674 (n=18)
+- yahoo-answers cicle fixed k=1: F1 54.25 [52.83, 55.45], tokens 276 (n=18)
+- yahoo-answers cicle fixed k=2: F1 56.46 [55.04, 57.69], tokens 334 (n=18)
+- yahoo-answers cicle fixed k=4: F1 58.20 [56.66, 59.49], tokens 447 (n=18)
+- yahoo-answers cicle fixed k=8: F1 59.65 [58.07, 60.91], tokens 666 (n=18)
+- yahoo-answers fewshot pc k=1: F1 57.93 [56.31, 59.25], tokens 700 (n=18)
+- yahoo-answers fewshot pc k=2: F1 59.54 [58.01, 60.86], tokens 1,183 (n=18)
+- yahoo-answers fewshot pc k=4: F1 61.65 [60.03, 63.02], tokens 2,166 (n=18)
+- yahoo-answers fewshot pc k=8: F1 62.20 [60.48, 63.51], tokens 4,168 (n=18)
+- yahoo-answers cicle pc k=1: F1 59.48 [57.99, 60.75], tokens 503 (n=18)
+- yahoo-answers cicle pc k=2: F1 60.92 [59.39, 62.25], tokens 792 (n=18)
+- yahoo-answers cicle pc k=4: F1 62.74 [61.12, 64.01], tokens 1,378 (n=18)
+- yahoo-answers cicle pc k=8: F1 63.78 [62.12, 65.10], tokens 2,566 (n=18)
 - yahoo-answers base: 65.44
 - yahoo-answers finetuned: 61.82
-- sst zeroshot  k=0: F1 40.35 [39.08, 41.49], tokens 184 (n=18)
-- sst fewshot fixed k=1: F1 40.59 [39.35, 41.77], tokens 217 (n=18)
-- sst fewshot fixed k=2: F1 43.17 [41.85, 44.39], tokens 244 (n=18)
-- sst fewshot fixed k=4: F1 44.11 [42.81, 45.34], tokens 298 (n=18)
-- sst fewshot fixed k=8: F1 45.80 [44.45, 47.09], tokens 407 (n=18)
-- sst cicle fixed k=1: F1 43.04 [41.75, 44.19], tokens 214 (n=18)
-- sst cicle fixed k=2: F1 45.19 [43.83, 46.41], tokens 241 (n=18)
-- sst cicle fixed k=4: F1 45.75 [44.37, 47.01], tokens 295 (n=18)
-- sst cicle fixed k=8: F1 46.77 [45.41, 48.07], tokens 404 (n=18)
-- sst fewshot pc k=1: F1 44.87 [43.54, 46.04], tokens 327 (n=18)
-- sst fewshot pc k=2: F1 46.37 [45.04, 47.55], tokens 466 (n=18)
-- sst fewshot pc k=4: F1 46.60 [45.27, 47.80], tokens 746 (n=18)
-- sst fewshot pc k=8: F1 46.31 [45.00, 47.50], tokens 1,311 (n=18)
-- sst cicle pc k=1: F1 46.23 [44.90, 47.45], tokens 292 (n=18)
-- sst cicle pc k=2: F1 47.59 [46.22, 48.84], tokens 399 (n=18)
-- sst cicle pc k=4: F1 47.51 [46.15, 48.77], tokens 615 (n=18)
-- sst cicle pc k=8: F1 47.10 [45.74, 48.31], tokens 1,050 (n=18)
+- sst zeroshot  k=0: F1 40.35 [39.15, 41.38], tokens 184 (n=18)
+- sst fewshot fixed k=1: F1 40.59 [39.29, 41.69], tokens 217 (n=18)
+- sst fewshot fixed k=2: F1 43.17 [41.85, 44.27], tokens 244 (n=18)
+- sst fewshot fixed k=4: F1 44.11 [42.83, 45.21], tokens 298 (n=18)
+- sst fewshot fixed k=8: F1 45.80 [44.43, 46.98], tokens 407 (n=18)
+- sst cicle fixed k=1: F1 43.04 [41.83, 44.20], tokens 214 (n=18)
+- sst cicle fixed k=2: F1 45.19 [43.85, 46.42], tokens 241 (n=18)
+- sst cicle fixed k=4: F1 45.75 [44.44, 46.98], tokens 295 (n=18)
+- sst cicle fixed k=8: F1 46.77 [45.39, 47.98], tokens 404 (n=18)
+- sst fewshot pc k=1: F1 44.87 [43.63, 45.93], tokens 327 (n=18)
+- sst fewshot pc k=2: F1 46.37 [45.04, 47.51], tokens 466 (n=18)
+- sst fewshot pc k=4: F1 46.60 [45.25, 47.84], tokens 746 (n=18)
+- sst fewshot pc k=8: F1 46.31 [45.03, 47.54], tokens 1,311 (n=18)
+- sst cicle pc k=1: F1 46.23 [44.94, 47.48], tokens 292 (n=18)
+- sst cicle pc k=2: F1 47.59 [46.33, 48.83], tokens 399 (n=18)
+- sst cicle pc k=4: F1 47.51 [46.13, 48.74], tokens 615 (n=18)
+- sst cicle pc k=8: F1 47.10 [45.83, 48.33], tokens 1,050 (n=18)
 - sst base: 35.50
 - sst finetuned: 51.19
-- semeval-18 zeroshot  k=0: F1 12.21 [11.46, 12.80], tokens 236 (n=18)
-- semeval-18 fewshot fixed k=1: F1 14.35 [13.43, 15.05], tokens 266 (n=18)
-- semeval-18 fewshot fixed k=2: F1 14.59 [13.68, 15.32], tokens 290 (n=18)
-- semeval-18 fewshot fixed k=4: F1 15.29 [14.31, 16.02], tokens 338 (n=18)
-- semeval-18 fewshot fixed k=8: F1 15.42 [14.44, 16.16], tokens 436 (n=18)
-- semeval-18 cicle fixed k=1: F1 14.71 [13.81, 15.42], tokens 255 (n=18)
-- semeval-18 cicle fixed k=2: F1 15.06 [14.13, 15.79], tokens 279 (n=18)
-- semeval-18 cicle fixed k=4: F1 15.89 [14.92, 16.65], tokens 328 (n=18)
-- semeval-18 cicle fixed k=8: F1 16.07 [15.06, 16.81], tokens 425 (n=18)
-- semeval-18 fewshot pc k=1: F1 15.16 [14.21, 15.89], tokens 731 (n=18)
-- semeval-18 fewshot pc k=2: F1 15.09 [14.13, 15.81], tokens 1,223 (n=18)
-- semeval-18 fewshot pc k=4: F1 15.38 [14.43, 16.10], tokens 2,209 (n=18)
-- semeval-18 fewshot pc k=8: F1 15.66 [14.73, 16.37], tokens 4,189 (n=18)
-- semeval-18 cicle pc k=1: F1 15.75 [14.78, 16.51], tokens 648 (n=18)
-- semeval-18 cicle pc k=2: F1 15.65 [14.67, 16.39], tokens 1,069 (n=18)
-- semeval-18 cicle pc k=4: F1 15.72 [14.76, 16.46], tokens 1,911 (n=18)
-- semeval-18 cicle pc k=8: F1 16.04 [15.10, 16.77], tokens 3,603 (n=18)
+- semeval-18 zeroshot  k=0: F1 12.21 [11.42, 12.79], tokens 236 (n=18)
+- semeval-18 fewshot fixed k=1: F1 14.35 [13.41, 15.06], tokens 266 (n=18)
+- semeval-18 fewshot fixed k=2: F1 14.59 [13.67, 15.36], tokens 290 (n=18)
+- semeval-18 fewshot fixed k=4: F1 15.29 [14.30, 16.07], tokens 338 (n=18)
+- semeval-18 fewshot fixed k=8: F1 15.42 [14.39, 16.23], tokens 436 (n=18)
+- semeval-18 cicle fixed k=1: F1 14.71 [13.78, 15.45], tokens 255 (n=18)
+- semeval-18 cicle fixed k=2: F1 15.06 [14.13, 15.78], tokens 279 (n=18)
+- semeval-18 cicle fixed k=4: F1 15.89 [14.87, 16.64], tokens 328 (n=18)
+- semeval-18 cicle fixed k=8: F1 16.07 [15.08, 16.82], tokens 425 (n=18)
+- semeval-18 fewshot pc k=1: F1 15.16 [14.20, 15.90], tokens 731 (n=18)
+- semeval-18 fewshot pc k=2: F1 15.09 [14.16, 15.82], tokens 1,223 (n=18)
+- semeval-18 fewshot pc k=4: F1 15.38 [14.39, 16.08], tokens 2,209 (n=18)
+- semeval-18 fewshot pc k=8: F1 15.66 [14.63, 16.33], tokens 4,189 (n=18)
+- semeval-18 cicle pc k=1: F1 15.75 [14.72, 16.46], tokens 648 (n=18)
+- semeval-18 cicle pc k=2: F1 15.65 [14.63, 16.40], tokens 1,069 (n=18)
+- semeval-18 cicle pc k=4: F1 15.72 [14.69, 16.46], tokens 1,911 (n=18)
+- semeval-18 cicle pc k=8: F1 16.04 [15.01, 16.67], tokens 3,603 (n=18)
 - semeval-18 base: 9.72
 - semeval-18 finetuned: 24.53
-- go-emotions zeroshot  k=0: F1 24.86 [22.84, 26.19], tokens 220 (n=18)
-- go-emotions fewshot fixed k=1: F1 24.60 [22.73, 25.88], tokens 246 (n=18)
-- go-emotions fewshot fixed k=2: F1 26.37 [24.41, 27.68], tokens 266 (n=18)
-- go-emotions fewshot fixed k=4: F1 26.45 [24.46, 27.78], tokens 305 (n=18)
-- go-emotions fewshot fixed k=8: F1 26.56 [24.59, 27.88], tokens 385 (n=18)
-- go-emotions cicle fixed k=1: F1 25.52 [23.66, 26.86], tokens 233 (n=18)
-- go-emotions cicle fixed k=2: F1 26.77 [24.89, 28.12], tokens 253 (n=18)
-- go-emotions cicle fixed k=4: F1 26.76 [24.95, 28.06], tokens 293 (n=18)
-- go-emotions cicle fixed k=8: F1 27.27 [25.34, 28.59], tokens 373 (n=18)
-- go-emotions fewshot pc k=1: F1 25.00 [23.15, 26.35], tokens 796 (n=18)
-- go-emotions fewshot pc k=2: F1 25.42 [23.45, 26.77], tokens 1,351 (n=18)
-- go-emotions fewshot pc k=4: F1 24.78 [22.81, 26.10], tokens 2,422 (n=18)
-- go-emotions fewshot pc k=8: F1 24.79 [22.80, 26.13], tokens 4,365 (n=18)
-- go-emotions cicle pc k=1: F1 25.95 [23.97, 27.40], tokens 665 (n=18)
-- go-emotions cicle pc k=2: F1 26.38 [24.32, 27.74], tokens 1,102 (n=18)
-- go-emotions cicle pc k=4: F1 26.03 [24.04, 27.42], tokens 1,942 (n=18)
-- go-emotions cicle pc k=8: F1 25.31 [23.42, 26.75], tokens 3,443 (n=18)
+- go-emotions zeroshot  k=0: F1 24.86 [22.80, 26.01], tokens 220 (n=18)
+- go-emotions fewshot fixed k=1: F1 24.60 [22.56, 25.85], tokens 246 (n=18)
+- go-emotions fewshot fixed k=2: F1 26.37 [24.38, 27.69], tokens 266 (n=18)
+- go-emotions fewshot fixed k=4: F1 26.45 [24.46, 27.86], tokens 305 (n=18)
+- go-emotions fewshot fixed k=8: F1 26.56 [24.48, 27.87], tokens 385 (n=18)
+- go-emotions cicle fixed k=1: F1 25.52 [23.61, 26.78], tokens 233 (n=18)
+- go-emotions cicle fixed k=2: F1 26.77 [24.94, 27.96], tokens 253 (n=18)
+- go-emotions cicle fixed k=4: F1 26.76 [24.87, 28.00], tokens 293 (n=18)
+- go-emotions cicle fixed k=8: F1 27.27 [25.22, 28.54], tokens 373 (n=18)
+- go-emotions fewshot pc k=1: F1 25.00 [23.12, 26.26], tokens 796 (n=18)
+- go-emotions fewshot pc k=2: F1 25.42 [23.36, 26.74], tokens 1,351 (n=18)
+- go-emotions fewshot pc k=4: F1 24.78 [22.85, 25.90], tokens 2,422 (n=18)
+- go-emotions fewshot pc k=8: F1 24.79 [22.78, 26.11], tokens 4,365 (n=18)
+- go-emotions cicle pc k=1: F1 25.95 [24.07, 27.37], tokens 665 (n=18)
+- go-emotions cicle pc k=2: F1 26.38 [24.35, 27.67], tokens 1,102 (n=18)
+- go-emotions cicle pc k=4: F1 26.03 [24.01, 27.24], tokens 1,942 (n=18)
+- go-emotions cicle pc k=8: F1 25.31 [23.37, 26.67], tokens 3,443 (n=18)
 - go-emotions base: 11.22
 - go-emotions finetuned: 36.98
-- ohsumed zeroshot  k=0: F1 35.90 [34.09, 36.98], tokens 579 (n=18)
-- ohsumed fewshot fixed k=1: F1 46.66 [44.54, 47.92], tokens 897 (n=18)
-- ohsumed fewshot fixed k=4: F1 50.35 [48.28, 51.70], tokens 1,826 (n=18)
-- ohsumed cicle fixed k=1: F1 47.65 [45.71, 48.90], tokens 828 (n=18)
-- ohsumed cicle fixed k=4: F1 51.67 [49.59, 53.02], tokens 1,756 (n=18)
-- ohsumed fewshot pc k=1: F1 44.59 [42.59, 45.84], tokens 7,518 (n=18)
-- ohsumed cicle pc k=1: F1 49.81 [47.74, 51.17], tokens 4,159 (n=18)
+- ohsumed zeroshot  k=0: F1 35.90 [34.09, 37.07], tokens 579 (n=18)
+- ohsumed fewshot fixed k=1: F1 46.66 [44.68, 47.88], tokens 897 (n=18)
+- ohsumed fewshot fixed k=4: F1 50.35 [48.34, 51.68], tokens 1,826 (n=18)
+- ohsumed cicle fixed k=1: F1 47.65 [45.89, 48.95], tokens 828 (n=18)
+- ohsumed cicle fixed k=4: F1 51.67 [49.57, 52.96], tokens 1,756 (n=18)
+- ohsumed fewshot pc k=1: F1 44.59 [42.62, 45.80], tokens 7,518 (n=18)
+- ohsumed cicle pc k=1: F1 49.81 [47.78, 51.07], tokens 4,159 (n=18)
 - ohsumed base: 45.24
 - ohsumed finetuned: 55.43
 
-## Figure 2 (Per-Class; narrowing under imbalance)
+## Figure 2 (Per-Class; narrowing under imbalance, panels a and c)
 
 - (a) yahoo-answers pc k∈{1,4} CICLe − fewshot: +1.32 pp [+0.90, +1.74] p=0.000 n=36
 - (a) yahoo-answers-imb10 pc k∈{1,4} CICLe − fewshot: +1.09 pp [+0.68, +1.50] p=0.000 n=36
@@ -212,32 +213,10 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - (a) yahoo-answers pc oracle − few-shot (ceiling): +8.39 pp [+7.68, +9.13] p=0.000 n=36
 - (a) yahoo-answers-imb10 pc oracle − few-shot (ceiling): +7.89 pp [+7.24, +8.58] p=0.000 n=36
 - (a) yahoo-answers-imb100 pc oracle − few-shot (ceiling): +4.20 pp [+3.68, +4.72] p=0.000 n=36
-- (b) yahoo-answers cicle: coverage 95.0%, mean set size 5.67 (3 seeds)
-- (b) yahoo-answers-imb10 cicle: coverage 94.9%, mean set size 6.21 (3 seeds)
-- (b) yahoo-answers-imb100 cicle: coverage 96.7%, mean set size 7.73 (3 seeds)
-- (b) yahoo-answers topk: coverage 93.7%, mean set size 5.67 (3 seeds)
-- (b) yahoo-answers-imb10 topk: coverage 90.5%, mean set size 6.00 (3 seeds)
-- (b) yahoo-answers-imb100 topk: coverage 81.6%, mean set size 7.67 (3 seeds)
-- (b) yahoo-answers mass: coverage 98.4%, mean set size 7.84 (3 seeds)
-- (b) yahoo-answers-imb10 mass: coverage 96.2%, mean set size 7.46 (3 seeds)
-- (b) yahoo-answers-imb100 mass: coverage 74.2%, mean set size 5.88 (3 seeds)
-- (b) yahoo-answers marginal: coverage 95.6%, mean set size 5.71 (3 seeds)
-- (b) yahoo-answers-imb10 marginal: coverage 89.5%, mean set size 5.04 (3 seeds)
-- (b) yahoo-answers-imb100 marginal: coverage 64.8%, mean set size 3.80 (3 seeds)
-- (b) yahoo-answers oracle: coverage 100.0%, mean set size 5.67 (3 seeds)
-- (b) yahoo-answers-imb10 oracle: coverage 100.0%, mean set size 6.00 (3 seeds)
-- (b) yahoo-answers-imb100 oracle: coverage 100.0%, mean set size 7.67 (3 seeds)
 - (c) yahoo-answers-imb100 cicle per-class coverage by rank (mean over seeds): 1:96, 2:97, 3:95, 4:97, 5:97, 6:98, 7:98, 8:95, 9:96, 10:98
 - (c) yahoo-answers-imb100 topk per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:100, 6:100, 7:98, 8:86, 9:29, 10:9
 - (c) yahoo-answers-imb100 mass per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:99, 4:100, 5:98, 6:93, 7:92, 8:58, 9:7, 10:1
 - (c) yahoo-answers-imb100 marginal per-class coverage by rank (mean over seeds): 1:99, 2:98, 3:97, 4:95, 5:86, 6:77, 7:76, 8:22, 9:0, 10:0
-- (c) yahoo-answers-imb100 oracle per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:100, 6:100, 7:100, 8:100, 9:100, 10:100
-- (d) yahoo-answers-imb100 fewshot pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:61.6, 2:46.9, 3:58.3, 4:68.4, 5:57.0, 6:63.1, 7:66.5, 8:47.4, 9:40.4, 10:36.7
-- (d) yahoo-answers-imb100 cicle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:64.3, 2:49.2, 3:59.3, 4:67.9, 5:58.0, 6:63.1, 7:67.2, 8:47.7, 9:41.0, 10:36.9
-- (d) yahoo-answers-imb100 topk pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:59.7, 2:45.5, 3:55.4, 4:67.5, 5:55.7, 6:61.3, 7:66.1, 8:45.4, 9:19.6, 10:8.6
-- (d) yahoo-answers-imb100 mass pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:58.8, 2:44.9, 3:55.3, 4:66.9, 5:55.8, 6:61.3, 7:66.7, 8:43.5, 9:8.2, 10:4.3
-- (d) yahoo-answers-imb100 marginal pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:55.7, 2:43.9, 3:56.3, 4:66.8, 5:56.6, 6:61.0, 7:64.9, 8:30.0, 9:0.6, 10:2.4
-- (d) yahoo-answers-imb100 oracle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:65.2, 2:52.9, 3:61.9, 4:70.5, 5:63.4, 6:67.5, 7:70.0, 8:51.1, 9:44.7, 10:42.6
 - (a) sst pc k∈{1,4} CICLe − fewshot: +1.14 pp [+0.47, +1.81] p=0.001 n=36
 - (a) sst-imb10 pc k∈{1,4} CICLe − fewshot: +1.82 pp [+1.15, +2.48] p=0.000 n=36
 - (a) sst-imb100 pc k∈{1,4} CICLe − fewshot: +1.16 pp [+0.54, +1.77] p=0.000 n=36
@@ -253,32 +232,10 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - (a) sst pc oracle − few-shot (ceiling): +8.73 pp [+7.91, +9.57] p=0.000 n=36
 - (a) sst-imb10 pc oracle − few-shot (ceiling): +9.07 pp [+8.17, +9.90] p=0.000 n=36
 - (a) sst-imb100 pc oracle − few-shot (ceiling): +6.87 pp [+6.14, +7.59] p=0.000 n=36
-- (b) sst cicle: coverage 95.4%, mean set size 3.86 (3 seeds)
-- (b) sst-imb10 cicle: coverage 96.5%, mean set size 4.04 (3 seeds)
-- (b) sst-imb100 cicle: coverage 96.0%, mean set size 4.35 (3 seeds)
-- (b) sst topk: coverage 95.5%, mean set size 4.00 (3 seeds)
-- (b) sst-imb10 topk: coverage 89.4%, mean set size 4.00 (3 seeds)
-- (b) sst-imb100 topk: coverage 88.4%, mean set size 4.33 (3 seeds)
-- (b) sst mass: coverage 99.2%, mean set size 4.50 (3 seeds)
-- (b) sst-imb10 mass: coverage 92.2%, mean set size 4.13 (3 seeds)
-- (b) sst-imb100 mass: coverage 60.0%, mean set size 2.85 (3 seeds)
-- (b) sst marginal: coverage 93.9%, mean set size 3.67 (3 seeds)
-- (b) sst-imb10 marginal: coverage 82.6%, mean set size 3.55 (3 seeds)
-- (b) sst-imb100 marginal: coverage 51.9%, mean set size 2.26 (3 seeds)
-- (b) sst oracle: coverage 100.0%, mean set size 4.00 (3 seeds)
-- (b) sst-imb10 oracle: coverage 100.0%, mean set size 4.00 (3 seeds)
-- (b) sst-imb100 oracle: coverage 100.0%, mean set size 4.33 (3 seeds)
 - (c) sst-imb100 cicle per-class coverage by rank (mean over seeds): 1:97, 2:94, 3:93, 4:97, 5:95
 - (c) sst-imb100 topk per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:36
 - (c) sst-imb100 mass per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:94, 4:20, 5:0
 - (c) sst-imb100 marginal per-class coverage by rank (mean over seeds): 1:100, 2:99, 3:69, 4:3, 5:0
-- (c) sst-imb100 oracle per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:100
-- (d) sst-imb100 fewshot pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:43.7, 2:51.5, 3:45.4, 4:34.1, 5:29.2
-- (d) sst-imb100 cicle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:43.9, 2:51.5, 3:46.1, 4:36.9, 5:31.2
-- (d) sst-imb100 topk pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:44.6, 2:51.5, 3:45.9, 4:35.5, 5:12.5
-- (d) sst-imb100 mass pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:45.9, 2:50.7, 3:46.0, 4:15.4, 5:0.7
-- (d) sst-imb100 marginal pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:45.3, 2:51.1, 3:43.7, 4:5.1, 5:1.6
-- (d) sst-imb100 oracle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:47.5, 2:55.6, 3:52.0, 4:40.6, 5:44.0
 
 ## Table 3 (label renaming, five datasets)
 
@@ -315,6 +272,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - sst cicle fixed k=4: 45.75 (n=18)
 - sst fewshot pc k=4: 46.60 (n=18)
 - sst cicle pc k=4: 47.51 (n=18)
+- sst-relabel cicle k=0 (candidate set only): 21.41 (n=18)
 - sst-relabel fewshot fixed k=1: 24.34 (n=18)
 - sst-relabel cicle fixed k=1: 28.43 (n=18)
 - sst-relabel fewshot pc k=1: 33.29 (n=18)
@@ -336,6 +294,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - semeval-18 cicle fixed k=4: 15.89 (n=18)
 - semeval-18 fewshot pc k=4: 15.38 (n=18)
 - semeval-18 cicle pc k=4: 15.72 (n=18)
+- semeval-18-relabel cicle k=0 (candidate set only): 2.53 (n=18)
 - semeval-18-relabel fewshot fixed k=1: 6.28 (n=18)
 - semeval-18-relabel cicle fixed k=1: 7.05 (n=18)
 - semeval-18-relabel fewshot pc k=1: 7.69 (n=18)
@@ -381,7 +340,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - ohsumed-relabel fewshot fixed k=4: 40.19 (n=18)
 - ohsumed-relabel cicle fixed k=4: 41.51 (n=18)
 
-## Table 4 (supervised vs pipelines)
+## Table 4 (supervised vs pipelines) (B=500, development build)
 
 - yahoo-answers base   k=: 65.44 (n=3)
 - yahoo-answers-imb10 base   k=: 50.39 (n=3)
@@ -401,15 +360,15 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - semeval-18 finetuned   k=: 24.53 (n=3)
 - go-emotions finetuned   k=: 36.98 (n=3)
 - ohsumed finetuned   k=: 55.43 (n=3)
-- yahoo-answers finetuned  roberta-large k=: 64.59 (n=3)
-- yahoo-answers-imb10 finetuned  roberta-large k=: 61.58 (n=3)
-- yahoo-answers-imb100 finetuned  roberta-large k=: 44.92 (n=3)
-- sst finetuned  roberta-large k=: 39.91 (n=3)
-- sst-imb10 finetuned  roberta-large k=: 35.83 (n=3)
-- sst-imb100 finetuned  roberta-large k=: 32.21 (n=3)
-- semeval-18 finetuned  roberta-large k=: 23.02 (n=3)
-- go-emotions finetuned  roberta-large k=: 27.32 (n=3)
-- ohsumed finetuned  roberta-large k=: 66.09 (n=3)
+- yahoo-answers finetuned  roberta-large k=: 65.21 (n=3)
+- yahoo-answers-imb10 finetuned  roberta-large k=: 62.93 (n=3)
+- yahoo-answers-imb100 finetuned  roberta-large k=: 43.56 (n=3)
+- sst finetuned  roberta-large k=: 52.93 (n=3)
+- sst-imb10 finetuned  roberta-large k=: 47.38 (n=3)
+- sst-imb100 finetuned  roberta-large k=: 32.52 (n=3)
+- semeval-18 finetuned  roberta-large k=: 23.21 (n=3)
+- go-emotions finetuned  roberta-large k=: 34.26 (n=3)
+- ohsumed finetuned  roberta-large k=: 65.61 (n=3)
 - yahoo-answers zeroshot   k=: 55.32 (n=18)
 - sst zeroshot   k=: 40.35 (n=18)
 - semeval-18 zeroshot   k=: 12.21 (n=18)
@@ -444,31 +403,31 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - ohsumed best LLM pipeline: 53.10 (CICLe F $k$=8)
 - yahoo-answers base  per seed: 42: 63.3, 43: 67.9, 44: 65.1
 - yahoo-answers finetuned  per seed: 42: 59.5, 43: 63.9, 44: 62.1
-- yahoo-answers finetuned roberta-large per seed: 42: 62.9, 43: 66.1, 44: 64.8
+- yahoo-answers finetuned roberta-large per seed: 42: 64.3, 43: 67.3, 44: 64.0
 - yahoo-answers-imb10 base  per seed: 42: 48.9, 43: 54.2, 44: 48.1
 - yahoo-answers-imb10 finetuned  per seed: 42: 58.5, 43: 62.5, 44: 55.1
-- yahoo-answers-imb10 finetuned roberta-large per seed: 42: 58.4, 43: 64.6, 44: 61.7
+- yahoo-answers-imb10 finetuned roberta-large per seed: 42: 61.6, 43: 64.4, 44: 62.8
 - yahoo-answers-imb100 base  per seed: 42: 25.6, 43: 36.5, 44: 32.0
 - yahoo-answers-imb100 finetuned  per seed: 42: 38.9, 43: 44.0, 44: 40.8
-- yahoo-answers-imb100 finetuned roberta-large per seed: 42: 44.1, 43: 49.2, 44: 41.4
+- yahoo-answers-imb100 finetuned roberta-large per seed: 42: 38.5, 43: 47.2, 44: 45.0
 - sst base  per seed: 42: 34.9, 43: 35.9, 44: 35.6
 - sst finetuned  per seed: 42: 51.9, 43: 52.4, 44: 49.3
-- sst finetuned roberta-large per seed: 42: 53.3, 43: 54.1, 44: 12.4
+- sst finetuned roberta-large per seed: 42: 53.4, 43: 53.1, 44: 52.4
 - sst-imb10 base  per seed: 42: 17.4, 43: 25.0, 44: 19.1
 - sst-imb10 finetuned  per seed: 42: 46.9, 43: 44.3, 44: 42.2
-- sst-imb10 finetuned roberta-large per seed: 42: 54.3, 43: 47.2, 44: 6.0
+- sst-imb10 finetuned roberta-large per seed: 42: 49.5, 43: 47.6, 44: 45.1
 - sst-imb100 base  per seed: 42: 15.6, 43: 12.5, 44: 9.6
 - sst-imb100 finetuned  per seed: 42: 30.5, 43: 29.6, 44: 35.6
-- sst-imb100 finetuned roberta-large per seed: 42: 28.6, 43: 32.3, 44: 35.7
+- sst-imb100 finetuned roberta-large per seed: 42: 29.4, 43: 31.6, 44: 36.5
 - semeval-18 base  per seed: 42: 10.4, 43: 9.2, 44: 9.5
 - semeval-18 finetuned  per seed: 42: 23.7, 43: 25.7, 44: 24.3
-- semeval-18 finetuned roberta-large per seed: 42: 28.2, 43: 25.9, 44: 14.9
+- semeval-18 finetuned roberta-large per seed: 42: 25.5, 43: 21.5, 44: 22.6
 - go-emotions base  per seed: 42: 11.2, 43: 11.6, 44: 10.9
 - go-emotions finetuned  per seed: 42: 35.7, 43: 38.1, 44: 37.1
-- go-emotions finetuned roberta-large per seed: 42: 1.9, 43: 39.3, 44: 40.7
+- go-emotions finetuned roberta-large per seed: 42: 35.1, 43: 35.8, 44: 31.9
 - ohsumed base  per seed: 42: 46.9, 43: 42.7, 44: 46.1
 - ohsumed finetuned  per seed: 42: 53.8, 43: 57.8, 44: 54.8
-- ohsumed finetuned roberta-large per seed: 42: 65.2, 43: 65.2, 44: 67.9
+- ohsumed finetuned roberta-large per seed: 42: 65.7, 43: 64.0, 44: 67.2
 
 ## Figure 3 (alpha; Llama-3.1-8B + Llama-3.2-3B, 24 cells)
 
@@ -489,7 +448,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - go-emotions alpha=0.1: Δ +1.45 pp [+0.74, +2.33] p=0.000 n=24; coverage 90.9%, answered without LLM 0.0%, mean set size 18.10
 - go-emotions alpha=0.2: Δ +3.02 pp [+2.09, +4.24] p=0.000 n=24; coverage 81.0%, answered without LLM 0.0%, mean set size 13.15
 
-## Tables B1-B11: full grids -> tables/grid_<variant>.tex
+## Tables B: full grids -> tables/grid_<variant>.tex
 
 
 ## Table C1 (CICLe − alternative, all variants)
@@ -527,9 +486,13 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - yahoo-answers-relabel fixed CICLe − fewshot: +6.52 pp [+5.96, +7.09] p=0.000 n=36
 - yahoo-answers-relabel fixed CICLe − topk: +2.61 pp [+2.02, +3.18] p=0.000 n=36
 - yahoo-answers-relabel fixed CICLe − mass: +5.03 pp [+4.49, +5.58] p=0.000 n=36
+- yahoo-answers-relabel fixed CICLe − marginal: -0.20 pp [-0.65, +0.25] p=0.378 n=36 n.s.
+- yahoo-answers-relabel fixed CICLe − oracle: -2.42 pp [-3.15, -1.69] p=0.000 n=36
 - yahoo-answers-relabel pc CICLe − fewshot: +5.62 pp [+5.00, +6.25] p=0.000 n=36
 - yahoo-answers-relabel pc CICLe − topk: +2.64 pp [+2.06, +3.22] p=0.000 n=36
 - yahoo-answers-relabel pc CICLe − mass: +4.46 pp [+3.91, +5.03] p=0.000 n=36
+- yahoo-answers-relabel pc CICLe − marginal: +0.60 pp [+0.14, +1.07] p=0.011 n=36
+- yahoo-answers-relabel pc CICLe − oracle: -4.05 pp [-4.83, -3.25] p=0.000 n=36
 - sst fixed CICLe − fewshot: +1.77 pp [+1.14, +2.39] p=0.000 n=72
 - sst fixed CICLe − topk: -0.14 pp [-0.89, +0.61] p=0.719 n=36 n.s.
 - sst fixed CICLe − mass: +1.07 pp [+0.43, +1.70] p=0.001 n=36
@@ -563,23 +526,33 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - sst-relabel fixed CICLe − fewshot: +3.75 pp [+3.18, +4.29] p=0.000 n=36
 - sst-relabel fixed CICLe − topk: +1.96 pp [+1.40, +2.53] p=0.000 n=36
 - sst-relabel fixed CICLe − mass: +2.63 pp [+2.13, +3.11] p=0.000 n=36
+- sst-relabel fixed CICLe − marginal: +0.07 pp [-0.39, +0.55] p=0.783 n=36 n.s.
+- sst-relabel fixed CICLe − oracle: -2.52 pp [-3.21, -1.84] p=0.000 n=36
 - sst-relabel pc CICLe − fewshot: +2.10 pp [+1.46, +2.73] p=0.000 n=36
 - sst-relabel pc CICLe − topk: -0.17 pp [-0.85, +0.51] p=0.628 n=36 n.s.
 - sst-relabel pc CICLe − mass: +1.00 pp [+0.44, +1.55] p=0.001 n=36
+- sst-relabel pc CICLe − marginal: -0.58 pp [-1.16, +0.01] p=0.053 n=36 n.s.
+- sst-relabel pc CICLe − oracle: -5.48 pp [-6.29, -4.69] p=0.000 n=36
 - semeval-18 fixed CICLe − fewshot: +0.52 pp [+0.30, +0.73] p=0.000 n=72
 - semeval-18 fixed CICLe − topk: +0.04 pp [-0.24, +0.32] p=0.775 n=36 n.s.
 - semeval-18 fixed CICLe − mass: +0.01 pp [-0.28, +0.30] p=0.945 n=36 n.s.
+- semeval-18 fixed CICLe − marginal: +0.02 pp [-0.27, +0.31] p=0.894 n=36 n.s.
 - semeval-18 fixed CICLe − oracle: -1.13 pp [-1.51, -0.74] p=0.000 n=36
 - semeval-18 pc CICLe − fewshot: +0.46 pp [+0.22, +0.71] p=0.000 n=72
 - semeval-18 pc CICLe − topk: +0.01 pp [-0.30, +0.33] p=0.928 n=36 n.s.
 - semeval-18 pc CICLe − mass: +0.02 pp [-0.29, +0.35] p=0.875 n=36 n.s.
+- semeval-18 pc CICLe − marginal: -0.21 pp [-0.51, +0.12] p=0.197 n=36 n.s.
 - semeval-18 pc CICLe − oracle: -1.32 pp [-1.68, -0.94] p=0.000 n=36
 - semeval-18-relabel fixed CICLe − fewshot: +0.79 pp [+0.54, +1.03] p=0.000 n=36
 - semeval-18-relabel fixed CICLe − topk: +0.14 pp [-0.12, +0.41] p=0.295 n=36 n.s.
 - semeval-18-relabel fixed CICLe − mass: +0.21 pp [-0.06, +0.47] p=0.129 n=36 n.s.
+- semeval-18-relabel fixed CICLe − marginal: -0.13 pp [-0.40, +0.14] p=0.353 n=36 n.s.
+- semeval-18-relabel fixed CICLe − oracle: -0.57 pp [-0.90, -0.24] p=0.002 n=36
 - semeval-18-relabel pc CICLe − fewshot: +0.72 pp [+0.44, +1.00] p=0.000 n=36
 - semeval-18-relabel pc CICLe − topk: +0.07 pp [-0.23, +0.36] p=0.643 n=36 n.s.
 - semeval-18-relabel pc CICLe − mass: +0.08 pp [-0.20, +0.37] p=0.602 n=36 n.s.
+- semeval-18-relabel pc CICLe − marginal: -0.27 pp [-0.56, +0.04] p=0.089 n=36 n.s.
+- semeval-18-relabel pc CICLe − oracle: -0.61 pp [-0.95, -0.25] p=0.001 n=36
 - go-emotions fixed CICLe − fewshot: +0.59 pp [+0.19, +1.07] p=0.006 n=72
 - go-emotions fixed CICLe − topk: +2.51 pp [+1.49, +3.23] p=0.000 n=36
 - go-emotions fixed CICLe − mass: +2.26 pp [+1.24, +2.98] p=0.000 n=36
@@ -593,9 +566,13 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - go-emotions-relabel fixed CICLe − fewshot: +0.66 pp [+0.34, +1.00] p=0.000 n=36
 - go-emotions-relabel fixed CICLe − topk: +0.43 pp [-0.07, +0.89] p=0.101 n=36 n.s.
 - go-emotions-relabel fixed CICLe − mass: +0.42 pp [-0.09, +0.90] p=0.128 n=36 n.s.
+- go-emotions-relabel fixed CICLe − marginal: -0.23 pp [-0.79, +0.31] p=0.442 n=36 n.s.
+- go-emotions-relabel fixed CICLe − oracle: -1.14 pp [-1.55, -0.73] p=0.000 n=36
 - go-emotions-relabel pc CICLe − fewshot: +0.98 pp [+0.66, +1.39] p=0.000 n=36
 - go-emotions-relabel pc CICLe − topk: +0.65 pp [+0.12, +1.19] p=0.014 n=36
 - go-emotions-relabel pc CICLe − mass: +0.34 pp [-0.19, +0.94] p=0.232 n=36 n.s.
+- go-emotions-relabel pc CICLe − marginal: -0.67 pp [-1.30, -0.00] p=0.050 n=36
+- go-emotions-relabel pc CICLe − oracle: -1.15 pp [-1.58, -0.70] p=0.000 n=36
 - ohsumed fixed CICLe − fewshot: +1.15 pp [+0.54, +1.87] p=0.000 n=36
 - ohsumed fixed CICLe − topk: +1.08 pp [+0.34, +1.80] p=0.002 n=36
 - ohsumed fixed CICLe − mass: +1.52 pp [+0.82, +2.24] p=0.000 n=36
@@ -653,12 +630,13 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - semeval-18 cicle: coverage 94.4%, size 17.12, singleton 0.0%, min per-class coverage 79.9% (per seed 87, 78, 75; 3 seeds)
 - semeval-18 topk: coverage 97.1%, size 17.00, singleton 0.0%, min per-class coverage 77.7% (per seed 86, 70, 77; 3 seeds)
 - semeval-18 mass: coverage 97.2%, size 16.87, singleton 0.0%, min per-class coverage 80.8% (per seed 87, 78, 77; 3 seeds)
+- semeval-18 marginal: coverage 96.2%, size 16.02, singleton 0.0%, min per-class coverage 73.5% (per seed 87, 61, 73; 3 seeds)
 - semeval-18 oracle: coverage 100.0%, size 17.00, singleton 0.0%, min per-class coverage 100.0% (per seed 100, 100, 100; 3 seeds)
 - semeval-18-relabel cicle: coverage 94.4%, size 17.16, singleton 0.0%, min per-class coverage 81.1% (per seed 88, 78, 77; 3 seeds)
 - semeval-18-relabel topk: coverage 97.1%, size 17.00, singleton 0.0%, min per-class coverage 77.7% (per seed 86, 70, 77; 3 seeds)
 - semeval-18-relabel mass: coverage 97.2%, size 16.87, singleton 0.0%, min per-class coverage 80.8% (per seed 87, 78, 77; 3 seeds)
 - semeval-18-relabel marginal: coverage 96.2%, size 16.02, singleton 0.0%, min per-class coverage 73.5% (per seed 87, 61, 73; 3 seeds)
-- semeval-18-relabel oracle: coverage 100.0%, size 17.00, singleton 0.0%, min per-class coverage 100.0% (per seed 100, 100; 2 seeds)
+- semeval-18-relabel oracle: coverage 100.0%, size 17.00, singleton 0.0%, min per-class coverage 100.0% (per seed 100, 100, 100; 3 seeds)
 - go-emotions cicle: coverage 95.4%, size 22.10, singleton 0.0%, min per-class coverage 73.9% (per seed 67, 75, 80; 3 seeds)
 - go-emotions topk: coverage 98.8%, size 22.00, singleton 0.0%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
 - go-emotions mass: coverage 97.9%, size 18.80, singleton 0.0%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
@@ -667,8 +645,8 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - go-emotions-relabel cicle: coverage 95.5%, size 22.13, singleton 0.0%, min per-class coverage 75.6% (per seed 67, 82, 79; 3 seeds)
 - go-emotions-relabel topk: coverage 98.8%, size 22.00, singleton 0.0%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
 - go-emotions-relabel mass: coverage 97.9%, size 18.80, singleton 0.0%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
-- go-emotions-relabel marginal: coverage 95.2%, size 14.34, singleton 0.1%, min per-class coverage 0.0% (per seed 0, 0; 2 seeds)
-- go-emotions-relabel oracle: coverage 100.0%, size 22.00, singleton 0.0%, min per-class coverage 100.0% (per seed 100; 1 seeds)
+- go-emotions-relabel marginal: coverage 95.0%, size 14.35, singleton 0.1%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
+- go-emotions-relabel oracle: coverage 100.0%, size 22.00, singleton 0.0%, min per-class coverage 100.0% (per seed 100, 100, 100; 3 seeds)
 - ohsumed cicle: coverage 96.4%, size 12.27, singleton 0.0%, min per-class coverage 84.9% (per seed 84, 84, 86; 3 seeds)
 - ohsumed topk: coverage 98.8%, size 12.00, singleton 0.0%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
 - ohsumed mass: coverage 99.4%, size 13.95, singleton 0.5%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
@@ -680,7 +658,52 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - ohsumed-relabel marginal: coverage 95.2%, size 4.81, singleton 7.4%, min per-class coverage 0.0% (per seed 0, 0, 0; 3 seeds)
 - ohsumed-relabel oracle: coverage 100.0%, size 12.00, singleton 0.0%, min per-class coverage 100.0% (per seed 100, 100, 100; 3 seeds)
 
-## Figure C1 (Figure 2 for the Fixed variant)
+## Figure 2 appendix extra (Per-Class; panels b and d)
+
+- (b) yahoo-answers cicle: coverage 95.0%, mean set size 5.67 (3 seeds)
+- (b) yahoo-answers-imb10 cicle: coverage 94.9%, mean set size 6.21 (3 seeds)
+- (b) yahoo-answers-imb100 cicle: coverage 96.7%, mean set size 7.73 (3 seeds)
+- (b) yahoo-answers topk: coverage 93.7%, mean set size 5.67 (3 seeds)
+- (b) yahoo-answers-imb10 topk: coverage 90.5%, mean set size 6.00 (3 seeds)
+- (b) yahoo-answers-imb100 topk: coverage 81.6%, mean set size 7.67 (3 seeds)
+- (b) yahoo-answers mass: coverage 98.4%, mean set size 7.84 (3 seeds)
+- (b) yahoo-answers-imb10 mass: coverage 96.2%, mean set size 7.46 (3 seeds)
+- (b) yahoo-answers-imb100 mass: coverage 74.2%, mean set size 5.88 (3 seeds)
+- (b) yahoo-answers marginal: coverage 95.6%, mean set size 5.71 (3 seeds)
+- (b) yahoo-answers-imb10 marginal: coverage 89.5%, mean set size 5.04 (3 seeds)
+- (b) yahoo-answers-imb100 marginal: coverage 64.8%, mean set size 3.80 (3 seeds)
+- (b) yahoo-answers oracle: coverage 100.0%, mean set size 5.67 (3 seeds)
+- (b) yahoo-answers-imb10 oracle: coverage 100.0%, mean set size 6.00 (3 seeds)
+- (b) yahoo-answers-imb100 oracle: coverage 100.0%, mean set size 7.67 (3 seeds)
+- (d) yahoo-answers-imb100 fewshot pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:61.6, 2:46.9, 3:58.3, 4:68.4, 5:57.0, 6:63.1, 7:66.5, 8:47.4, 9:40.4, 10:36.7
+- (d) yahoo-answers-imb100 cicle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:64.3, 2:49.2, 3:59.3, 4:67.9, 5:58.0, 6:63.1, 7:67.2, 8:47.7, 9:41.0, 10:36.9
+- (d) yahoo-answers-imb100 topk pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:59.7, 2:45.5, 3:55.4, 4:67.5, 5:55.7, 6:61.3, 7:66.1, 8:45.4, 9:19.6, 10:8.6
+- (d) yahoo-answers-imb100 mass pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:58.8, 2:44.9, 3:55.3, 4:66.9, 5:55.8, 6:61.3, 7:66.7, 8:43.5, 9:8.2, 10:4.3
+- (d) yahoo-answers-imb100 marginal pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:55.7, 2:43.9, 3:56.3, 4:66.8, 5:56.6, 6:61.0, 7:64.9, 8:30.0, 9:0.6, 10:2.4
+- (d) yahoo-answers-imb100 oracle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:65.2, 2:52.9, 3:61.9, 4:70.5, 5:63.4, 6:67.5, 7:70.0, 8:51.1, 9:44.7, 10:42.6
+- (b) sst cicle: coverage 95.4%, mean set size 3.86 (3 seeds)
+- (b) sst-imb10 cicle: coverage 96.5%, mean set size 4.04 (3 seeds)
+- (b) sst-imb100 cicle: coverage 96.0%, mean set size 4.35 (3 seeds)
+- (b) sst topk: coverage 95.5%, mean set size 4.00 (3 seeds)
+- (b) sst-imb10 topk: coverage 89.4%, mean set size 4.00 (3 seeds)
+- (b) sst-imb100 topk: coverage 88.4%, mean set size 4.33 (3 seeds)
+- (b) sst mass: coverage 99.2%, mean set size 4.50 (3 seeds)
+- (b) sst-imb10 mass: coverage 92.2%, mean set size 4.13 (3 seeds)
+- (b) sst-imb100 mass: coverage 60.0%, mean set size 2.85 (3 seeds)
+- (b) sst marginal: coverage 93.9%, mean set size 3.67 (3 seeds)
+- (b) sst-imb10 marginal: coverage 82.6%, mean set size 3.55 (3 seeds)
+- (b) sst-imb100 marginal: coverage 51.9%, mean set size 2.26 (3 seeds)
+- (b) sst oracle: coverage 100.0%, mean set size 4.00 (3 seeds)
+- (b) sst-imb10 oracle: coverage 100.0%, mean set size 4.00 (3 seeds)
+- (b) sst-imb100 oracle: coverage 100.0%, mean set size 4.33 (3 seeds)
+- (d) sst-imb100 fewshot pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:43.7, 2:51.5, 3:45.4, 4:34.1, 5:29.2
+- (d) sst-imb100 cicle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:43.9, 2:51.5, 3:46.1, 4:36.9, 5:31.2
+- (d) sst-imb100 topk pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:44.6, 2:51.5, 3:45.9, 4:35.5, 5:12.5
+- (d) sst-imb100 mass pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:45.9, 2:50.7, 3:46.0, 4:15.4, 5:0.7
+- (d) sst-imb100 marginal pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:45.3, 2:51.1, 3:43.7, 4:5.1, 5:1.6
+- (d) sst-imb100 oracle pc k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:47.5, 2:55.6, 3:52.0, 4:40.6, 5:44.0
+
+## Figure C1 (Fixed variant; panels a-d)
 
 - (a) yahoo-answers fixed k∈{1,4} CICLe − fewshot: -0.35 pp [-0.79, +0.10] p=0.135 n=36 n.s.
 - (a) yahoo-answers-imb10 fixed k∈{1,4} CICLe − fewshot: -0.45 pp [-0.90, -0.03] p=0.036 n=36
@@ -716,7 +739,6 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - (c) yahoo-answers-imb100 topk per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:100, 6:100, 7:98, 8:86, 9:29, 10:9
 - (c) yahoo-answers-imb100 mass per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:99, 4:100, 5:98, 6:93, 7:92, 8:58, 9:7, 10:1
 - (c) yahoo-answers-imb100 marginal per-class coverage by rank (mean over seeds): 1:99, 2:98, 3:97, 4:95, 5:86, 6:77, 7:76, 8:22, 9:0, 10:0
-- (c) yahoo-answers-imb100 oracle per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:100, 6:100, 7:100, 8:100, 9:100, 10:100
 - (d) yahoo-answers-imb100 fewshot fixed k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:60.6, 2:44.9, 3:57.7, 4:65.0, 5:55.3, 6:58.5, 7:60.8, 8:42.8, 9:40.9, 10:39.0
 - (d) yahoo-answers-imb100 cicle fixed k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:62.2, 2:46.3, 3:58.1, 4:64.2, 5:55.9, 6:57.3, 7:60.6, 8:43.7, 9:41.8, 10:39.2
 - (d) yahoo-answers-imb100 topk fixed k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:58.4, 2:43.5, 3:54.4, 4:63.7, 5:53.0, 6:56.4, 7:61.1, 8:42.3, 9:21.6, 10:10.3
@@ -757,7 +779,6 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - (c) sst-imb100 topk per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:36
 - (c) sst-imb100 mass per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:94, 4:20, 5:0
 - (c) sst-imb100 marginal per-class coverage by rank (mean over seeds): 1:100, 2:99, 3:69, 4:3, 5:0
-- (c) sst-imb100 oracle per-class coverage by rank (mean over seeds): 1:100, 2:100, 3:100, 4:100, 5:100
 - (d) sst-imb100 fewshot fixed k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:42.2, 2:50.7, 3:40.2, 4:31.8, 5:26.2
 - (d) sst-imb100 cicle fixed k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:42.6, 2:50.9, 3:41.3, 4:33.9, 5:29.7
 - (d) sst-imb100 topk fixed k=4 per-class F1 by rank (mean over 6 models x 3 seeds): 1:42.8, 2:50.4, 3:41.6, 4:34.5, 5:12.0
@@ -768,59 +789,65 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 ## Table D1 (per-model Δ, all k)
 
 - Llama-3.2-3B yahoo-answers fixed: -2.33 pp [-3.13, -1.53] p=0.000 n=12
-- Llama-3.2-3B yahoo-answers pc: +0.82 pp [+0.22, +1.42] p=0.007 n=12
 - Llama-3.2-3B sst fixed: +3.85 pp [+2.80, +4.92] p=0.000 n=12
-- Llama-3.2-3B sst pc: +3.17 pp [+2.14, +4.24] p=0.000 n=12
 - Llama-3.2-3B semeval-18 fixed: +0.50 pp [+0.02, +0.96] p=0.041 n=12
-- Llama-3.2-3B semeval-18 pc: +0.92 pp [+0.41, +1.43] p=0.000 n=12
 - Llama-3.2-3B go-emotions fixed: +0.92 pp [+0.26, +1.62] p=0.007 n=12
-- Llama-3.2-3B go-emotions pc: +2.46 pp [+1.39, +3.47] p=0.000 n=12
 - Llama-3.2-3B ohsumed fixed: -0.33 pp [-1.53, +0.98] p=0.644 n=6 n.s.
 - Ministral-3B yahoo-answers fixed: -0.17 pp [-1.09, +0.77] p=0.740 n=12 n.s.
-- Ministral-3B yahoo-answers pc: +3.40 pp [+2.55, +4.25] p=0.000 n=12
 - Ministral-3B sst fixed: +3.36 pp [+2.31, +4.43] p=0.000 n=12
-- Ministral-3B sst pc: +1.33 pp [+0.33, +2.36] p=0.010 n=12
 - Ministral-3B semeval-18 fixed: +0.74 pp [+0.24, +1.23] p=0.003 n=12
-- Ministral-3B semeval-18 pc: +0.62 pp [+0.13, +1.11] p=0.009 n=12
 - Ministral-3B go-emotions fixed: +0.47 pp [-0.40, +1.55] p=0.281 n=12 n.s.
-- Ministral-3B go-emotions pc: +1.32 pp [+0.49, +2.14] p=0.002 n=12
 - Ministral-3B ohsumed fixed: +1.66 pp [+0.33, +3.08] p=0.016 n=6
 - Qwen2.5-3B yahoo-answers fixed: +1.99 pp [+1.23, +2.79] p=0.000 n=12
-- Qwen2.5-3B yahoo-answers pc: +2.14 pp [+1.35, +2.92] p=0.000 n=12
 - Qwen2.5-3B sst fixed: +0.40 pp [-0.60, +1.40] p=0.421 n=12 n.s.
-- Qwen2.5-3B sst pc: +1.12 pp [+0.03, +2.23] p=0.044 n=12
 - Qwen2.5-3B semeval-18 fixed: +0.12 pp [-0.28, +0.49] p=0.576 n=12 n.s.
-- Qwen2.5-3B semeval-18 pc: +0.16 pp [-0.31, +0.60] p=0.496 n=12 n.s.
 - Qwen2.5-3B go-emotions fixed: +0.39 pp [-0.26, +1.11] p=0.247 n=12 n.s.
-- Qwen2.5-3B go-emotions pc: +0.95 pp [+0.19, +1.75] p=0.013 n=12
 - Qwen2.5-3B ohsumed fixed: +4.71 pp [+3.20, +6.65] p=0.000 n=6
 - Mistral-7B yahoo-answers fixed: -0.69 pp [-1.31, -0.06] p=0.032 n=12
-- Mistral-7B yahoo-answers pc: +0.08 pp [-0.58, +0.75] p=0.793 n=12 n.s.
 - Mistral-7B sst fixed: -0.42 pp [-1.27, +0.47] p=0.348 n=12 n.s.
-- Mistral-7B sst pc: -0.54 pp [-1.48, +0.42] p=0.257 n=12 n.s.
 - Mistral-7B semeval-18 fixed: +0.85 pp [+0.39, +1.31] p=0.000 n=12
-- Mistral-7B semeval-18 pc: +0.73 pp [+0.22, +1.23] p=0.003 n=12
 - Mistral-7B go-emotions fixed: +0.73 pp [+0.03, +1.40] p=0.041 n=12
-- Mistral-7B go-emotions pc: +0.15 pp [-0.63, +1.10] p=0.592 n=12 n.s.
 - Mistral-7B ohsumed fixed: -0.13 pp [-1.32, +1.12] p=0.875 n=6 n.s.
 - Qwen2.5-7B yahoo-answers fixed: +0.05 pp [-0.44, +0.54] p=0.842 n=12 n.s.
-- Qwen2.5-7B yahoo-answers pc: +1.24 pp [+0.67, +1.84] p=0.000 n=12
 - Qwen2.5-7B sst fixed: +1.49 pp [+0.64, +2.35] p=0.000 n=12
-- Qwen2.5-7B sst pc: +0.96 pp [+0.07, +1.85] p=0.036 n=12
 - Qwen2.5-7B semeval-18 fixed: +0.48 pp [+0.05, +0.93] p=0.030 n=12
-- Qwen2.5-7B semeval-18 pc: -0.29 pp [-0.76, +0.21] p=0.248 n=12 n.s.
 - Qwen2.5-7B go-emotions fixed: +0.69 pp [-0.35, +2.02] p=0.160 n=12 n.s.
-- Qwen2.5-7B go-emotions pc: +0.45 pp [-0.59, +1.50] p=0.385 n=12 n.s.
 - Qwen2.5-7B ohsumed fixed: +0.49 pp [-0.62, +1.61] p=0.362 n=6 n.s.
 - Llama-3.1-8B yahoo-answers fixed: +0.03 pp [-0.49, +0.57] p=0.889 n=12 n.s.
-- Llama-3.1-8B yahoo-answers pc: +0.74 pp [+0.20, +1.30] p=0.009 n=12
 - Llama-3.1-8B sst fixed: +1.94 pp [+1.06, +2.81] p=0.000 n=12
-- Llama-3.1-8B sst pc: +0.35 pp [-0.59, +1.28] p=0.448 n=12 n.s.
 - Llama-3.1-8B semeval-18 fixed: +0.45 pp [-0.01, +0.90] p=0.054 n=12 n.s.
-- Llama-3.1-8B semeval-18 pc: +0.65 pp [+0.14, +1.16] p=0.013 n=12
 - Llama-3.1-8B go-emotions fixed: +0.32 pp [-0.52, +1.18] p=0.401 n=12 n.s.
-- Llama-3.1-8B go-emotions pc: +0.20 pp [-0.76, +1.20] p=0.695 n=12 n.s.
 - Llama-3.1-8B ohsumed fixed: +0.51 pp [-0.65, +1.61] p=0.417 n=6 n.s.
+- Llama-3.2-3B yahoo-answers pc: +0.82 pp [+0.22, +1.42] p=0.007 n=12
+- Llama-3.2-3B sst pc: +3.17 pp [+2.14, +4.24] p=0.000 n=12
+- Llama-3.2-3B semeval-18 pc: +0.92 pp [+0.41, +1.43] p=0.000 n=12
+- Llama-3.2-3B go-emotions pc: +2.46 pp [+1.39, +3.47] p=0.000 n=12
+- Llama-3.2-3B ohsumed pc: +4.95 pp [+3.03, +6.98] p=0.000 n=3
+- Ministral-3B yahoo-answers pc: +3.40 pp [+2.55, +4.25] p=0.000 n=12
+- Ministral-3B sst pc: +1.33 pp [+0.33, +2.36] p=0.010 n=12
+- Ministral-3B semeval-18 pc: +0.62 pp [+0.13, +1.11] p=0.009 n=12
+- Ministral-3B go-emotions pc: +1.32 pp [+0.49, +2.14] p=0.002 n=12
+- Ministral-3B ohsumed pc: +4.39 pp [+2.53, +6.25] p=0.000 n=3
+- Qwen2.5-3B yahoo-answers pc: +2.14 pp [+1.35, +2.92] p=0.000 n=12
+- Qwen2.5-3B sst pc: +1.12 pp [+0.03, +2.23] p=0.044 n=12
+- Qwen2.5-3B semeval-18 pc: +0.16 pp [-0.31, +0.60] p=0.496 n=12 n.s.
+- Qwen2.5-3B go-emotions pc: +0.95 pp [+0.19, +1.75] p=0.013 n=12
+- Qwen2.5-3B ohsumed pc: +13.73 pp [+11.52, +15.89] p=0.000 n=3
+- Mistral-7B yahoo-answers pc: +0.08 pp [-0.58, +0.75] p=0.793 n=12 n.s.
+- Mistral-7B sst pc: -0.54 pp [-1.48, +0.42] p=0.257 n=12 n.s.
+- Mistral-7B semeval-18 pc: +0.73 pp [+0.22, +1.23] p=0.003 n=12
+- Mistral-7B go-emotions pc: +0.15 pp [-0.63, +1.10] p=0.592 n=12 n.s.
+- Mistral-7B ohsumed pc: +3.28 pp [+1.69, +4.87] p=0.000 n=3
+- Qwen2.5-7B yahoo-answers pc: +1.24 pp [+0.67, +1.84] p=0.000 n=12
+- Qwen2.5-7B sst pc: +0.96 pp [+0.07, +1.85] p=0.036 n=12
+- Qwen2.5-7B semeval-18 pc: -0.29 pp [-0.76, +0.21] p=0.248 n=12 n.s.
+- Qwen2.5-7B go-emotions pc: +0.45 pp [-0.59, +1.50] p=0.385 n=12 n.s.
+- Qwen2.5-7B ohsumed pc: +1.64 pp [+0.11, +3.28] p=0.035 n=3
+- Llama-3.1-8B yahoo-answers pc: +0.74 pp [+0.20, +1.30] p=0.009 n=12
+- Llama-3.1-8B sst pc: +0.35 pp [-0.59, +1.28] p=0.448 n=12 n.s.
+- Llama-3.1-8B semeval-18 pc: +0.65 pp [+0.14, +1.16] p=0.013 n=12
+- Llama-3.1-8B go-emotions pc: +0.20 pp [-0.76, +1.20] p=0.695 n=12 n.s.
+- Llama-3.1-8B ohsumed pc: +3.30 pp [+1.37, +5.36] p=0.000 n=3
 
 ## Table E1 (ablation; Llama-3.1-8B + Llama-3.2-3B, 24 cells)
 
@@ -883,6 +910,10 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - Mistral-Nemo-12B go-emotions zero-shot: 27.2 (3 seeds)
 - Mistral-Nemo-12B go-emotions Δ fixed: +0.53 pp [-0.45, +1.48] p=0.275 n=6 n.s.
 - Mistral-Nemo-12B go-emotions Δ pc: +0.77 pp [-0.33, +2.05] p=0.174 n=6 n.s.
+- Mistral-Nemo-12B ohsumed fixed k=1: few-shot 50.6, CICLe 52.5 (seeds 3/3)
+- Mistral-Nemo-12B ohsumed fixed k=4: few-shot 56.7, CICLe 57.6 (seeds 3/3)
+- Mistral-Nemo-12B ohsumed zero-shot: 46.4 (3 seeds)
+- Mistral-Nemo-12B ohsumed Δ fixed: +1.44 pp [+0.08, +2.79] p=0.039 n=6
 - Qwen2.5-32B yahoo-answers fixed k=1: few-shot 64.0, CICLe 65.0 (seeds 3/3)
 - Qwen2.5-32B yahoo-answers fixed k=4: few-shot 66.4, CICLe 66.9 (seeds 3/3)
 - Qwen2.5-32B yahoo-answers pc k=1: few-shot 63.9, CICLe 65.2 (seeds 3/3)
@@ -1045,6 +1076,9 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - Mistral-Nemo-12B go-emotions zeroshot: mean 1.0%, max 1.2% over 3 runs
 - Mistral-Nemo-12B go-emotions fewshot: mean 1.0%, max 2.2% over 12 runs
 - Mistral-Nemo-12B go-emotions cicle: mean 0.8%, max 1.3% over 12 runs
+- Mistral-Nemo-12B ohsumed zeroshot: mean 2.4%, max 2.9% over 3 runs
+- Mistral-Nemo-12B ohsumed fewshot: mean 1.6%, max 2.3% over 6 runs
+- Mistral-Nemo-12B ohsumed cicle: mean 0.4%, max 0.5% over 6 runs
 - Qwen2.5-32B yahoo-answers zeroshot: mean 3.2%, max 3.7% over 3 runs
 - Qwen2.5-32B yahoo-answers fewshot: mean 0.5%, max 1.1% over 12 runs
 - Qwen2.5-32B yahoo-answers cicle: mean 0.4%, max 1.1% over 12 runs
@@ -1063,7 +1097,7 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - Mistral-7B most frequent invalid raw outputs (7,322 invalid in total): 'Based on the provided text' x106; 'It is difficult to accurately' x84; 'appreciation' x84; 'concern' x81; '🇨🇦' x77; 'discrimination' x69; '🎉 (This emoji represents a party' x61; 'anxiety' x60
 - Qwen2.5-7B most frequent invalid raw outputs (8,853 invalid in total): '🎉' x758; 'disbelief' x418; 'advice' x311; 'discomfort' x265; 'Neurological Diseases' x235; '😋' x220; 'Religion' x213; '☕' x168
 - Llama-3.1-8B most frequent invalid raw outputs (870 invalid in total): 'anxiety' x87; 'discomfort' x65; '😋' x64; 'concern' x40; 'nostalgia' x30; 'Neurological Diseases' x25; '😴' x21; 'nostalgia is not in the list' x19
-- Mistral-Nemo-12B most frequent invalid raw outputs (1,207 invalid in total): '💪' x94; 'gratuity' x54; 'History' x46; 'Religion' x46; '😌' x42; 'disbelief' x37; '🍻' x36; '🎉' x36
+- Mistral-Nemo-12B most frequent invalid raw outputs (1,397 invalid in total): '💪' x94; 'gratuity' x54; 'History' x46; 'Religion' x46; '😌' x42; 'disbelief' x37; '🍻' x36; '🎉' x36
 - Qwen2.5-32B most frequent invalid raw outputs (2,561 invalid in total): '🌞' x319; '🎉' x103; 'disbelief' x88; '💪' x85; '😋' x79; 'nostalgia\n\nIt seems that the' x65; 'disbelief\n\nHowever, since "dis' x37; '🎃' x35
 
 ## Table G3 (qualitative examples; Llama-3.1-8B, seed 42, PC k=4)
@@ -1096,49 +1130,49 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 
 - yahoo-answers-n250 MiniLM + LR: 54.57 (n=3); per seed 42: 54.3, 43: 54.9, 44: 54.5
 - yahoo-answers-n250 RoBERTa-base: 52.16 (n=3); per seed 42: 52.8, 43: 51.9, 44: 51.8
-- yahoo-answers-n250 RoBERTa-large: 54.33 (n=3); per seed 42: 55.2, 43: 48.2, 44: 59.6
+- yahoo-answers-n250 RoBERTa-large: 43.09 (n=3); per seed 42: 44.4, 43: 30.9, 44: 54.0
 - yahoo-answers-n250 Few-shot PC, $k$=4: 60.55 (n=18)
 - yahoo-answers-n250 CICLe PC, $k$=4: 60.50 (n=18)
 - yahoo-answers-n250 best LLM pipeline: 60.55 (FS PC $k$=4)
 - yahoo-answers-n500 MiniLM + LR: 59.95 (n=3); per seed 42: 60.3, 43: 61.3, 44: 58.2
 - yahoo-answers-n500 RoBERTa-base: 58.96 (n=3); per seed 42: 57.9, 43: 59.4, 44: 59.5
-- yahoo-answers-n500 RoBERTa-large: 43.09 (n=3); per seed 42: 4.6, 43: 61.4, 44: 63.3
+- yahoo-answers-n500 RoBERTa-large: 62.13 (n=3); per seed 42: 61.6, 43: 62.3, 44: 62.5
 - yahoo-answers-n500 Few-shot PC, $k$=4: 60.34 (n=18)
 - yahoo-answers-n500 CICLe PC, $k$=4: 61.19 (n=18)
 - yahoo-answers-n500 best LLM pipeline: 61.19 (CICLe PC $k$=4)
 - yahoo-answers-n1000 MiniLM + LR: 63.40 (n=3); per seed 42: 62.3, 43: 65.0, 44: 62.9
 - yahoo-answers-n1000 RoBERTa-base: 62.04 (n=3); per seed 42: 60.8, 43: 64.0, 44: 61.3
-- yahoo-answers-n1000 RoBERTa-large: 62.86 (n=3); per seed 42: 59.6, 43: 65.3, 44: 63.7
+- yahoo-answers-n1000 RoBERTa-large: 63.36 (n=3); per seed 42: 64.0, 43: 64.2, 44: 61.8
 - yahoo-answers-n1000 Few-shot PC, $k$=4: 61.17 (n=18)
 - yahoo-answers-n1000 CICLe PC, $k$=4: 62.43 (n=18)
 - yahoo-answers-n1000 best LLM pipeline: 62.43 (CICLe PC $k$=4)
 - yahoo-answers MiniLM + LR: 65.44 (n=3); per seed 42: 63.3, 43: 67.9, 44: 65.1
 - yahoo-answers RoBERTa-base: 61.82 (n=3); per seed 42: 59.5, 43: 63.9, 44: 62.1
-- yahoo-answers RoBERTa-large: 64.59 (n=3); per seed 42: 62.9, 43: 66.1, 44: 64.8
+- yahoo-answers RoBERTa-large: 65.21 (n=3); per seed 42: 64.3, 43: 67.3, 44: 64.0
 - yahoo-answers Few-shot PC, $k$=4: 61.65 (n=18)
 - yahoo-answers CICLe PC, $k$=4: 62.74 (n=18)
 - yahoo-answers best LLM pipeline: 63.78 (CICLe PC $k$=8)
 - sst-n250 MiniLM + LR: 23.33 (n=3); per seed 42: 22.9, 43: 21.9, 44: 25.2
 - sst-n250 RoBERTa-base: 38.77 (n=3); per seed 42: 37.9, 43: 39.7, 44: 38.7
-- sst-n250 RoBERTa-large: 31.48 (n=3); per seed 42: 16.9, 43: 35.6, 44: 41.9
+- sst-n250 RoBERTa-large: 18.27 (n=3); per seed 42: 16.1, 43: 19.8, 44: 19.0
 - sst-n250 Few-shot PC, $k$=4: 45.88 (n=18)
 - sst-n250 CICLe PC, $k$=4: 44.99 (n=18)
 - sst-n250 best LLM pipeline: 45.88 (FS PC $k$=4)
 - sst-n500 MiniLM + LR: 29.67 (n=3); per seed 42: 29.7, 43: 31.4, 44: 27.9
 - sst-n500 RoBERTa-base: 46.42 (n=3); per seed 42: 47.2, 43: 46.1, 44: 46.0
-- sst-n500 RoBERTa-large: 36.15 (n=3); per seed 42: 13.3, 43: 47.4, 44: 47.8
+- sst-n500 RoBERTa-large: 45.34 (n=3); per seed 42: 43.1, 43: 51.0, 44: 41.9
 - sst-n500 Few-shot PC, $k$=4: 47.09 (n=18)
 - sst-n500 CICLe PC, $k$=4: 47.65 (n=18)
 - sst-n500 best LLM pipeline: 47.65 (CICLe PC $k$=4)
 - sst-n1000 MiniLM + LR: 32.47 (n=3); per seed 42: 31.3, 43: 35.2, 44: 30.8
 - sst-n1000 RoBERTa-base: 48.75 (n=3); per seed 42: 47.5, 43: 50.4, 44: 48.3
-- sst-n1000 RoBERTa-large: 39.71 (n=3); per seed 42: 13.3, 43: 53.3, 44: 52.5
+- sst-n1000 RoBERTa-large: 53.65 (n=3); per seed 42: 56.3, 43: 51.9, 44: 52.8
 - sst-n1000 Few-shot PC, $k$=4: 46.11 (n=18)
 - sst-n1000 CICLe PC, $k$=4: 46.62 (n=18)
 - sst-n1000 best LLM pipeline: 46.62 (CICLe PC $k$=4)
 - sst MiniLM + LR: 35.50 (n=3); per seed 42: 34.9, 43: 35.9, 44: 35.6
 - sst RoBERTa-base: 51.19 (n=3); per seed 42: 51.9, 43: 52.4, 44: 49.3
-- sst RoBERTa-large: 39.91 (n=3); per seed 42: 53.3, 43: 54.1, 44: 12.4
+- sst RoBERTa-large: 52.93 (n=3); per seed 42: 53.4, 43: 53.1, 44: 52.4
 - sst Few-shot PC, $k$=4: 46.60 (n=18)
 - sst CICLe PC, $k$=4: 47.51 (n=18)
 - sst best LLM pipeline: 47.59 (CICLe PC $k$=2)
@@ -1147,49 +1181,49 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 
 - yahoo-answers-n250 MiniLM + LR: 54.57 (n=3); per seed 42: 54.3, 43: 54.9, 44: 54.5
 - yahoo-answers-n250 RoBERTa-base: 52.16 (n=3); per seed 42: 52.8, 43: 51.9, 44: 51.8
-- yahoo-answers-n250 RoBERTa-large: 54.33 (n=3); per seed 42: 55.2, 43: 48.2, 44: 59.6
+- yahoo-answers-n250 RoBERTa-large: 43.09 (n=3); per seed 42: 44.4, 43: 30.9, 44: 54.0
 - yahoo-answers-n250 Few-shot PC, $k$=4: 60.55 (n=18)
 - yahoo-answers-n250 CICLe PC, $k$=4: 60.50 (n=18)
 - yahoo-answers-n250 best LLM pipeline: 60.55 (FS PC $k$=4)
 - yahoo-answers-n500 MiniLM + LR: 59.95 (n=3); per seed 42: 60.3, 43: 61.3, 44: 58.2
 - yahoo-answers-n500 RoBERTa-base: 58.96 (n=3); per seed 42: 57.9, 43: 59.4, 44: 59.5
-- yahoo-answers-n500 RoBERTa-large: 43.09 (n=3); per seed 42: 4.6, 43: 61.4, 44: 63.3
+- yahoo-answers-n500 RoBERTa-large: 62.13 (n=3); per seed 42: 61.6, 43: 62.3, 44: 62.5
 - yahoo-answers-n500 Few-shot PC, $k$=4: 60.34 (n=18)
 - yahoo-answers-n500 CICLe PC, $k$=4: 61.19 (n=18)
 - yahoo-answers-n500 best LLM pipeline: 61.19 (CICLe PC $k$=4)
 - yahoo-answers-n1000 MiniLM + LR: 63.40 (n=3); per seed 42: 62.3, 43: 65.0, 44: 62.9
 - yahoo-answers-n1000 RoBERTa-base: 62.04 (n=3); per seed 42: 60.8, 43: 64.0, 44: 61.3
-- yahoo-answers-n1000 RoBERTa-large: 62.86 (n=3); per seed 42: 59.6, 43: 65.3, 44: 63.7
+- yahoo-answers-n1000 RoBERTa-large: 63.36 (n=3); per seed 42: 64.0, 43: 64.2, 44: 61.8
 - yahoo-answers-n1000 Few-shot PC, $k$=4: 61.17 (n=18)
 - yahoo-answers-n1000 CICLe PC, $k$=4: 62.43 (n=18)
 - yahoo-answers-n1000 best LLM pipeline: 62.43 (CICLe PC $k$=4)
 - yahoo-answers MiniLM + LR: 65.44 (n=3); per seed 42: 63.3, 43: 67.9, 44: 65.1
 - yahoo-answers RoBERTa-base: 61.82 (n=3); per seed 42: 59.5, 43: 63.9, 44: 62.1
-- yahoo-answers RoBERTa-large: 64.59 (n=3); per seed 42: 62.9, 43: 66.1, 44: 64.8
+- yahoo-answers RoBERTa-large: 65.21 (n=3); per seed 42: 64.3, 43: 67.3, 44: 64.0
 - yahoo-answers Few-shot PC, $k$=4: 61.65 (n=18)
 - yahoo-answers CICLe PC, $k$=4: 62.74 (n=18)
 - yahoo-answers best LLM pipeline: 63.78 (CICLe PC $k$=8)
 - sst-n250 MiniLM + LR: 23.33 (n=3); per seed 42: 22.9, 43: 21.9, 44: 25.2
 - sst-n250 RoBERTa-base: 38.77 (n=3); per seed 42: 37.9, 43: 39.7, 44: 38.7
-- sst-n250 RoBERTa-large: 31.48 (n=3); per seed 42: 16.9, 43: 35.6, 44: 41.9
+- sst-n250 RoBERTa-large: 18.27 (n=3); per seed 42: 16.1, 43: 19.8, 44: 19.0
 - sst-n250 Few-shot PC, $k$=4: 45.88 (n=18)
 - sst-n250 CICLe PC, $k$=4: 44.99 (n=18)
 - sst-n250 best LLM pipeline: 45.88 (FS PC $k$=4)
 - sst-n500 MiniLM + LR: 29.67 (n=3); per seed 42: 29.7, 43: 31.4, 44: 27.9
 - sst-n500 RoBERTa-base: 46.42 (n=3); per seed 42: 47.2, 43: 46.1, 44: 46.0
-- sst-n500 RoBERTa-large: 36.15 (n=3); per seed 42: 13.3, 43: 47.4, 44: 47.8
+- sst-n500 RoBERTa-large: 45.34 (n=3); per seed 42: 43.1, 43: 51.0, 44: 41.9
 - sst-n500 Few-shot PC, $k$=4: 47.09 (n=18)
 - sst-n500 CICLe PC, $k$=4: 47.65 (n=18)
 - sst-n500 best LLM pipeline: 47.65 (CICLe PC $k$=4)
 - sst-n1000 MiniLM + LR: 32.47 (n=3); per seed 42: 31.3, 43: 35.2, 44: 30.8
 - sst-n1000 RoBERTa-base: 48.75 (n=3); per seed 42: 47.5, 43: 50.4, 44: 48.3
-- sst-n1000 RoBERTa-large: 39.71 (n=3); per seed 42: 13.3, 43: 53.3, 44: 52.5
+- sst-n1000 RoBERTa-large: 53.65 (n=3); per seed 42: 56.3, 43: 51.9, 44: 52.8
 - sst-n1000 Few-shot PC, $k$=4: 46.11 (n=18)
 - sst-n1000 CICLe PC, $k$=4: 46.62 (n=18)
 - sst-n1000 best LLM pipeline: 46.62 (CICLe PC $k$=4)
 - sst MiniLM + LR: 35.50 (n=3); per seed 42: 34.9, 43: 35.9, 44: 35.6
 - sst RoBERTa-base: 51.19 (n=3); per seed 42: 51.9, 43: 52.4, 44: 49.3
-- sst RoBERTa-large: 39.91 (n=3); per seed 42: 53.3, 43: 54.1, 44: 12.4
+- sst RoBERTa-large: 52.93 (n=3); per seed 42: 53.4, 43: 53.1, 44: 52.4
 - sst Few-shot PC, $k$=4: 46.60 (n=18)
 - sst CICLe PC, $k$=4: 47.51 (n=18)
 - sst best LLM pipeline: 47.59 (CICLe PC $k$=2)
@@ -1449,10 +1483,14 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - sst pc: few-shot 46.54, CICLe 47.23, Δ +0.69 pp [-0.39, +1.84] p=0.232 n=12 n.s.
 - sst-altprompt fixed: few-shot 44.25, CICLe 45.76, Δ +1.51 pp [+0.37, +2.72] p=0.010 n=12
 - sst-altprompt pc: few-shot 45.57, CICLe 47.45, Δ +1.88 pp [+0.78, +3.00] p=0.000 n=12
+- sst-random fixed: few-shot 40.94, CICLe 43.60, Δ +2.66 pp [+1.13, +4.18] p=0.001 n=12
+- sst-random pc: few-shot 44.35, CICLe 46.93, Δ +2.58 pp [+1.21, +4.01] p=0.001 n=12
 - semeval-18 fixed: few-shot 15.13, CICLe 15.72, Δ +0.59 pp [+0.15, +1.04] p=0.007 n=12
 - semeval-18 pc: few-shot 15.51, CICLe 16.19, Δ +0.68 pp [+0.24, +1.12] p=0.002 n=12
 - semeval-18-altprompt fixed: few-shot 15.16, CICLe 15.49, Δ +0.32 pp [-0.26, +0.89] p=0.268 n=12 n.s.
 - semeval-18-altprompt pc: few-shot 14.41, CICLe 15.12, Δ +0.71 pp [+0.10, +1.34] p=0.024 n=12
+- semeval-18-random fixed: few-shot 14.42, CICLe 14.76, Δ +0.34 pp [-0.26, +0.94] p=0.280 n=12 n.s.
+- semeval-18-random pc: few-shot 14.07, CICLe 14.55, Δ +0.47 pp [-0.13, +1.07] p=0.122 n=12 n.s.
 - go-emotions fixed: few-shot 25.97, CICLe 25.93, Δ -0.04 pp [-0.79, +0.85] p=0.960 n=12 n.s.
 - go-emotions pc: few-shot 25.36, CICLe 26.13, Δ +0.77 pp [-0.01, +1.63] p=0.054 n=12 n.s.
 - go-emotions-altprompt fixed: few-shot 25.61, CICLe 26.01, Δ +0.39 pp [-0.69, +1.54] p=0.456 n=12 n.s.
@@ -1461,3 +1499,4 @@ Specific slots first, then the incomplete grids behind them (present / expected 
 - go-emotions-random pc: few-shot 23.50, CICLe 23.90, Δ +0.39 pp [-0.59, +1.71] p=0.376 n=12 n.s.
 - ohsumed fixed: few-shot 49.42, CICLe 50.49, Δ +1.07 pp [-0.06, +2.23] p=0.064 n=12 n.s.
 - ohsumed-altprompt fixed: few-shot 45.97, CICLe 47.29, Δ +1.32 pp [+0.11, +2.50] p=0.033 n=12
+- ohsumed-random fixed: few-shot 34.33, CICLe 38.65, Δ +4.32 pp [+2.92, +5.68] p=0.000 n=12

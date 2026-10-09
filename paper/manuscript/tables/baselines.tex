@@ -3,7 +3,7 @@
   \centering
   \scriptsize
   \setlength{\tabcolsep}{3pt}
-  \input{tables/body_baselines}
+  \resizebox{\textwidth}{!}{\input{tables/body_baselines}}
   \caption{Supervised baselines against LLM pipelines, macro-F1. Supervised rows are means over three seeds, LLM rows over six models and three seeds. The fixed configuration is Per-Class retrieval at $k = 4$ (Ohsumed: Fixed, marked F). The best pipeline is the best (method, variant, $k$) mean per column and is selected on the test set. Zero-shot prompting does not depend on the pool. The test sample is identical at every imbalance level. Bold marks the best value per column.}
   \label{tab:baselines}
 \end{table*}

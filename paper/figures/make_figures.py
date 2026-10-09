@@ -54,7 +54,7 @@ MODEL_NAME = {"llama-3.2-3b": "Llama-3.2-3B", "ministral-3b": "Ministral-3B",
               "mistral-nemo-2407": "Mistral-Nemo-12B", "qwen-2.5-32b": "Qwen2.5-32B"}
 METHOD_NAME = {"zeroshot": "Zero-shot", "fewshot": "Few-shot", "cicle": "CICLe",
                "topk": "Top-$m$", "mass": "Prob. mass", "marginal": "Marginal CP",
-               "oracle": "Oracle", "base": "MiniLM + LR", "finetuned": "RoBERTa-base (fine-tuned)"}
+               "oracle": "Oracle", "base": "MiniLM + LR", "finetuned": "RoBERTa-base"}
 METHOD_PLAIN = {"zeroshot": "zero-shot", "fewshot": "few-shot", "cicle": "CICLe", "topk": "top-m",
                 "mass": "prob. mass", "marginal": "marginal CP", "oracle": "oracle"}
 VARIANT_NAME = {"fixed": "Fixed", "pc": "Per-Class"}
@@ -97,17 +97,17 @@ TEXTWIDTH, COLWIDTH = 6.5, 3.3
 
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["DejaVu Sans", "Liberation Sans"],
-    "font.size": 7.5, "axes.titlesize": 8, "axes.labelsize": 7.5, "legend.fontsize": 7,
-    "xtick.labelsize": 7, "ytick.labelsize": 7, "axes.spines.top": False,
+    "font.size": 8, "axes.titlesize": 9, "axes.labelsize": 9, "legend.fontsize": 8,
+    "xtick.labelsize": 8, "ytick.labelsize": 8, "axes.spines.top": False,
     "axes.spines.right": False, "axes.edgecolor": "#c3c2b7", "axes.linewidth": 0.6,
     "xtick.color": "#52514e", "ytick.color": "#52514e", "xtick.major.width": 0.6,
     "ytick.major.width": 0.6, "xtick.major.size": 2.5, "ytick.major.size": 2.5,
     "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.5, "grid.linestyle": "-",
-    "axes.axisbelow": True, "lines.linewidth": 1.2, "lines.markersize": 4,
+    "axes.axisbelow": True, "lines.linewidth": 1.6, "lines.markersize": 5.5,
     "legend.frameon": False, "legend.handlelength": 1.8, "legend.columnspacing": 1.0,
     "pdf.fonttype": 42, "figure.dpi": 150, "axes.unicode_minus": True,
 })
-ERR = dict(capsize=1.5, elinewidth=0.7, capthick=0.7)
+ERR = dict(capsize=2.5, elinewidth=1.0, capthick=1.0)
 
 
 # ---------------------------------------------------------------------------
@@ -140,16 +140,24 @@ def ci_str(res):
     return f"[{res['lo']:+.2f}, {res['hi']:+.2f}]"
 
 
-def delta_tex(res, ci=True, n=False):
-    """Δ cell: bold when the 95% CI excludes zero, 'n.s.' otherwise."""
+def delta_tex(res, ci=True, n=False, stacked=False, inline=False):
+    """Δ cell: bold when the 95% CI excludes zero, 'n.s.' otherwise.
+    stacked: CI on a second line inside the cell (narrow appendix tables);
+    inline: '+1.40 [+1.04, +1.76]' in one line, whole cell bold when significant."""
     if res is None:
         return "--"
+    if inline:
+        body = f"{res['mean']:+.2f} {ci_str(res)}"
+        return r"\textbf{" + body + "}" if sig(res) else body
     body = f"{res['mean']:+.2f}"
     body = r"\textbf{" + body + "}" if sig(res) else body + r"\,\textsuperscript{n.s.}"
-    if ci:
-        body += r" {\scriptsize " + ci_str(res) + "}"
     if n:
         body += f" ({res['n']})"
+    if ci and stacked:
+        return (r"\begin{tabular}[c]{@{}c@{}}" + body + r"\\{\scriptsize " + ci_str(res) + "}"
+                + r"\end{tabular}")
+    if ci:
+        body += r" {\scriptsize " + ci_str(res) + "}"
     return body
 
 
@@ -212,7 +220,7 @@ def legend_handle(method, variant=None, label=None):
     c = COLOR[method]
     return Line2D([], [], color=c, marker=MARKER[method], ls=LSTYLE.get(method, "none"),
                   mfc=c if filled else "white", mec=c, label=label or METHOD_NAME[method],
-                  markersize=5 if method != "zeroshot" else 7)
+                  markersize=6 if method != "zeroshot" else 11)
 
 
 # ---------------------------------------------------------------------------
@@ -241,121 +249,167 @@ def tab2(B):
                       f"(n={n}" + (f", tokens {t:,.0f})" if tokens else ")"))
         return label + " & " + " & ".join(cells) + r" \\"
 
+    # -- main-text body: macro-F1 only, one number per cell -------------------
+    k0_var = sorted({kk[1] for d in CORE for kk in fd.variant(d).select(method="cicle", k=0)})
+    if not k0_var:
+        pending(sec, "k=0 row (no cicle runs with k=0 yet)")
+    main = [f1_row("Zero-shot", "zeroshot", tokens=False)]
+    if k0_var:
+        main.append(f1_row("Candidate set only ($k$=0)", "cicle", k0_var[0], 0, tokens=False))
+    main += [r"\midrule",
+             f1_row("Few-shot, Fixed", "fewshot", "fixed", 4, tokens=False),
+             f1_row("CICLe, Fixed", "cicle", "fixed", 4, tokens=False),
+             r"\midrule",
+             f1_row("Few-shot, Per-Class", "fewshot", "pc", 4, tokens=False),
+             f1_row("CICLe, Per-Class", "cicle", "pc", 4, tokens=False),
+             r"\midrule",
+             f1_row("MiniLM + LR", "base", tokens=False),
+             f1_row("RoBERTa-base", "finetuned", tokens=False)]
+    main = [r.replace(r"\textsuperscript{$k$=1}", r"$^{\dagger}$") for r in main]
+    write_table("body_main_results", "l" + "c" * len(CORE), head, main,
+                comment="Table 2 body (main text). Macro-F1 (pp) at k=4, mean over 6 models x 3 seeds "
+                        "(supervised rows over 3 seeds). dagger: Ohsumed Per-Class is run at k=1 only. "
+                        "Prompt tokens are in tables/main_results.tex (appendix).")
+    # -- main-text delta body: one line per cell, bold when the CI excludes 0 --
+    drows = []
+    for var in ("fixed", "pc"):
+        cells = []
+        for d in CORE:
+            res = fd.paired_delta(d, "cicle", "fewshot", var, ks_for(d, var), B=B)
+            if res is None:
+                cells.append("--")
+                pending(sec, f"Δ {d} {var}")
+                continue
+            cells.append(delta_tex(res, inline=True))
+            note(sec, f"Δ CICLe − few-shot {d} {var} (all k): {delta_txt(res)}")
+        drows.append(f"{VARIANT_NAME[var]} & " + " & ".join(cells) + r" \\")
+    saved = []
+    for d in CORE:
+        k = 4 if 4 in ks_for(d, "pc") else ks_for(d, "pc")[0]
+        tf, _ = fd.mean_metric(d, "fewshot", "pc", k, metric="mean_prompt_tokens")
+        tc, _ = fd.mean_metric(d, "cicle", "pc", k, metric="mean_prompt_tokens")
+        if tf is None or tc is None:
+            saved.append("--")
+            continue
+        saved.append(f"{100 * (1 - tc / tf):.0f}\\%" + (r"$^{\dagger}$" if k != 4 else ""))
+        note(sec, f"{d} tokens saved by CICLe Per-Class at k={k}: {100 * (1 - tc / tf):.1f}% "
+                  f"({tf:,.0f} -> {tc:,.0f} tokens per call)")
+    drows.append(r"\midrule")
+    drows.append("Tokens saved & " + " & ".join(saved) + r" \\")
+    write_table("body_main_delta", "l" + "c" * len(CORE), head, drows,
+                comment="Table 2b body (main text). Paired Δ CICLe − few-shot (pp) with the 95% "
+                        "bootstrap CI over test instances, pooled over all k: 72 (model, seed, k) "
+                        "pairs per cell; Ohsumed Fixed 36, Ohsumed Per-Class 18 (k=1 only, dagger). "
+                        "Bold: interval excludes zero. Last row: 1 - CICLe PC tokens / few-shot PC "
+                        "tokens per LLM call at k=4 (Ohsumed k=1).")
+    # -- appendix version with prompt tokens --------------------------------
     rows.append(f1_row("MiniLM + LR (no LLM)", "base", tokens=False))
     rows.append(f1_row("RoBERTa-base, fine-tuned", "finetuned", tokens=False))
     rows.append(r"\midrule")
     rows.append(f1_row("Zero-shot", "zeroshot"))
-    # k = 0: the candidate set alone, no examples (pending runs)
-    k0 = {d: fd.variant(d).select(method="cicle", k=0) for d in CORE}
-    if any(k0.values()):
-        var0 = sorted({kk[1] for d in CORE for kk in k0[d]})
-        for var in var0:
-            rows.append(f1_row("CICLe, candidate set only ($k$=0)", "cicle", var, 0))
-    else:
-        pending(sec, "k=0 row (no cicle runs with k=0 yet)")
+    if k0_var:
+        rows.append(f1_row("Candidate set only ($k$=0)", "cicle", k0_var[0], 0))
     rows.append(f1_row("Few-shot, Fixed", "fewshot", "fixed", 4))
     rows.append(f1_row("CICLe, Fixed", "cicle", "fixed", 4))
     rows.append(f1_row("Few-shot, Per-Class", "fewshot", "pc", 4))
     rows.append(f1_row("CICLe, Per-Class", "cicle", "pc", 4))
     rows.append(r"\midrule")
     for var in ("fixed", "pc"):
-        dcells, ccells = [], []
+        dcells = []
         for d in CORE:
             res = fd.paired_delta(d, "cicle", "fewshot", var, ks_for(d, var), B=B)
-            if res is None:
-                dcells.append("--"); ccells.append("")
-                pending(sec, f"Δ {d} {var}")
-                continue
-            dcells.append(delta_tex(res, ci=False))
-            ccells.append(r"{\scriptsize " + ci_str(res) + f", $n$={res['n']}" + "}")
-            note(sec, f"Δ CICLe − few-shot {d} {var} (all k): {delta_txt(res)}")
-        rows.append(f"$\\Delta$ {VARIANT_NAME[var]} (CICLe $-$ few-shot, all $k$) & "
-                    + " & ".join(dcells) + r" \\")
-        rows.append(" & " + " & ".join(ccells) + r" \\")
+            dcells.append(delta_tex(res, stacked=True) if res else "--")
+        rows.append(f"$\\Delta$ {VARIANT_NAME[var]} & " + " & ".join(dcells) + r" \\")
     write_table("main_results", "l" + "c" * len(CORE), head, rows,
-                comment="Table 2. Macro-F1 (pp) at k=4; LLM rows mean over 6 models x 3 seeds, "
-                        "small number = mean prompt tokens per LLM call; Δ rows pool all k "
-                        "(72 pairs; Ohsumed Fixed 36, Ohsumed Per-Class 18 at k=1 only), 95% paired "
-                        "bootstrap CI over test instances. Ohsumed Per-Class cells show k=1 (marked).")
+                comment="Table 2 (appendix version with tokens). Macro-F1 (pp) at k=4; LLM rows mean "
+                        "over 6 models x 3 seeds, small number = mean prompt tokens per LLM call; Δ rows "
+                        "= CICLe − few-shot pooled over all k (72 pairs; Ohsumed Fixed 36, Ohsumed "
+                        "Per-Class 18 at k=1 only), 95% paired bootstrap CI over test instances. "
+                        "Ohsumed Per-Class cells show k=1 (marked).")
 
 
 # ---------------------------------------------------------------------------
-# Figure 1 -- macro-F1 against prompt tokens (f1_vs_tokens.pdf)
+# Figure 1 -- macro-F1 against prompt tokens (fig_main_tokens.pdf, 2 x 3, legend in the 6th cell)
 # ---------------------------------------------------------------------------
 def fig1(B):
     sec = "Figure 1 (macro-F1 vs prompt tokens)"
-    fig, axes = plt.subplots(1, len(CORE), figsize=(TEXTWIDTH, 1.95))
+    fig, axes = plt.subplots(2, 3, figsize=(TEXTWIDTH, 4.7))
+    axes = axes.ravel()
     for ax, d in zip(axes, CORE):
         ks = ks_for(d)
         series = [("zeroshot", None, [None]), ("fewshot", "fixed", ks), ("cicle", "fixed", ks),
                   ("fewshot", "pc", ks_for(d, "pc")), ("cicle", "pc", ks_for(d, "pc"))]
         for method, var, kk in series:
-            xs, ys, lo, hi, kl = [], [], [], [], []
+            xs, ys, kl = [], [], []
             for k in kk:
                 r = fd.mean_ci(d, method, var, k, B=B)
                 t, _ = fd.mean_metric(d, method, var, k, metric="mean_prompt_tokens")
                 if r is None or t is None:
-                    if method != "zeroshot" or k is not None:
-                        pending(sec, f"{d} {method} {var} k={k}")
+                    pending(sec, f"{d} {method} {var} k={k}")
                     continue
-                xs.append(t); ys.append(r["mean"]); lo.append(r["mean"] - r["lo"])
-                hi.append(r["hi"] - r["mean"]); kl.append(k)
+                xs.append(t); ys.append(r["mean"]); kl.append(k)
                 note(sec, f"{d} {method} {var or ''} k={k or 0}: F1 {r['mean']:.2f} "
                           f"[{r['lo']:.2f}, {r['hi']:.2f}], tokens {t:,.0f} (n={r['n']})")
             if not xs:
                 continue
             c = COLOR[method]
             filled = var != "fixed"
-            ax.errorbar(xs, ys, yerr=[lo, hi], color=c, marker=MARKER[method],
-                        ls="-" if len(xs) > 1 else "none", mfc=c if filled else "white", mec=c,
-                        markersize=7 if method == "zeroshot" else 4, zorder=3, **ERR)
+            ax.plot(xs, ys, color=c, marker=MARKER[method], ls="-" if len(xs) > 1 else "none",
+                    mfc=c if filled else "white", mec=c, markersize=11 if method == "zeroshot" else 5.5,
+                    zorder=3)
             if method == "cicle" and var == "pc" and len(xs) > 1:
                 ax.annotate(f"$k$={kl[0]}", (xs[0], ys[0]), textcoords="offset points",
-                            xytext=(2, -9), fontsize=7, color="#52514e", ha="left", va="top")
+                            xytext=(3, -10), fontsize=8, color="#52514e", ha="left", va="top")
                 ax.annotate(f"$k$={kl[-1]}", (xs[-1], ys[-1]), textcoords="offset points",
-                            xytext=(4, -2), fontsize=7, color="#52514e", ha="left", va="top")
+                            xytext=(5, -3), fontsize=8, color="#52514e", ha="left", va="top")
         refs = []
-        for ref, ls, lab in (("base", ":", "MiniLM+LR"), ("finetuned", "-.", "RoBERTa")):
+        for ref, ls, lab in (("base", ":", "MiniLM + LR"), ("finetuned", "-.", "RoBERTa-base")):
             v, _ = fd.mean_metric(d, ref)
             if v is None:
                 pending(sec, f"{d} {ref}")
                 continue
-            ax.axhline(v, color=COLOR[ref], ls=ls, lw=0.8, zorder=1)
+            ax.axhline(v, color=COLOR[ref], ls=ls, lw=1.1, zorder=1)
             refs.append((v, lab))
             note(sec, f"{d} {ref}: {v:.2f}")
         ax.set_xscale("log")
-        ax.set_xlim(140, 9000)
-        ax.set_xticks([200, 1000, 5000])
-        ax.set_xticklabels(["200", "1k", "5k"])
+        ax.set_xlim(140, 12000)
+        ax.set_xticks([200, 500, 1000, 2000, 5000])
+        ax.set_xticklabels(["200", "500", "1k", "2k", "5k"])
         lo_y, hi_y = ax.get_ylim()
-        pad = 0.04 * (hi_y - lo_y)
-        ax.set_ylim(min(lo_y, min(v for v, _ in refs) - 2 * pad), max(hi_y, max(v for v, _ in refs) + 2 * pad))
+        pad = 0.05 * (hi_y - lo_y)
+        if refs:
+            ax.set_ylim(min(lo_y, min(v for v, _ in refs) - 2 * pad),
+                        max(hi_y, max(v for v, _ in refs) + 2 * pad))
         lo_y, hi_y = ax.get_ylim()
         for v, lab in refs:  # label at the left edge, below the line when it is near the top
             above = v < hi_y - 0.12 * (hi_y - lo_y)
-            ax.annotate(lab, xy=(0.02, v), xycoords=("axes fraction", "data"), fontsize=7,
+            ax.annotate(lab, xy=(0.02, v), xycoords=("axes fraction", "data"), fontsize=8,
                         color="#52514e", ha="left", va="bottom" if above else "top",
-                        xytext=(0, 1 if above else -1), textcoords="offset points")
+                        xytext=(0, 2 if above else -2), textcoords="offset points")
         ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
-        ax.set_title(NAME[d], fontsize=8, pad=3)
-        ax.tick_params(axis="x", labelrotation=0)
-    axes[0].set_ylabel("macro-F1 (pp)")
-    fig.supxlabel("mean prompt tokens per LLM call (log scale)", fontsize=7.5, y=-0.01)
+        ax.set_title(NAME[d], fontsize=9, pad=4)
+        ax.set_xlabel("")
+        ax.set_ylabel("")
     handles = [legend_handle("zeroshot"), legend_handle("fewshot", "fixed", "Few-shot, Fixed"),
                legend_handle("cicle", "fixed", "CICLe, Fixed"),
                legend_handle("fewshot", "pc", "Few-shot, Per-Class"),
                legend_handle("cicle", "pc", "CICLe, Per-Class"),
-               Line2D([], [], color=COLOR["base"], ls=":", lw=0.8, label="MiniLM + LR"),
-               Line2D([], [], color=COLOR["finetuned"], ls="-.", lw=0.8, label="RoBERTa-base")]
-    fig.legend(handles=handles, loc="lower center", ncol=7, bbox_to_anchor=(0.5, -0.2),
-               handletextpad=0.5)
-    fig.subplots_adjust(wspace=0.35)
-    save_fig(fig, "f1_vs_tokens")
+               Line2D([], [], color=COLOR["base"], ls=":", lw=1.1, label="MiniLM + LR (no LLM)"),
+               Line2D([], [], color=COLOR["finetuned"], ls="-.", lw=1.1, label="RoBERTa-base, fine-tuned")]
+    axes[-1].axis("off")
+    axes[-1].legend(handles=handles, loc="center", ncol=1, fontsize=9, handlelength=2.4,
+                    labelspacing=0.9, borderaxespad=0)
+    fig.supxlabel("mean prompt tokens per LLM call (log scale)", fontsize=9, y=0.015)
+    fig.supylabel("macro-F1 (pp)", fontsize=9, x=0.012)
+    fig.subplots_adjust(wspace=0.22, hspace=0.30, left=0.075, right=0.99, top=0.96, bottom=0.095)
+    save_fig(fig, "fig_main_tokens")
 
 
 # ---------------------------------------------------------------------------
-# Figure 2 -- narrowing under a long-tailed labelled pool (narrowing_imbalance.pdf)
-# Figure C1 -- the same for the Fixed variant
+# Figure 2 -- narrowing under a long-tailed labelled pool
+#   fig_main_narrowing.pdf      (a) + (c), Per-Class
+#   fig_app_narrowing_extra.pdf (b) + (d), Per-Class
+#   fig_app_narrowing_fixed.pdf (a)-(d), Fixed
 # ---------------------------------------------------------------------------
 def rank_map(ds, seed, imb):
     counts = fd.class_counts(ds, seed, imb)
@@ -364,174 +418,202 @@ def rank_map(ds, seed, imb):
     return {lab: i for i, (lab, _) in enumerate(counts)}, counts
 
 
-def fig2(B, variant="pc", name="narrowing_imbalance"):
-    sec = f"Figure 2 ({VARIANT_NAME[variant]}; narrowing under imbalance)" if variant == "pc" \
-        else "Figure C1 (Figure 2 for the Fixed variant)"
-    datasets = ["yahoo-answers", "sst"]
-    comparators = ["fewshot", "topk", "mass", "marginal"]
-    drawn = set()  # methods that got at least one mark (for the legend)
-    fig, axes = plt.subplots(2, 4, figsize=(TEXTWIDTH, 4.0))
-    for row, d in enumerate(datasets):
-        # (a) paired delta vs imbalance ------------------------------------
-        ax = axes[row, 0]
-        for comp in comparators:
-            xs, ys, lo, hi = [], [], [], []
-            for i, imb in enumerate((1, 10, 100)):
-                res = fd.paired_delta(imb_tag(d, imb), "cicle", comp, variant, [1, 4], B=B)
-                if res is None:
-                    pending(sec, f"(a) {imb_tag(d, imb)} CICLe − {comp} {variant}")
-                    continue
-                xs.append(i); ys.append(res["mean"]); lo.append(res["mean"] - res["lo"])
-                hi.append(res["hi"] - res["mean"])
-                note(sec, f"(a) {imb_tag(d, imb)} {variant} k∈{{1,4}} CICLe − {comp}: {delta_txt(res)}")
-            if xs:
-                c = COLOR[comp]
-                drawn.add(comp)
-                ax.errorbar(xs, ys, yerr=[lo, hi], color=c, marker=MARKER[comp], ls=LSTYLE[comp],
-                            mfc=c if variant == "pc" else "white", mec=c, zorder=3, **ERR)
-        xs, ys = [], []
+def _rank_ticks(ax, n):
+    ax.set_xticks(range(1, n + 1))
+    ax.set_xticklabels([str(i) if (i == 1 or i % 2 == 0 or i == n) else "" for i in range(1, n + 1)])
+
+
+def panel_a(ax, d, variant, B, sec, drawn):
+    """Paired Δ CICLe − alternative against pool imbalance; oracle − few-shot dashed."""
+    for comp in ("fewshot", "topk", "mass", "marginal"):
+        xs, ys, lo, hi = [], [], [], []
         for i, imb in enumerate((1, 10, 100)):
-            res = fd.paired_delta(imb_tag(d, imb), "oracle", "fewshot", variant, [1, 4], B=B)
+            res = fd.paired_delta(imb_tag(d, imb), "cicle", comp, variant, [1, 4], B=B)
             if res is None:
-                pending(sec, f"(a) {imb_tag(d, imb)} oracle − few-shot {variant} (ceiling)")
+                pending(sec, f"(a) {imb_tag(d, imb)} CICLe − {comp} {variant}")
                 continue
-            xs.append(i); ys.append(res["mean"])
-            note(sec, f"(a) {imb_tag(d, imb)} {variant} oracle − few-shot (ceiling): {delta_txt(res)}")
+            xs.append(i); ys.append(res["mean"]); lo.append(res["mean"] - res["lo"])
+            hi.append(res["hi"] - res["mean"])
+            note(sec, f"(a) {imb_tag(d, imb)} {variant} k∈{{1,4}} CICLe − {comp}: {delta_txt(res)}")
         if xs:
-            drawn.add("oracle")
-            ax.plot(xs, ys, color=COLOR["oracle"], ls="--", marker="x", lw=0.9, zorder=2)
-        ax.axhline(0, color=MUTED, lw=0.7, zorder=1)
-        ax.set_xticks([0, 1, 2]); ax.set_xticklabels([r"1$\times$", r"10$\times$", r"100$\times$"])
-        ax.set_xlim(-0.4, 2.4)
-        ax.set_ylabel(f"{NAME[d]}\nCICLe $-$ alternative (pp)")
-        if row == 0:
-            ax.set_title("(a) paired gain of CICLe", fontsize=7.5)
-        if row == 1:
-            ax.set_xlabel("imbalance of labelled pool")
+            c = COLOR[comp]
+            drawn.add(comp)
+            ax.errorbar(xs, ys, yerr=[lo, hi], color=c, marker=MARKER[comp], ls=LSTYLE[comp],
+                        mfc=c if variant == "pc" else "white", mec=c, zorder=3, **ERR)
+    xs, ys = [], []
+    for i, imb in enumerate((1, 10, 100)):
+        res = fd.paired_delta(imb_tag(d, imb), "oracle", "fewshot", variant, [1, 4], B=B)
+        if res is None:
+            pending(sec, f"(a) {imb_tag(d, imb)} oracle − few-shot {variant} (ceiling)")
+            continue
+        xs.append(i); ys.append(res["mean"])
+        note(sec, f"(a) {imb_tag(d, imb)} {variant} oracle − few-shot (ceiling): {delta_txt(res)}")
+    if xs:
+        drawn.add("oracle")
+        ax.plot(xs, ys, color=COLOR["oracle"], ls="--", marker="x", zorder=2)
+    ax.axhline(0, color=MUTED, lw=0.8, zorder=1)
+    ax.set_xticks([0, 1, 2]); ax.set_xticklabels([r"1$\times$", r"10$\times$", r"100$\times$"])
+    ax.set_xlim(-0.4, 2.4)
+    ax.set_ylabel("CICLe $-$ alternative (pp)")
+    ax.set_xlabel("pool imbalance" if COMPACT[0] else "imbalance of the labelled pool")
 
-        # (b) coverage vs mean set size -------------------------------------
-        ax = axes[row, 1]
-        for method in ("cicle", "topk", "mass", "marginal", "oracle"):
-            pts = []
-            for imb, size in ((1, 14), (10, 30), (100, 60)):
-                tag = imb_tag(d, imb)
-                vals = [fd.one_set_run(tag, method, s) for s in SEEDS]
-                vals = [r for r in vals if r is not None]
-                if not vals:
-                    pending(sec, f"(b) {tag} {method} candidate sets")
-                    continue
-                cov = 100 * np.mean([r["gold_in_set"].mean() for r in vals])
-                sz = np.mean([r["set_size"].mean() for r in vals])
-                pts.append((sz, cov, size, imb))
-                note(sec, f"(b) {tag} {method}: coverage {cov:.1f}%, mean set size {sz:.2f} "
-                          f"({len(vals)} seeds)")
-            if not pts:
+
+def panel_b(ax, d, variant, B, sec, drawn):
+    """Coverage against mean candidate-set size, marker size grows with imbalance."""
+    for method in ("cicle", "topk", "mass", "marginal", "oracle"):
+        pts = []
+        for imb, size in ((1, 22), (10, 48), (100, 95)):
+            tag = imb_tag(d, imb)
+            vals = [fd.one_set_run(tag, method, s) for s in SEEDS]
+            vals = [r for r in vals if r is not None]
+            if not vals:
+                pending(sec, f"(b) {tag} {method} candidate sets")
                 continue
-            c = COLOR[method]
-            drawn.add(method)
-            ax.plot([p[0] for p in pts], [p[1] for p in pts], color=c, lw=0.7, ls=LSTYLE[method],
-                    zorder=2)
+            cov = 100 * np.mean([r["gold_in_set"].mean() for r in vals])
+            sz = np.mean([r["set_size"].mean() for r in vals])
+            pts.append((sz, cov, size, imb))
+            note(sec, f"(b) {tag} {method}: coverage {cov:.1f}%, mean set size {sz:.2f} "
+                      f"({len(vals)} seeds)")
+        if not pts:
+            continue
+        c = COLOR[method]
+        drawn.add(method)
+        ax.plot([p[0] for p in pts], [p[1] for p in pts], color=c, lw=0.9, ls=LSTYLE[method], zorder=2)
+        for x, y, size, imb in pts:
+            ax.scatter([x], [y], s=size, color=c, marker=MARKER[method], edgecolor="white",
+                       linewidth=0.7, zorder=3)
+        if method == "cicle":
             for x, y, size, imb in pts:
-                ax.scatter([x], [y], s=size, color=c, marker=MARKER[method], edgecolor="white",
-                           linewidth=0.6, zorder=3)
-            if method == "cicle":
-                for x, y, size, imb in pts:
-                    if imb in (1, 100):
-                        ax.annotate(f"{imb}$\\times$", (x, y), textcoords="offset points",
-                                    xytext=(0, -10), fontsize=7, color="#52514e", ha="center")
-        ax.axhline(95, color=MUTED, lw=0.7, ls=":", zorder=1)
-        ax.set_ylabel("coverage of gold label (%)")
-        if row == 0:
-            ax.set_title("(b) coverage vs. set size", fontsize=7.5)
-        if row == 1:
-            ax.set_xlabel("mean candidate-set size")
+                if imb in (1, 100):
+                    ax.annotate(f"{imb}$\\times$", (x, y), textcoords="offset points",
+                                xytext=(0, -13), fontsize=8, color="#52514e", ha="center")
+    ax.axhline(95, color=MUTED, lw=0.8, ls=":", zorder=1)
+    ax.set_ylabel("coverage (%)" if COMPACT[0] else "coverage of the gold label (%)")
+    ax.set_xlabel("mean set size" if COMPACT[0] else "mean candidate-set size")
 
-        # (c) per-class coverage by frequency rank at 100x -------------------
-        ax = axes[row, 2]
-        tag = imb_tag(d, 100)
-        v = fd.variant(tag)
-        drew = False
-        for method in ("cicle", "topk", "mass", "marginal", "oracle"):
-            by_rank = defaultdict(list)
-            for s in SEEDS:
-                rank, counts = rank_map(d, s, 100)
-                run = fd.one_set_run(tag, method, s)
-                if rank is None or run is None:
-                    if run is None and s == SEEDS[0]:
-                        pending(sec, f"(c) {tag} {method} candidate sets")
-                    continue
-                for lab, cov in fd.per_class_coverage(v, run).items():
-                    by_rank[rank[lab]].append(cov)
-            if not by_rank:
+
+def panel_c(ax, d, variant, B, sec, drawn, methods=("cicle", "topk", "mass", "marginal")):
+    """Per-class coverage at 100x by class-frequency rank in the pool."""
+    tag = imb_tag(d, 100)
+    v = fd.variant(tag)
+    n = 0
+    for method in methods:
+        by_rank = defaultdict(list)
+        for s in SEEDS:
+            rank, counts = rank_map(d, s, 100)
+            run = fd.one_set_run(tag, method, s)
+            if rank is None or run is None:
+                if run is None and s == SEEDS[0]:
+                    pending(sec, f"(c) {tag} {method} candidate sets")
                 continue
-            xs = sorted(by_rank)
-            ys = [np.mean(by_rank[x]) for x in xs]
-            ax.plot([x + 1 for x in xs], ys, color=COLOR[method], marker=MARKER[method],
-                    ls=LSTYLE[method], markersize=3, zorder=3)
-            note(sec, f"(c) {tag} {method} per-class coverage by rank (mean over seeds): "
-                      + ", ".join(f"{x + 1}:{y:.0f}" for x, y in zip(xs, ys)))
-            drew = True
-        ax.axhline(95, color=MUTED, lw=0.7, ls=":", zorder=1)
-        if drew:
-            ax.set_xticks(range(1, len(xs) + 1))
-            ax.set_xticklabels([str(i) if (i == 1 or i % 2 == 0 or i == len(xs)) else ""
-                                for i in range(1, len(xs) + 1)])
-        else:
-            ax.text(0.5, 0.5, "pending", ha="center", va="center", transform=ax.transAxes)
-        ax.set_ylabel("per-class coverage (%)")
-        if row == 0:
-            ax.set_title(r"(c) coverage by class, 100$\times$", fontsize=7.5)
-        if row == 1:
-            ax.set_xlabel("class rank (frequent to rare)")
+            for lab, cov in fd.per_class_coverage(v, run).items():
+                by_rank[rank[lab]].append(cov)
+        if not by_rank:
+            continue
+        xs = sorted(by_rank)
+        ys = [np.mean(by_rank[x]) for x in xs]
+        drawn.add(method)
+        ax.plot([x + 1 for x in xs], ys, color=COLOR[method], marker=MARKER[method], ls=LSTYLE[method],
+                zorder=3)
+        note(sec, f"(c) {tag} {method} per-class coverage by rank (mean over seeds): "
+                  + ", ".join(f"{x + 1}:{y:.0f}" for x, y in zip(xs, ys)))
+        n = len(xs)
+    ax.axhline(95, color=MUTED, lw=0.8, ls=":", zorder=1)
+    if n:
+        _rank_ticks(ax, n)
+    else:
+        ax.text(0.5, 0.5, "pending", ha="center", va="center", transform=ax.transAxes)
+    ax.set_ylabel(r"class coverage, 100$\times$ (%)" if COMPACT[0] else r"per-class coverage at 100$\times$ (%)")
+    ax.set_xlabel("class rank" if COMPACT[0] else "class rank in the pool (frequent to rare)")
 
-        # (d) per-class F1 by frequency rank at 100x (k=4) -------------------
-        ax = axes[row, 3]
-        drew = False
-        for method in ("fewshot", "cicle", "topk", "mass", "marginal", "oracle"):
-            by_rank = defaultdict(list)
-            n_runs = 0
-            for s in SEEDS:
-                rank, counts = rank_map(d, s, 100)
-                if rank is None:
-                    continue
-                for m in SMALL:
-                    run = v.get(method, variant, 4, m, seed=s)
-                    if run is None:
-                        continue
-                    n_runs += 1
-                    for lab, f in fd.per_class_f1(v, run).items():
-                        by_rank[rank[lab]].append(f)
-            if n_runs < len(SMALL) * len(SEEDS):
-                pending(sec, f"(d) {tag} {method} {variant} k=4 ({n_runs}/{len(SMALL) * len(SEEDS)} runs)")
+
+def panel_d(ax, d, variant, B, sec, drawn):
+    """Per-class F1 at 100x, k = 4, by class-frequency rank."""
+    tag = imb_tag(d, 100)
+    v = fd.variant(tag)
+    n = 0
+    for method in ("fewshot", "cicle", "topk", "mass", "marginal", "oracle"):
+        by_rank = defaultdict(list)
+        n_runs = 0
+        for s in SEEDS:
+            rank, counts = rank_map(d, s, 100)
+            if rank is None:
                 continue
-            xs = sorted(by_rank)
-            ys = [np.mean(by_rank[x]) for x in xs]
-            c = COLOR[method]
-            ax.plot([x + 1 for x in xs], ys, color=c, marker=MARKER[method], ls=LSTYLE[method],
-                    markersize=3, mfc=c if variant == "pc" else "white", zorder=3)
-            note(sec, f"(d) {tag} {method} {variant} k=4 per-class F1 by rank "
-                      f"(mean over 6 models x 3 seeds): " + ", ".join(f"{x + 1}:{y:.1f}" for x, y in zip(xs, ys)))
-            drew = True
-        if drew:
-            ax.set_xticks(range(1, len(xs) + 1))
-            ax.set_xticklabels([str(i) if (i == 1 or i % 2 == 0 or i == len(xs)) else ""
-                                for i in range(1, len(xs) + 1)])
-        else:
-            ax.text(0.5, 0.5, "pending", ha="center", va="center", transform=ax.transAxes)
-        ax.set_ylabel("per-class F1 (pp)")
-        if row == 0:
-            ax.set_title(r"(d) F1 by class, 100$\times$, $k$=4", fontsize=7.5)
-        if row == 1:
-            ax.set_xlabel("class rank (frequent to rare)")
+            for m in SMALL:
+                run = v.get(method, variant, 4, m, seed=s)
+                if run is None:
+                    continue
+                n_runs += 1
+                for lab, f in fd.per_class_f1(v, run).items():
+                    by_rank[rank[lab]].append(f)
+        if n_runs < len(SMALL) * len(SEEDS):
+            pending(sec, f"(d) {tag} {method} {variant} k=4 ({n_runs}/{len(SMALL) * len(SEEDS)} runs)")
+            continue
+        xs = sorted(by_rank)
+        ys = [np.mean(by_rank[x]) for x in xs]
+        c = COLOR[method]
+        drawn.add(method)
+        ax.plot([x + 1 for x in xs], ys, color=c, marker=MARKER[method], ls=LSTYLE[method],
+                mfc=c if variant == "pc" else "white", zorder=3)
+        note(sec, f"(d) {tag} {method} {variant} k=4 per-class F1 by rank "
+                  f"(mean over 6 models x 3 seeds): " + ", ".join(f"{x + 1}:{y:.1f}" for x, y in zip(xs, ys)))
+        n = len(xs)
+    if n:
+        _rank_ticks(ax, n)
+    else:
+        ax.text(0.5, 0.5, "pending", ha="center", va="center", transform=ax.transAxes)
+    ax.set_ylabel(r"class F1, 100$\times$, $k$=4 (pp)" if COMPACT[0] else r"per-class F1 at 100$\times$, $k$=4 (pp)")
+    ax.set_xlabel("class rank" if COMPACT[0] else "class rank in the pool (frequent to rare)")
 
+
+PANELS = {"a": panel_a, "b": panel_b, "c": panel_c, "d": panel_d}
+COMPACT = [False]  # shorter axis labels for the four-column appendix figure
+
+
+def narrowing_figure(B, variant, panels, name, sec, height):
+    """Rows Yahoo / SST-5, one column per panel letter, shared legend below."""
+    datasets = ["yahoo-answers", "sst"]
+    drawn = set()
+    COMPACT[0] = len(panels) > 2
+    fig, axes = plt.subplots(2, len(panels), figsize=(TEXTWIDTH, height), squeeze=False)
+    for row, d in enumerate(datasets):
+        for col, p in enumerate(panels):
+            ax = axes[row, col]
+            PANELS[p](ax, d, variant, B, sec, drawn)
+            if col == 0:
+                ax.set_ylabel(f"{NAME[d]}\n" + ax.get_ylabel())
+            if row == 0:
+                ax.set_xlabel("")
     handles = [legend_handle(m, variant, METHOD_NAME[m]) for m in
                ("fewshot", "cicle", "topk", "mass", "marginal") if m in drawn]
     if "oracle" in drawn:
-        handles.append(Line2D([], [], color=COLOR["oracle"], ls="--", marker="x", lw=0.9,
-                              label="Oracle (in (a): oracle $-$ few-shot, the ceiling)"))
-    fig.legend(handles=handles, loc="lower center", ncol=6, bbox_to_anchor=(0.5, -0.05))
-    fig.subplots_adjust(wspace=0.55, hspace=0.32, left=0.09, right=0.99, top=0.95, bottom=0.14)
+        handles.append(Line2D([], [], color=COLOR["oracle"], ls="--", marker="x",
+                              label="Oracle (in (a): oracle $-$ few-shot, the ceiling)" if "a" in panels
+                              else "Oracle"))
+    ncol = 3 if len(handles) > 4 else len(handles)
+    fig.legend(handles=handles, loc="lower center", ncol=ncol, bbox_to_anchor=(0.5, -0.01),
+               fontsize=9, handlelength=2.2, columnspacing=1.6)
+    legend_rows = -(-len(handles) // ncol)
+    fig.subplots_adjust(wspace=0.32 if len(panels) <= 2 else 0.6, hspace=0.25,
+                        left=0.11 if len(panels) <= 2 else 0.09, right=0.99, top=0.98,
+                        bottom=0.10 + 0.045 * legend_rows)
+    COMPACT[0] = False
     save_fig(fig, name)
+
+
+def fig2(B):
+    narrowing_figure(B, "pc", "ac", "fig_main_narrowing",
+                     "Figure 2 (Per-Class; narrowing under imbalance, panels a and c)", 5.6)
+
+
+def figAN(B):
+    narrowing_figure(B, "pc", "bd", "fig_app_narrowing_extra",
+                     "Figure 2 appendix extra (Per-Class; panels b and d)", 5.6)
+
+
+def figC1(B):
+    narrowing_figure(B, "fixed", "abcd", "fig_app_narrowing_fixed",
+                     "Figure C1 (Fixed variant; panels a-d)", 5.2)
 
 
 # ---------------------------------------------------------------------------
@@ -539,12 +621,12 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
 # ---------------------------------------------------------------------------
 def tab3(B):
     sec = "Table 3 (label renaming, five datasets)"
-    head = [r"Dataset & Labels & $k$ & FS Fixed & CICLe Fixed & FS PC & CICLe PC & "
-            r"$\Delta$ Fixed & $\Delta$ PC \\"]
+    head = [r"Dataset & Labels & $k$ & FS F & CICLe F & FS PC & CICLe PC & "
+            r"$\Delta$ F & $\Delta$ PC \\"]
     rows = []
     for d in CORE:
         variants = ("fixed", "pc") if d != "ohsumed" else ("fixed",)
-        for tag, label in ((d, "original"), (d + "-relabel", "nonsense words")):
+        for tag, label in ((d, "original"), (d + "-relabel", "nonsense")):
             if not fd.has_results(tag):
                 pending(sec, f"{tag} (no results directory)")
                 continue
@@ -573,7 +655,7 @@ def tab3(B):
                         dcells.append("")
                         continue
                     res = fd.paired_delta(tag, "cicle", "fewshot", var, [1, 4], B=B)
-                    dcells.append(r"\multirow{2}{*}{" + delta_tex(res) + "}")
+                    dcells.append(r"\multirow{2}{*}{" + delta_tex(res, stacked=True) + "}")
                     if res is None:
                         pending(sec, f"Δ {tag} {var}")
                     else:
@@ -641,35 +723,56 @@ def tab4(B):
         best[t] = max(cand) if cand else None
         if best[t]:
             note(sec, f"{t} best LLM pipeline: {best[t][0]:.2f} ({best[t][1]})")
-    rows = []
-    for i, lab in enumerate(labels):
+    # transposed layout: one row per dataset variant, one column per method
+    short = ["MiniLM + LR", "RoBERTa-base", "RoBERTa-large", "Zero-shot", "Few-shot PC $k$=4",
+             "CICLe PC $k$=4"]
+
+    def row_cells(t, idx, with_best):
+        vals = [values.get((i, t)) for i in idx]
+        present = [v[0] for v in vals if v] + ([best[t][0]] if with_best and best[t] else [])
+        top = max(present) if present else None
         cells = []
-        for t, _ in cols:
-            x = values.get((i, t))
-            if x is None:
+        for v in vals:
+            if v is None:
                 cells.append("--")
                 continue
-            val, flag = x
-            col_vals = [values[(j, t)][0] for j in range(len(labels)) if values.get((j, t))]
-            col_vals.append(best[t][0] if best[t] else -1)
-            s = num(val) + (r"\textsuperscript{F}" if flag else "")
-            cells.append(r"\textbf{" + s + "}" if val >= max(col_vals) - 1e-9 else s)
-        rows.append(lab + " & " + " & ".join(cells) + r" \\")
-    cells = []
-    for t, _ in cols:
-        if not best[t]:
-            cells.append("--")
-            continue
-        col_vals = [values[(j, t)][0] for j in range(len(labels)) if values.get((j, t))]
-        s = num(best[t][0])
-        s = r"\textbf{" + s + "}" if best[t][0] >= max(col_vals + [best[t][0]]) - 1e-9 else s
-        cells.append(s + r" {\scriptsize " + best[t][1] + "}")
-    rows.append("Best LLM pipeline & " + " & ".join(cells) + r" \\")
-    head = [" & " + " & ".join(l for _, l in cols) + r" \\"]
-    write_table("baselines", "l" + "c" * len(cols), head, rows,
-                comment="Table 4. Macro-F1; supervised rows mean over 3 seeds, LLM rows over 6 "
-                        "models x 3 seeds. Zero-shot does not depend on the pool (1x column only). "
-                        "F = Fixed retrieval (Ohsumed has no Per-Class runs). Bold = best per column.")
+            s = num(v[0]) + (r"$^{\mathrm{F}}$" if v[1] else "")
+            cells.append(r"\textbf{" + s + "}" if v[0] >= top - 1e-9 else s)
+        if with_best:
+            if best[t]:
+                s = num(best[t][0])
+                s = r"\textbf{" + s + "}" if best[t][0] >= top - 1e-9 else s
+                cells.append(s + r" {\scriptsize " + best[t][1].replace("CICLe ", "C-").replace("FS ", "FS-").replace(" $k$=", "-") + "}")
+            else:
+                cells.append("--")
+        return cells
+
+    main_idx = [0, 1, 2, 4, 5]
+    heads = ["MiniLM+LR", "RoB-base", "RoB-large", "Zero-shot", "FS PC", "CICLe PC"]
+    head = [" & " + " & ".join(heads[i] for i in main_idx) + r" \\"]
+    rows = []
+    for t, label in cols:
+        label = (label.replace("Yahoo Answers", "Yahoo").replace("SemEval-18", "SemEval")
+                 .replace("GoEmotions", "GoEmo"))
+        rows.append(label + " & " + " & ".join(row_cells(t, main_idx, False)) + r" \\")
+        if t in ("yahoo-answers-imb100", "sst-imb100"):
+            rows.append(r"\midrule")
+    write_table("body_main_supervised", "l" + "c" * len(main_idx), head, rows,
+                comment="Table 4 body (main text). Macro-F1 (pp): supervised columns mean over 3 "
+                        "seeds, LLM columns over 6 models x 3 seeds, Per-Class k=4 (Ohsumed: Fixed, "
+                        "marked F). The test sample is the same at every imbalance level. Bold = best "
+                        "per row. Pool sizes: tables/pool_size.tex.")
+    app_idx = [0, 1, 2, 3, 4, 5]
+    head = [" & " + " & ".join(short[i] for i in app_idx) + r" & best LLM pipeline \\"]
+    rows = []
+    for t, label in cols:
+        rows.append(label + " & " + " & ".join(row_cells(t, app_idx, True)) + r" \\")
+        if t in ("yahoo-answers-imb100", "sst-imb100"):
+            rows.append(r"\midrule")
+    write_table("baselines", "l" + "c" * (len(app_idx) + 1), head, rows,
+                comment="Table 4 (appendix version). As the main body plus zero-shot (1x only; it does "
+                        "not depend on the pool) and the best LLM pipeline (argmax over method, "
+                        "variant, k of the 18-run mean; name in small type). Bold = best per row.")
     # per-seed RoBERTa / LR values for the appendix version
     for t, _ in cols:
         for method, kw in (("base", {}), ("finetuned", {}), ("finetuned", {"emb": "roberta-large"})):
@@ -684,7 +787,7 @@ def tab4(B):
 # ---------------------------------------------------------------------------
 def fig3(B):
     sec = "Figure 3 (alpha; Llama-3.1-8B + Llama-3.2-3B, 24 cells)"
-    fig, (top, mid, bot) = plt.subplots(3, 1, figsize=(COLWIDTH, 3.9), sharex=True,
+    fig, (top, mid, bot) = plt.subplots(3, 1, figsize=(COLWIDTH, 5.0), sharex=True,
                                         gridspec_kw={"height_ratios": [2.2, 1, 1]})
     for d in SHORT:
         xs, ys, lo, hi, cov, skip = [], [], [], [], [], []
@@ -713,15 +816,15 @@ def fig3(B):
     top.axhline(0, color=MUTED, lw=0.7, zorder=1)
     top.set_ylabel("CICLe $-$ few-shot (pp)")
     mid.plot(ALPHAS, [100 * (1 - a) for a in ALPHAS], color=MUTED, ls=":", lw=0.8, zorder=1)
-    mid.text(0.03, 0.08, r"dotted: $1-\alpha$", transform=mid.transAxes, fontsize=7, color="#52514e")
+    mid.text(0.03, 0.08, r"dotted: $1-\alpha$", transform=mid.transAxes, fontsize=8, color="#52514e")
     mid.set_ylabel("coverage (%)")
     bot.set_ylabel("no LLM call (%)")
     bot.set_xscale("log"); bot.set_xticks(ALPHAS); bot.set_xticklabels([str(a) for a in ALPHAS])
     bot.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
     bot.set_xlabel(r"miscoverage level $\alpha$")
-    top.legend(ncol=2, loc="upper left", handletextpad=0.4)
-    fig.subplots_adjust(hspace=0.12)
-    save_fig(fig, "alpha")
+    top.legend(ncol=2, loc="upper left", handletextpad=0.4, fontsize=8)
+    fig.subplots_adjust(hspace=0.15, left=0.17, right=0.98, top=0.98, bottom=0.09)
+    save_fig(fig, "fig_app_alpha")
 
 
 # ---------------------------------------------------------------------------
@@ -754,7 +857,7 @@ def tabB(B):
                         f"{len(ms)} & {100 * mean('macro_f1'):.1f} & {100 * mean('accuracy'):.1f} & "
                         f"{100 * mean('invalid_rate'):.1f} & {mean('mean_shots'):.1f} & "
                         f"{mean('mean_prompt_tokens'):,.0f} \\\\")
-        head = [r"Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\"]
+        head = [r"Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\"]
         write_table(f"grid_{tag}", "llrrrrrrr", head, rows,
                     comment=f"Table B: {tag}, six small models, reference setting (MiniLM, LR, "
                             "alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the "
@@ -767,9 +870,8 @@ def tabB(B):
 def tabC1(B):
     sec = "Table C1 (CICLe − alternative, all variants)"
     comps = ["fewshot", "topk", "mass", "marginal", "oracle"]
-    head = [r"Variant & Retrieval & vs.\ few-shot & vs.\ top-$m$ & vs.\ prob.\ mass & "
-            r"vs.\ marginal CP & vs.\ oracle \\"]
     rows = []
+    ns = set()
     for tag in ALL_TAGS:
         if not fd.has_results(tag):
             pending(sec, tag)
@@ -785,14 +887,22 @@ def tabC1(B):
                         pending(sec, f"{tag} {var} vs {comp}")
                     continue
                 any_cell = True
-                cells.append(delta_tex(res, n=True))
+                ns.add((comp == "fewshot", res["n"]))
+                cells.append(delta_tex(res, stacked=True))
                 note(sec, f"{tag} {var} CICLe − {comp}: {delta_txt(res)}")
             if any_cell:
-                rows.append(f"{tag_name(tag)} & {VARIANT_NAME[var]} & " + " & ".join(cells) + r" \\")
-    write_table("narrowing_all", "llccccc", head, rows,
-                comment="Table C1. Paired Δ macro-F1 (pp), CICLe minus alternative, 95% bootstrap "
-                        "CI over test instances, (n) = number of (model, seed, k) cells; vs few-shot "
-                        "pools all k, the other columns k in {1,4}. Bold: CI excludes 0.")
+                rows.append((f"{tag_name(tag)} & {VARIANT_NAME[var]} & ", cells))
+    comment = ("Paired Δ macro-F1 (pp), CICLe minus alternative, 95% bootstrap CI over test "
+               "instances; vs few-shot pools all k (72 cells on the four main sets, 36 elsewhere, "
+               "18 for Ohsumed Per-Class), the other comparators k in {1,4} (36 cells, Ohsumed "
+               "Per-Class 18). Bold: CI excludes 0.")
+    write_table("narrowing_all_a", "llccc",
+                [r"Variant & Retrieval & vs.\ few-shot & vs.\ top-$m$ & vs.\ prob.\ mass \\"],
+                [lab + " & ".join(c[:3]) + r" \\" for lab, c in rows], comment="Table C1a. " + comment)
+    write_table("narrowing_all_b", "llcc",
+                [r"Variant & Retrieval & vs.\ marginal CP & vs.\ oracle \\"],
+                [lab + " & ".join(c[3:]) + r" \\" for lab, c in rows if any(x != "--" for x in c[3:])],
+                comment="Table C1b. " + comment)
 
 
 # ---------------------------------------------------------------------------
@@ -801,7 +911,7 @@ def tabC1(B):
 def tabC2(B):
     sec = "Table C2 (candidate-set statistics)"
     head = [r"Variant & Method & coverage (\%) & mean size & singleton (\%) & "
-            r"min.\ per-class coverage (\%) \\"]
+            r"min.\ class cov.\ (\%) \\"]
     rows = []
     for tag in ALL_TAGS:
         if not fd.has_results(tag):
@@ -839,23 +949,25 @@ def tabC2(B):
 # ---------------------------------------------------------------------------
 def tabD1(B):
     sec = "Table D1 (per-model Δ, all k)"
-    cols = [(d, var) for d in CORE for var in (("fixed", "pc") if d != "ohsumed" else ("fixed",))]
-    head = ["Model & " + " & ".join(f"{NAME[d]} {'F' if var == 'fixed' else 'PC'}" for d, var in cols)
-            + r" \\"]
-    rows = []
-    for m in SMALL:
-        cells = []
-        for d, var in cols:
-            res = fd.paired_delta(d, "cicle", "fewshot", var, ks_for(d, var), models=[m], B=B)
-            if res is None:
-                cells.append("--"); pending(sec, f"{m} {d} {var}")
-                continue
-            cells.append(delta_tex(res))
-            note(sec, f"{MODEL_NAME[m]} {d} {var}: {delta_txt(res)}")
-        rows.append(MODEL_NAME[m] + " & " + " & ".join(cells) + r" \\")
-    write_table("per_model", "l" + "c" * len(cols), head, rows,
-                comment="Table D1. CICLe minus few-shot per model, all k pooled (12 pairs, Ohsumed 6), "
-                        "95% paired bootstrap CI. F = Fixed, PC = Per-Class.")
+    for var in ("fixed", "pc"):
+        head = ["Model & " + " & ".join(NAME[d] for d in CORE) + r" \\"]
+        rows = []
+        for m in SMALL:
+            cells = []
+            for d in CORE:
+                if var == "pc" and d == "ohsumed" and False:
+                    cells.append("--"); continue
+                res = fd.paired_delta(d, "cicle", "fewshot", var, ks_for(d, var), models=[m], B=B)
+                if res is None:
+                    cells.append("--"); pending(sec, f"{m} {d} {var}")
+                    continue
+                cells.append(delta_tex(res, stacked=True))
+                note(sec, f"{MODEL_NAME[m]} {d} {var}: {delta_txt(res)}")
+            rows.append(MODEL_NAME[m] + " & " + " & ".join(cells) + r" \\")
+        write_table(f"per_model_{var}", "l" + "c" * len(CORE), head, rows,
+                    comment=f"Table D1 ({VARIANT_NAME[var]}). CICLe minus few-shot per model, all k "
+                            "pooled (12 pairs; Ohsumed Fixed 6, Ohsumed Per-Class 3 at k=1), 95% paired "
+                            "bootstrap CI over test instances. Bold: CI excludes 0.")
 
 
 # ---------------------------------------------------------------------------
@@ -866,8 +978,8 @@ def tabE1(B):
     settings = [("contriever", "lr", 0.05), ("minilm", "lr", 0.05), ("minilm", "svm", 0.05),
                 ("tfidf", "lr", 0.05), ("minilm", "lr", 0.01), ("minilm", "lr", 0.10),
                 ("minilm", "lr", 0.20)]
-    head = [r"Dataset & Embedding & Classifier & $\alpha$ & CICLe & few-shot & $\Delta$ & "
-            r"coverage (\%) & set size & no LLM call (\%) \\"]
+    head = [r"Dataset & Setting & CICLe & few-shot & $\Delta$ & "
+            r"cov.\ (\%) & set size & no LLM (\%) \\"]
     rows = []
     for d in SHORT:
         first = True
@@ -885,8 +997,8 @@ def tabE1(B):
             skip = 100 * np.mean([1 - r["metrics"]["llm_call_rate"] for r in runs])
             if a == 0.01 and not first:
                 rows.append(r"\addlinespace")
-            rows.append(f"{NAME[d] if first else ''} & {emb} & {clf.upper()} & {a:.2f} & "
-                        f"{res['mean_a']:.1f} & {res['mean_b']:.1f} & {delta_tex(res)} & "
+            rows.append(f"{NAME[d] if first else ''} & {emb}/{clf.upper()}, $\\alpha$={a:.2f} & "
+                        f"{res['mean_a']:.1f} & {res['mean_b']:.1f} & {delta_tex(res, stacked=True)} & "
                         f"{cov:.1f} & {size:.2f} & {skip:.1f} \\\\")
             first = False
             note(sec, f"{d} {emb}/{clf}/alpha={a}: CICLe {res['mean_a']:.2f}, few-shot "
@@ -895,7 +1007,7 @@ def tabE1(B):
         rows.append(r"\midrule")
     if rows and rows[-1] == r"\midrule":
         rows.pop()
-    write_table("ablation", "lllrrrcrrr", head, rows,
+    write_table("ablation", "llrrcrrr", head, rows,
                 comment="Table E1. Llama-3.1-8B and Llama-3.2-3B, both retrieval variants, k in {1,4}, "
                         "3 seeds (24 cells). Few-shot uses the same embedding for retrieval. "
                         "Δ = CICLe − few-shot, paired bootstrap CI.")
@@ -907,9 +1019,9 @@ def tabE1(B):
 def tabF1(B):
     sec = "Table F1 (12B / 32B models)"
     head = [r"Model & Dataset & seeds & Zero-shot & \multicolumn{2}{c}{Fixed} & "
-            r"\multicolumn{2}{c}{Per-Class} & $\Delta$ Fixed & $\Delta$ PC \\",
-            r" & & & & $k$=1 & $k$=4 & $k$=1 & $k$=4 & & \\"]
-    rows = []
+            r"\multicolumn{2}{c}{Per-Class} \\",
+            r" & & & & $k$=1 & $k$=4 & $k$=1 & $k$=4 \\"]
+    rows, drows = [], []
     for m in LARGE:
         for d in CORE:
             v = fd.variant(d)
@@ -931,15 +1043,17 @@ def tabF1(B):
                                   f"(seeds {nf}/{nc})")
             if zs is not None:
                 note(sec, f"{MODEL_NAME[m]} {d} zero-shot: {zs:.1f} ({len(seeds)} seeds)")
+            dcells = []
             for var in ("fixed", "pc"):
                 res = fd.paired_delta(d, "cicle", "fewshot", var, [1, 4], models=[m], B=B,
                                       allow_partial=True)
-                cells.append(delta_tex(res, n=True))
+                dcells.append(delta_tex(res, n=True, stacked=True))
                 if res is not None:
                     note(sec, f"{MODEL_NAME[m]} {d} Δ {var}: {delta_txt(res)}")
-            rows.append(f"{MODEL_NAME[m]} & {NAME[d]} & {','.join(str(s) for s in seeds)} & "
+            rows.append(f"{MODEL_NAME[m]} & {NAME[d]} & {len(seeds)} & "
                         + " & ".join(cells) + r" \\")
-        rows.append(r"\midrule")
+            drows.append(f"{MODEL_NAME[m]} & {NAME[d]} & " + " & ".join(dcells) + r" \\")
+        rows.append(r"\midrule"); drows.append(r"\midrule")
     # best small model + CICLe PC k=4 (seed 42) vs the 32B zero-shot (seed 42)
     extra = []
     for d in ("yahoo-answers", "sst", "semeval-18", "go-emotions"):
@@ -954,14 +1068,19 @@ def tabF1(B):
             note(sec, f"{d} seed 42: best 3B + CICLe PC k=4 = {MODEL_NAME[mm]} {f:.1f}; "
                       f"Qwen2.5-32B zero-shot {fd.f1(v, big):.1f}")
     if extra:
-        rows.append(r"\multicolumn{10}{l}{\emph{Smallest models with CICLe against the largest "
+        rows.append(r"\multicolumn{8}{l}{\emph{Smallest models with CICLe against the largest "
                     r"model without examples (seed 42)}} \\")
-        rows.extend(r"\multicolumn{10}{l}{" + e.replace(r" \\", "").replace(" & ", "; ") + r"} \\"
+        rows.extend(r"\multicolumn{8}{l}{" + e.replace(r" \\", "").replace(" & ", "; ") + r"} \\"
                     for e in extra)
-    write_table("large_models", "llrcccccc c", head, rows,
-                comment="Table F1. Mistral-Nemo-12B and Qwen2.5-32B: macro-F1 (mean over the seeds "
-                        "listed), cells 'few-shot / CICLe'; Δ = CICLe − few-shot over k in {1,4}, "
-                        "paired bootstrap CI, (n) cells.")
+    write_table("large_models", "llrccccc", head, rows,
+                comment="Table F1a. Mistral-Nemo-12B and Qwen2.5-32B: macro-F1, mean over the number "
+                        "of seeds given (seed ids in NUMBERS.md), cells 'few-shot / CICLe'.")
+    if drows and drows[-1] == r"\midrule":
+        drows.pop()
+    write_table("large_models_delta", "llcc",
+                [r"Model & Dataset & $\Delta$ Fixed & $\Delta$ Per-Class \\"], drows,
+                comment="Table F1b. Δ = CICLe − few-shot over k in {1,4} for the 12B / 32B models, "
+                        "paired bootstrap CI over test instances, (n) = cells (2 per seed).")
 
 
 # ---------------------------------------------------------------------------
@@ -969,10 +1088,11 @@ def tabF1(B):
 # ---------------------------------------------------------------------------
 def tabG1(B):
     sec = "Table G1 (fixes vs breaks, k=4)"
-    head = [r"Variant & Retr. & pairs & fixed & broken & both right & both wrong & "
-            r"\multicolumn{3}{c}{gold outside set} & \multicolumn{3}{c}{few-shot answer outside set} \\",
-            r" & & & \multicolumn{4}{c}{(\% of pairs)} & share & fixed & broken & share & fixed & broken \\"]
-    rows = []
+    head = [r"Variant & Retr. & pairs & fixed & broken & both right & both wrong \\"]
+    head2 = [r"Variant & Retr. & \multicolumn{3}{c}{gold outside the set} & "
+             r"\multicolumn{3}{c}{few-shot answer outside the set} \\",
+             r" & & share & fixed & broken & share & fixed & broken \\"]
+    rows, rows2 = [], []
     tags = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed", "yahoo-answers-imb100",
             "sst-imb100", "yahoo-answers-relabel", "sst-relabel", "semeval-18-relabel",
             "go-emotions-relabel", "ohsumed-relabel"]
@@ -1007,11 +1127,12 @@ def tabG1(B):
             n = agg["n"]
             pct = lambda x, d=n: 100 * x / max(d, 1)  # noqa: E731
             rows.append(f"{tag_name(tag)} & {VARIANT_NAME[var]} & {n:,} & {pct(agg['fix']):.1f} & "
-                        f"{pct(agg['brk']):.1f} & {pct(agg['both']):.1f} & {pct(agg['neither']):.1f} & "
-                        f"{pct(agg['out']):.1f} & {pct(agg['out_fix'], agg['out']):.1f} & "
-                        f"{pct(agg['out_brk'], agg['out']):.1f} & {pct(agg['fsout']):.1f} & "
-                        f"{pct(agg['fsout_fix'], agg['fsout']):.1f} & "
-                        f"{pct(agg['fsout_brk'], agg['fsout']):.1f} \\\\")
+                        f"{pct(agg['brk']):.1f} & {pct(agg['both']):.1f} & {pct(agg['neither']):.1f} \\\\")
+            rows2.append(f"{tag_name(tag)} & {VARIANT_NAME[var]} & "
+                         f"{pct(agg['out']):.1f} & {pct(agg['out_fix'], agg['out']):.1f} & "
+                         f"{pct(agg['out_brk'], agg['out']):.1f} & {pct(agg['fsout']):.1f} & "
+                         f"{pct(agg['fsout_fix'], agg['fsout']):.1f} & "
+                         f"{pct(agg['fsout_brk'], agg['fsout']):.1f} \\\\")
             note(sec, f"{tag} {var} k=4 ({n:,} pairs): fixed {pct(agg['fix']):.1f}%, broken "
                       f"{pct(agg['brk']):.1f}%, both right {pct(agg['both']):.1f}%, both wrong "
                       f"{pct(agg['neither']):.1f}%; gold outside set {pct(agg['out']):.1f}% of pairs "
@@ -1019,11 +1140,14 @@ def tabG1(B):
                       f"{pct(agg['out_brk'], agg['out']):.1f}%); few-shot answer outside set "
                       f"{pct(agg['fsout']):.1f}% (within: fixed {pct(agg['fsout_fix'], agg['fsout']):.1f}%, "
                       f"broken {pct(agg['fsout_brk'], agg['fsout']):.1f}%)")
-    write_table("fixes_breaks", "llrrrrrrrrrrr", head, rows,
-                comment="Table G1. CICLe k=4 vs few-shot k=4, same retrieval variant, 6 models x 3 "
-                        "seeds x 1,000 instances. fixed = CICLe right & few-shot wrong; broken = the "
-                        "reverse. 'gold outside set' / 'few-shot answer outside set': share of pairs, "
-                        "then fixed and broken as % of that subset.")
+    write_table("fixes_breaks", "llrrrrr", head, rows,
+                comment="Table G1a. CICLe k=4 vs few-shot k=4, same retrieval variant, 6 models x 3 "
+                        "seeds x 1,000 instances; % of pairs. fixed = CICLe right & few-shot wrong; "
+                        "broken = the reverse.")
+    write_table("fixes_breaks_sets", "llrrrrrr", head2, rows2,
+                comment="Table G1b. Same pairs split by the candidate set: share of pairs whose gold "
+                        "label (left) or few-shot answer (right) lies outside CICLe's set, then fixed "
+                        "and broken as % of that subset.")
 
 
 # ---------------------------------------------------------------------------
@@ -1031,13 +1155,11 @@ def tabG1(B):
 # ---------------------------------------------------------------------------
 def tabG2(B):
     sec = "Table G2 (invalid outputs)"
-    head = ["Model & " + " & ".join(NAME[d] for d in CORE) + r" \\",
-            r" & \multicolumn{" + str(len(CORE)) + r"}{c}{mean (max) invalid rate in \%: "
-            r"zero-shot / few-shot / CICLe} \\"]
+    head = ["Model & Method & " + " & ".join(NAME[d] for d in CORE) + r" \\"]
     rows = []
     raw = defaultdict(Counter)
     for m in SMALL + LARGE:
-        cells = []
+        per_method = {}
         for d in CORE:
             v = fd.variant(d)
             vals = defaultdict(list)
@@ -1045,19 +1167,22 @@ def tabG2(B):
                 if key[0] in ("zeroshot", "fewshot", "cicle"):
                     vals[key[0]].append(100 * r["metrics"]["invalid_rate"])
                     raw[m].update(r["invalid_raw"])
-            parts = []
             for meth in ("zeroshot", "fewshot", "cicle"):
                 if vals[meth]:
-                    parts.append(f"{np.mean(vals[meth]):.1f} ({np.max(vals[meth]):.1f})")
+                    per_method.setdefault(meth, []).append(f"{np.mean(vals[meth]):.1f} ({np.max(vals[meth]):.1f})")
                     note(sec, f"{MODEL_NAME[m]} {d} {meth}: mean {np.mean(vals[meth]):.1f}%, "
                               f"max {np.max(vals[meth]):.1f}% over {len(vals[meth])} runs")
                 else:
-                    parts.append("--")
-            cells.append(" / ".join(parts))
-        rows.append(MODEL_NAME[m] + " & " + " & ".join(cells) + r" \\")
-    write_table("invalid", "l" + "c" * len(CORE), head, rows,
-                comment="Table G2. Invalid (unparseable) outputs per model and dataset, reference "
-                        "setting; mean and maximum over (variant, k, seed) runs of each method.")
+                    per_method.setdefault(meth, []).append("--")
+        for i, meth in enumerate(("zeroshot", "fewshot", "cicle")):
+            rows.append(f"{MODEL_NAME[m] if i == 0 else ''} & {METHOD_NAME[meth]} & "
+                        + " & ".join(per_method.get(meth, ["--"] * len(CORE))) + r" \\")
+        rows.append(r"\addlinespace")
+    if rows and rows[-1] == r"\addlinespace":
+        rows.pop()
+    write_table("invalid", "ll" + "c" * len(CORE), head, rows,
+                comment="Table G2. Invalid (unparseable) outputs in %, per model, method and dataset, "
+                        "reference setting: mean (maximum) over the (variant, k, seed) runs.")
     rows = []
     for m in SMALL + LARGE:
         if not raw[m]:
@@ -1207,7 +1332,7 @@ def tabP(B):
     sec = "Table P (pool size)"
     vals = pool_values(sec)
     labels = [s[2] for s in POOL_SERIES]
-    head = [r"Dataset & labelled pool & " + " & ".join(labels) + r" & best LLM pipeline \\"]
+    head = [r"Dataset & pool & " + " & ".join(l.replace("Few-shot PC, $k$=4", "FS PC").replace("CICLe PC, $k$=4", "CICLe PC") for l in labels) + r" & best pipeline \\"]
     rows = []
     for d in ("yahoo-answers", "sst"):
         for n in POOL_SIZES:
@@ -1245,29 +1370,27 @@ def figP(B):
              "RoBERTa-large": dict(color=COLOR["finetuned"], ls="--", marker="D", mfc="white"),
              "Few-shot PC, $k$=4": dict(color=COLOR["fewshot"], ls="-", marker="o"),
              "CICLe PC, $k$=4": dict(color=COLOR["cicle"], ls="-", marker="o")}
-    fig, axes = plt.subplots(1, 2, figsize=(COLWIDTH, 1.7))
+    fig, axes = plt.subplots(2, 1, figsize=(COLWIDTH, 5.4), sharex=True)
     for ax, d in zip(axes, ("yahoo-answers", "sst")):
         for lab, st in style.items():
             pts = [(n, vals[(d, n, lab)][0]) for n in POOL_SIZES if (d, n, lab) in vals]
             if pts:
-                ax.plot([p[0] for p in pts], [p[1] for p in pts], label=lab, markersize=3.5, lw=1.0,
-                        **st)
+                ax.plot([p[0] for p in pts], [p[1] for p in pts], label=lab, **st)
         zs, _ = fd.mean_metric(d, "zeroshot")
         if zs is not None:
-            ax.axhline(zs, color=COLOR["zeroshot"], lw=0.6, ls=(0, (1, 2)))
-            ax.annotate("zero-shot", xy=(0.02, zs), xycoords=("axes fraction", "data"), fontsize=7,
-                        color="#52514e", va="bottom", xytext=(0, 1), textcoords="offset points")
+            ax.axhline(zs, color=COLOR["zeroshot"], lw=0.8, ls=(0, (1, 2)))
+            ax.annotate("zero-shot", xy=(0.02, zs), xycoords=("axes fraction", "data"), fontsize=8,
+                        color="#52514e", va="bottom", xytext=(0, 2), textcoords="offset points")
         ax.set_xscale("log"); ax.set_xticks(POOL_SIZES)
-        ax.set_xticklabels([str(n) for n in POOL_SIZES], fontsize=7)
+        ax.set_xticklabels([f"{n:,}" for n in POOL_SIZES])
         ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
-        ax.set_title(NAME[d], fontsize=8, pad=3)
-        ax.set_xlabel("labelled pool size")
-    axes[0].set_ylabel("macro-F1 (pp)")
+        ax.set_title(NAME[d], fontsize=9, pad=4)
+        ax.set_ylabel("macro-F1 (pp)")
+    axes[1].set_xlabel("labelled pool size (train + calibration)")
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.33),
-               handletextpad=0.5, columnspacing=0.8)
-    fig.subplots_adjust(wspace=0.35)
-    save_fig(fig, "pool_size")
+    axes[0].legend(handles, labels, loc="lower right", fontsize=8, handlelength=2.2)
+    fig.subplots_adjust(hspace=0.22, left=0.16, right=0.98, top=0.96, bottom=0.08)
+    save_fig(fig, "fig_main_poolsize")
 
 
 # ---------------------------------------------------------------------------
@@ -1275,10 +1398,10 @@ def figP(B):
 # ---------------------------------------------------------------------------
 def tabL(B):
     sec = "Table L (legacy vs corrected protocol, seed 42, Fixed, k in {1,4})"
-    head = [r"Dataset & Model & \multicolumn{2}{c}{invalid outputs (\%): ZS / FS / CICLe} & "
-            r"\multicolumn{2}{c}{macro-F1: ZS / FS / CICLe} & \multicolumn{2}{c}{$\Delta$ CICLe $-$ few-shot} \\",
-            r" & & legacy & corrected & legacy & corrected & legacy & corrected \\"]
-    rows = []
+    head = [r"Model & \multicolumn{2}{c}{invalid outputs (\%): ZS / FS / CICLe} & "
+            r"\multicolumn{2}{c}{macro-F1: ZS / FS / CICLe} \\",
+            r" & legacy & corrected & legacy & corrected \\"]
+    rows, drows = [], []
     for d in CORE:
         leg, cor = "legacy:" + d, d
         if not fd.has_results(leg):
@@ -1308,17 +1431,26 @@ def tabL(B):
             deltas = []
             for tag in (leg, cor):
                 res = fd.paired_delta(tag, "cicle", "fewshot", "fixed", [1, 4], models=[m], seeds=[42], B=B)
-                deltas.append(delta_tex(res))
+                deltas.append(delta_tex(res, stacked=True))
                 if res is None:
                     pending(sec, f"Δ {tag} {m}")
                 else:
                     note(sec, f"Δ CICLe − few-shot {tag} {MODEL_NAME[m]} (2 cells): {delta_txt(res)}")
-            rows.append(f"{NAME[d] if m == SMALL[0] else ''} & {MODEL_NAME[m]} & {cells[0][0]} & "
-                        f"{cells[1][0]} & {cells[0][1]} & {cells[1][1]} & {deltas[0]} & {deltas[1]} \\\\")
-        rows.append(r"\midrule")
+            if m == SMALL[0]:
+                rows.append(r"\multicolumn{5}{l}{\emph{" + NAME[d] + r"}} \\")
+            rows.append(f"{MODEL_NAME[m]} & {cells[0][0]} & "
+                        f"{cells[1][0]} & {cells[0][1]} & {cells[1][1]} \\\\")
+            drows.append(f"{NAME[d] if m == SMALL[0] else ''} & {MODEL_NAME[m]} & {deltas[0]} & "
+                         f"{deltas[1]} \\\\")
+        rows.append(r"\midrule"); drows.append(r"\midrule")
     if rows and rows[-1] == r"\midrule":
-        rows.pop()
-    write_table("legacy", "llcccccc", head, rows,
+        rows.pop(); drows.pop()
+    write_table("legacy_delta", "llcc",
+                [r"Dataset & Model & $\Delta$ legacy & $\Delta$ corrected \\"], drows,
+                comment="Table Lb. Per-model Δ CICLe − few-shot (Fixed, k in {1,4}, seed 42) under the "
+                        "legacy and the corrected protocol, paired over the 1,000 instances and 2 "
+                        "cells, 95% bootstrap CI.")
+    write_table("legacy", "lcccc", head, rows,
                 comment="Table L. Original (DS2026) protocol vs the corrected one on the same seed-42 "
                         "test sample: zero-shot, few-shot Fixed and CICLe Fixed at k in {1,4} (FS / CICLe "
                         "cells are means over k). Legacy = no label list in the few-shot/CICLe prompts, "
@@ -1333,7 +1465,7 @@ def tabR(B):
     sec = "Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4})"
     head = [r"Dataset & Condition & FS Fixed & CICLe Fixed & $\Delta$ Fixed & FS PC & CICLe PC & $\Delta$ PC \\"]
     rows = []
-    conds = [("", "default prompt"), ("-altprompt", "alternative prompt"), ("-random", "random retrieval")]
+    conds = [("", "default"), ("-altprompt", "alt. prompt"), ("-random", "random retr.")]
     for d in CORE:
         variants = ("fixed", "pc") if d != "ohsumed" else ("fixed",)
         for suffix, label in conds:
@@ -1353,7 +1485,7 @@ def tabR(B):
                     pending(sec, f"{tag} {var}")
                     cells += ["[pending]"] * 3
                     continue
-                cells += [num(res["mean_b"]), num(res["mean_a"]), delta_tex(res)]
+                cells += [num(res["mean_b"]), num(res["mean_a"]), delta_tex(res, stacked=True)]
                 note(sec, f"{tag} {var}: few-shot {res['mean_b']:.2f}, CICLe {res['mean_a']:.2f}, "
                           f"Δ {delta_txt(res)}")
             rows.append(f"{NAME[d] if suffix == '' else ''} & {label} & " + " & ".join(cells) + r" \\")
@@ -1409,27 +1541,27 @@ def write_numbers(B, built):
 
 # ---------------------------------------------------------------------------
 STEPS = {
-    "tab2": ("Table 2: main results at k=4 -> tables/main_results.tex", tab2),
-    "fig1": ("Figure 1: macro-F1 vs prompt tokens -> f1_vs_tokens.pdf", fig1),
-    "fig2": ("Figure 2: narrowing under imbalance, Per-Class -> narrowing_imbalance.pdf", fig2),
+    "tab2": ("Table 2: main results -> tables/body_main_results.tex, body_main_delta.tex, main_results.tex", tab2),
+    "fig1": ("Figure 1: macro-F1 vs prompt tokens -> fig_main_tokens.pdf", fig1),
+    "fig2": ("Figure 2: narrowing under imbalance, Per-Class, panels a+c -> fig_main_narrowing.pdf", fig2),
     "tab3": ("Table 3: label renaming -> tables/relabel.tex", tab3),
-    "tab4": ("Table 4: supervised vs pipelines -> tables/baselines.tex", tab4),
-    "fig3": ("Figure 3: alpha -> alpha.pdf", fig3),
-    "tabB": ("Tables B1-B11: full grids -> tables/grid_<variant>.tex", tabB),
-    "tabC1": ("Table C1: narrowing comparisons, all variants -> tables/narrowing_all.tex", tabC1),
+    "tab4": ("Table 4: supervised vs pipelines -> tables/body_main_supervised.tex, baselines.tex", tab4),
+    "fig3": ("Figure 3: alpha -> fig_app_alpha.pdf", fig3),
+    "tabB": ("Tables B: full grids -> tables/grid_<variant>.tex", tabB),
+    "tabC1": ("Table C1: narrowing comparisons, all variants -> tables/narrowing_all_a.tex, narrowing_all_b.tex", tabC1),
     "tabC2": ("Table C2: candidate-set statistics -> tables/set_stats.tex", tabC2),
-    "figC1": ("Figure C1: Figure 2 for the Fixed variant -> narrowing_imbalance_fixed.pdf",
-              lambda B: fig2(B, variant="fixed", name="narrowing_imbalance_fixed")),
-    "tabD1": ("Table D1: per-model deltas -> tables/per_model.tex", tabD1),
+    "figAN": ("Figure 2 extra: panels b+d, Per-Class -> fig_app_narrowing_extra.pdf", figAN),
+    "figC1": ("Figure C1: panels a-d, Fixed -> fig_app_narrowing_fixed.pdf", figC1),
+    "tabD1": ("Table D1: per-model deltas -> tables/per_model_fixed.tex, per_model_pc.tex", tabD1),
     "tabE1": ("Table E1: embedding / classifier / alpha ablation -> tables/ablation.tex", tabE1),
-    "tabF1": ("Table F1: larger models -> tables/large_models.tex", tabF1),
-    "tabG1": ("Table G1: fixes vs breaks -> tables/fixes_breaks.tex", tabG1),
+    "tabF1": ("Table F1: larger models -> tables/large_models.tex, large_models_delta.tex", tabF1),
+    "tabG1": ("Table G1: fixes vs breaks -> tables/fixes_breaks.tex, fixes_breaks_sets.tex", tabG1),
     "tabG2": ("Table G2: invalid outputs -> tables/invalid.tex, invalid_raw.tex", tabG2),
     "tabG3": ("Table G3: qualitative examples -> tables/examples.tex", tabG3),
     "tabH1": ("Table H1: imbalance class counts, relabel words -> tables/imbalance_counts.tex, relabel_words.tex", tabH1),
     "tabP": ("Table P: pool size -> tables/pool_size.tex", tabP),
-    "figP": ("Figure P: macro-F1 vs pool size -> pool_size.pdf", figP),
-    "tabL": ("Table L: legacy vs corrected protocol -> tables/legacy.tex", tabL),
+    "figP": ("Figure P: macro-F1 vs pool size -> fig_main_poolsize.pdf", figP),
+    "tabL": ("Table L: legacy vs corrected protocol -> tables/legacy.tex, legacy_delta.tex", tabL),
     "tabR": ("Table R: alternative prompt / random retrieval -> tables/robustness.tex", tabR),
 }
 

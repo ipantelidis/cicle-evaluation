@@ -1,0 +1,41 @@
+% Table Lb. Per-model Δ CICLe − few-shot (Fixed, k in {1,4}, seed 42) under the legacy and the corrected protocol, paired over the 1,000 instances and 2 cells, 95% bootstrap CI.
+\begin{tabular}{llcc}
+\toprule
+Dataset & Model & $\Delta$ legacy & $\Delta$ corrected \\
+\midrule
+Yahoo Answers & Llama-3.2-3B & \begin{tabular}[c]{@{}c@{}}+1.07\,\textsuperscript{n.s.}\\{\scriptsize [-0.06, +2.19]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-3.79}\\{\scriptsize [-5.58, -2.04]}\end{tabular} \\
+ & Ministral-3B & \begin{tabular}[c]{@{}c@{}}-0.76\,\textsuperscript{n.s.}\\{\scriptsize [-2.36, +0.88]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.59\,\textsuperscript{n.s.}\\{\scriptsize [-2.33, +1.19]}\end{tabular} \\
+ & Qwen2.5-3B & \begin{tabular}[c]{@{}c@{}}\textbf{+1.34}\\{\scriptsize [+0.14, +2.54]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.20\,\textsuperscript{n.s.}\\{\scriptsize [-1.34, +1.78]}\end{tabular} \\
+ & Mistral-7B & \begin{tabular}[c]{@{}c@{}}+0.91\,\textsuperscript{n.s.}\\{\scriptsize [-0.11, +1.92]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.88\,\textsuperscript{n.s.}\\{\scriptsize [-2.24, +0.47]}\end{tabular} \\
+ & Qwen2.5-7B & \begin{tabular}[c]{@{}c@{}}-0.25\,\textsuperscript{n.s.}\\{\scriptsize [-1.05, +0.55]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-1.67}\\{\scriptsize [-2.76, -0.62]}\end{tabular} \\
+ & Llama-3.1-8B & \begin{tabular}[c]{@{}c@{}}+0.49\,\textsuperscript{n.s.}\\{\scriptsize [-0.46, +1.45]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.66\,\textsuperscript{n.s.}\\{\scriptsize [-0.51, +1.93]}\end{tabular} \\
+\midrule
+SST-5 & Llama-3.2-3B & \begin{tabular}[c]{@{}c@{}}+1.38\,\textsuperscript{n.s.}\\{\scriptsize [-0.27, +3.01]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+2.88}\\{\scriptsize [+0.86, +4.87]}\end{tabular} \\
+ & Ministral-3B & \begin{tabular}[c]{@{}c@{}}\textbf{-2.64}\\{\scriptsize [-4.51, -0.81]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+5.24}\\{\scriptsize [+3.35, +7.18]}\end{tabular} \\
+ & Qwen2.5-3B & \begin{tabular}[c]{@{}c@{}}-0.22\,\textsuperscript{n.s.}\\{\scriptsize [-1.58, +1.19]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{-1.96}\\{\scriptsize [-3.75, -0.03]}\end{tabular} \\
+ & Mistral-7B & \begin{tabular}[c]{@{}c@{}}\textbf{+2.07}\\{\scriptsize [+0.82, +3.38]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.29\,\textsuperscript{n.s.}\\{\scriptsize [-1.72, +1.15]}\end{tabular} \\
+ & Qwen2.5-7B & \begin{tabular}[c]{@{}c@{}}\textbf{+1.36}\\{\scriptsize [+0.13, +2.63]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.78\,\textsuperscript{n.s.}\\{\scriptsize [-0.65, +2.33]}\end{tabular} \\
+ & Llama-3.1-8B & \begin{tabular}[c]{@{}c@{}}+1.16\,\textsuperscript{n.s.}\\{\scriptsize [-0.11, +2.45]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+2.24}\\{\scriptsize [+0.42, +4.06]}\end{tabular} \\
+\midrule
+SemEval-18 & Llama-3.2-3B & \begin{tabular}[c]{@{}c@{}}-0.47\,\textsuperscript{n.s.}\\{\scriptsize [-1.41, +0.47]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.17\,\textsuperscript{n.s.}\\{\scriptsize [-1.00, +1.34]}\end{tabular} \\
+ & Ministral-3B & \begin{tabular}[c]{@{}c@{}}+0.34\,\textsuperscript{n.s.}\\{\scriptsize [-0.43, +1.20]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+1.29}\\{\scriptsize [+0.36, +2.24]}\end{tabular} \\
+ & Qwen2.5-3B & \begin{tabular}[c]{@{}c@{}}+0.28\,\textsuperscript{n.s.}\\{\scriptsize [-0.40, +0.96]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.06\,\textsuperscript{n.s.}\\{\scriptsize [-0.71, +0.86]}\end{tabular} \\
+ & Mistral-7B & \begin{tabular}[c]{@{}c@{}}+0.50\,\textsuperscript{n.s.}\\{\scriptsize [-0.40, +1.39]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+1.65}\\{\scriptsize [+0.77, +2.57]}\end{tabular} \\
+ & Qwen2.5-7B & \begin{tabular}[c]{@{}c@{}}+0.65\,\textsuperscript{n.s.}\\{\scriptsize [-0.09, +1.44]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.36\,\textsuperscript{n.s.}\\{\scriptsize [-0.57, +1.31]}\end{tabular} \\
+ & Llama-3.1-8B & \begin{tabular}[c]{@{}c@{}}+0.30\,\textsuperscript{n.s.}\\{\scriptsize [-0.30, +0.91]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.02\,\textsuperscript{n.s.}\\{\scriptsize [-0.88, +0.94]}\end{tabular} \\
+\midrule
+GoEmotions & Llama-3.2-3B & \begin{tabular}[c]{@{}c@{}}\textbf{+0.82}\\{\scriptsize [+0.19, +1.50]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.33\,\textsuperscript{n.s.}\\{\scriptsize [-0.88, +1.53]}\end{tabular} \\
+ & Ministral-3B & \begin{tabular}[c]{@{}c@{}}-0.53\,\textsuperscript{n.s.}\\{\scriptsize [-1.57, +0.57]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.96\,\textsuperscript{n.s.}\\{\scriptsize [-2.86, +1.24]}\end{tabular} \\
+ & Qwen2.5-3B & \begin{tabular}[c]{@{}c@{}}+0.66\,\textsuperscript{n.s.}\\{\scriptsize [-0.37, +1.73]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.28\,\textsuperscript{n.s.}\\{\scriptsize [-1.14, +1.91]}\end{tabular} \\
+ & Mistral-7B & \begin{tabular}[c]{@{}c@{}}-0.65\,\textsuperscript{n.s.}\\{\scriptsize [-1.90, +0.68]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.47\,\textsuperscript{n.s.}\\{\scriptsize [-1.16, +2.18]}\end{tabular} \\
+ & Qwen2.5-7B & \begin{tabular}[c]{@{}c@{}}\textbf{+1.33}\\{\scriptsize [+0.15, +2.63]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.20\,\textsuperscript{n.s.}\\{\scriptsize [-1.92, +1.63]}\end{tabular} \\
+ & Llama-3.1-8B & \begin{tabular}[c]{@{}c@{}}+0.27\,\textsuperscript{n.s.}\\{\scriptsize [-0.77, +1.37]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.17\,\textsuperscript{n.s.}\\{\scriptsize [-1.71, +1.49]}\end{tabular} \\
+\midrule
+Ohsumed & Llama-3.2-3B & \begin{tabular}[c]{@{}c@{}}+0.78\,\textsuperscript{n.s.}\\{\scriptsize [-0.18, +1.63]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.73\,\textsuperscript{n.s.}\\{\scriptsize [-2.88, +1.42]}\end{tabular} \\
+ & Ministral-3B & \begin{tabular}[c]{@{}c@{}}+0.01\,\textsuperscript{n.s.}\\{\scriptsize [-1.40, +1.46]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+2.54}\\{\scriptsize [+0.16, +5.00]}\end{tabular} \\
+ & Qwen2.5-3B & \begin{tabular}[c]{@{}c@{}}\textbf{+1.63}\\{\scriptsize [+0.48, +2.68]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{+4.58}\\{\scriptsize [+2.17, +7.11]}\end{tabular} \\
+ & Mistral-7B & \begin{tabular}[c]{@{}c@{}}+0.17\,\textsuperscript{n.s.}\\{\scriptsize [-0.36, +0.73]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.47\,\textsuperscript{n.s.}\\{\scriptsize [-1.64, +2.62]}\end{tabular} \\
+ & Qwen2.5-7B & \begin{tabular}[c]{@{}c@{}}-0.17\,\textsuperscript{n.s.}\\{\scriptsize [-1.60, +0.72]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}+0.22\,\textsuperscript{n.s.}\\{\scriptsize [-1.89, +2.09]}\end{tabular} \\
+ & Llama-3.1-8B & \begin{tabular}[c]{@{}c@{}}+0.12\,\textsuperscript{n.s.}\\{\scriptsize [-0.79, +0.82]}\end{tabular} & \begin{tabular}[c]{@{}c@{}}-0.69\,\textsuperscript{n.s.}\\{\scriptsize [-2.57, +1.03]}\end{tabular} \\
+\bottomrule
+\end{tabular}

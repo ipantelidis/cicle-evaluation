@@ -1,10 +1,6 @@
 % COLING 2027 submission via ACL Rolling Review (deadline 12 October 2026).
 % Review version: anonymous, line numbers, page numbers. Switch to \usepackage{acl} for the final version.
 %
-% ANONYMITY NOTE. A preliminary version of this work exists as arXiv:2512.05732
-% ("Efficient Text Classification with Conformal In-Context Learning"). It must be listed on
-% the ARR submission form as a preliminary non-archival version and must NOT be cited or
-% referred to in this file. The flawed earlier protocol is described as a pilot study.
 %
 % Working title below. Two alternatives that reflect the new storyline:
 %   1. How to Narrow the Label Space for In-Context Classification:
@@ -25,6 +21,13 @@
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{multirow}
+
+% Float placement: allow pages that are mostly floats so that the five main-text floats land at the top of the page where they are first cited.
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
 
 \title{Evaluating Conformal In-Context Learning Across Tasks and Models}
 

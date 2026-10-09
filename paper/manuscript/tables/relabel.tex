@@ -3,7 +3,7 @@
   \centering
   \small
   \setlength{\tabcolsep}{4pt}
-  \input{tables/body_relabel}
+  \resizebox{\textwidth}{!}{\input{tables/body_relabel}}
   \caption{Label renaming. Macro-F1 with the original class names and with every name replaced by a nonsense word (same mapping for all seeds), mean over six models and three seeds. $k = 0$ is the candidate set without examples. $\Delta$ = CICLe minus few-shot, paired over $k \in \{1, 4\}$ (36 pairs), with 95\% bootstrap intervals over test instances. The base classifier is unaffected by renaming, so the whole effect is on the LLM's use of the candidate list and the examples. FS = few-shot, PC = Per-Class. Ohsumed is Fixed only.}
   \label{tab:relabel}
 \end{table*}
