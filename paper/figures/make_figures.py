@@ -43,8 +43,9 @@ NUMBERS_MD = os.path.join(HERE, "NUMBERS.md")
 CORE = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed"]
 SHORT = ["yahoo-answers", "sst", "semeval-18", "go-emotions"]
 ALL_TAGS = ["yahoo-answers", "yahoo-answers-imb10", "yahoo-answers-imb100", "yahoo-answers-relabel",
-            "sst", "sst-imb10", "sst-imb100", "semeval-18", "go-emotions", "go-emotions-relabel",
-            "ohsumed"]
+            "sst", "sst-imb10", "sst-imb100", "sst-relabel", "semeval-18", "semeval-18-relabel",
+            "go-emotions", "go-emotions-relabel", "ohsumed", "ohsumed-relabel"]
+POOL_SIZES = [250, 500, 1000, 2000]
 NAME = {"yahoo-answers": "Yahoo Answers", "sst": "SST-5", "semeval-18": "SemEval-18",
         "go-emotions": "GoEmotions", "ohsumed": "Ohsumed"}
 MODEL_NAME = {"llama-3.2-3b": "Llama-3.2-3B", "ministral-3b": "Ministral-3B",
@@ -249,8 +250,7 @@ def tab2(B):
     if any(k0.values()):
         var0 = sorted({kk[1] for d in CORE for kk in k0[d]})
         for var in var0:
-            rows.append(f1_row(f"CICLe, no examples ($k$=0, {VARIANT_NAME.get(var, var)})",
-                               "cicle", var, 0))
+            rows.append(f1_row("CICLe, candidate set only ($k$=0)", "cicle", var, 0))
     else:
         pending(sec, "k=0 row (no cicle runs with k=0 yet)")
     rows.append(f1_row("Few-shot, Fixed", "fewshot", "fixed", 4))
@@ -288,7 +288,7 @@ def fig1(B):
     for ax, d in zip(axes, CORE):
         ks = ks_for(d)
         series = [("zeroshot", None, [None]), ("fewshot", "fixed", ks), ("cicle", "fixed", ks),
-                  ("fewshot", "pc", ks), ("cicle", "pc", ks)]
+                  ("fewshot", "pc", ks_for(d, "pc")), ("cicle", "pc", ks_for(d, "pc"))]
         for method, var, kk in series:
             xs, ys, lo, hi, kl = [], [], [], [], []
             for k in kk:
@@ -411,7 +411,7 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
 
         # (b) coverage vs mean set size -------------------------------------
         ax = axes[row, 1]
-        for method in ("cicle", "topk", "mass", "marginal"):
+        for method in ("cicle", "topk", "mass", "marginal", "oracle"):
             pts = []
             for imb, size in ((1, 14), (10, 30), (100, 60)):
                 tag = imb_tag(d, imb)
@@ -438,7 +438,7 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
                 for x, y, size, imb in pts:
                     if imb in (1, 100):
                         ax.annotate(f"{imb}$\\times$", (x, y), textcoords="offset points",
-                                    xytext=(0, 6), fontsize=7, color="#52514e", ha="center")
+                                    xytext=(0, -10), fontsize=7, color="#52514e", ha="center")
         ax.axhline(95, color=MUTED, lw=0.7, ls=":", zorder=1)
         ax.set_ylabel("coverage of gold label (%)")
         if row == 0:
@@ -451,7 +451,7 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
         tag = imb_tag(d, 100)
         v = fd.variant(tag)
         drew = False
-        for method in ("cicle", "topk", "mass", "marginal"):
+        for method in ("cicle", "topk", "mass", "marginal", "oracle"):
             by_rank = defaultdict(list)
             for s in SEEDS:
                 rank, counts = rank_map(d, s, 100)
@@ -487,8 +487,9 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
         # (d) per-class F1 by frequency rank at 100x (k=4) -------------------
         ax = axes[row, 3]
         drew = False
-        for method in ("fewshot", "cicle", "topk", "mass", "marginal"):
+        for method in ("fewshot", "cicle", "topk", "mass", "marginal", "oracle"):
             by_rank = defaultdict(list)
+            n_runs = 0
             for s in SEEDS:
                 rank, counts = rank_map(d, s, 100)
                 if rank is None:
@@ -497,11 +498,11 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
                     run = v.get(method, variant, 4, m, seed=s)
                     if run is None:
                         continue
+                    n_runs += 1
                     for lab, f in fd.per_class_f1(v, run).items():
                         by_rank[rank[lab]].append(f)
-            if not by_rank:
-                if method != "marginal":
-                    pending(sec, f"(d) {tag} {method} {variant} k=4")
+            if n_runs < len(SMALL) * len(SEEDS):
+                pending(sec, f"(d) {tag} {method} {variant} k=4 ({n_runs}/{len(SMALL) * len(SEEDS)} runs)")
                 continue
             xs = sorted(by_rank)
             ys = [np.mean(by_rank[x]) for x in xs]
@@ -527,7 +528,7 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
                ("fewshot", "cicle", "topk", "mass", "marginal") if m in drawn]
     if "oracle" in drawn:
         handles.append(Line2D([], [], color=COLOR["oracle"], ls="--", marker="x", lw=0.9,
-                              label="Oracle $-$ few-shot (ceiling, panel a)"))
+                              label="Oracle (in (a): oracle $-$ few-shot, the ceiling)"))
     fig.legend(handles=handles, loc="lower center", ncol=6, bbox_to_anchor=(0.5, -0.05))
     fig.subplots_adjust(wspace=0.55, hspace=0.32, left=0.09, right=0.99, top=0.95, bottom=0.14)
     save_fig(fig, name)
@@ -537,40 +538,57 @@ def fig2(B, variant="pc", name="narrowing_imbalance"):
 # Table 3 -- label renaming (tables/relabel.tex)
 # ---------------------------------------------------------------------------
 def tab3(B):
-    sec = "Table 3 (label renaming)"
-    head = [r"Dataset & Labels & $k$ & FS Fixed & CICLe Fixed & FS PC & CICLe PC \\"]
+    sec = "Table 3 (label renaming, five datasets)"
+    head = [r"Dataset & Labels & $k$ & FS Fixed & CICLe Fixed & FS PC & CICLe PC & "
+            r"$\Delta$ Fixed & $\Delta$ PC \\"]
     rows = []
-    for d in ("yahoo-answers", "go-emotions"):
+    for d in CORE:
+        variants = ("fixed", "pc") if d != "ohsumed" else ("fixed",)
         for tag, label in ((d, "original"), (d + "-relabel", "nonsense words")):
+            if not fd.has_results(tag):
+                pending(sec, f"{tag} (no results directory)")
+                continue
+            # k = 0: candidate set only (CICLe Fixed column; nothing to compare against)
+            v0, n0 = fd.mean_metric(tag, "cicle", "fixed", 0)
+            if v0 is not None:
+                rows.append(f"{NAME[d]} & {label} & 0 & -- & {num(v0)} & -- & -- & & \\\\")
+                note(sec, f"{tag} cicle k=0 (candidate set only): {v0:.2f} (n={n0})")
             for k in (1, 4):
                 cells = []
                 for m, var in (("fewshot", "fixed"), ("cicle", "fixed"), ("fewshot", "pc"),
                                ("cicle", "pc")):
+                    if var not in variants:
+                        cells.append("--")
+                        continue
                     val, n = fd.mean_metric(tag, m, var, k)
                     cells.append(num(val))
                     if val is None:
                         pending(sec, f"{tag} {m} {var} k={k}")
                     else:
                         note(sec, f"{tag} {m} {var} k={k}: {val:.2f} (n={n})")
-                rows.append(f"{NAME[d]} & {label} & {k} & " + " & ".join(cells) + r" \\")
+                # matched-k paired delta in the row of k = 1 (over k in {1,4}, 36 pairs)
+                dcells = []
+                for var in ("fixed", "pc"):
+                    if var not in variants or k != 1:
+                        dcells.append("")
+                        continue
+                    res = fd.paired_delta(tag, "cicle", "fewshot", var, [1, 4], B=B)
+                    dcells.append(r"\multirow{2}{*}{" + delta_tex(res) + "}")
+                    if res is None:
+                        pending(sec, f"Δ {tag} {var}")
+                    else:
+                        note(sec, f"Δ CICLe − few-shot {tag} {var} k∈{{1,4}}: {delta_txt(res)}")
+                rows.append(f"{NAME[d]} & {label} & {k} & " + " & ".join(cells) + " & "
+                            + " & ".join(dcells) + r" \\")
         rows.append(r"\midrule")
-    rows.append(r"\multicolumn{7}{l}{$\Delta$ CICLe $-$ few-shot, $k \in \{1, 4\}$ (36 pairs)} \\")
-    for d in ("yahoo-answers", "go-emotions"):
-        for tag, label in ((d, "original"), (d + "-relabel", "nonsense words")):
-            cells = []
-            for var in ("fixed", "pc"):
-                res = fd.paired_delta(tag, "cicle", "fewshot", var, [1, 4], B=B)
-                cells.append(delta_tex(res))
-                if res is None:
-                    pending(sec, f"Δ {tag} {var}")
-                else:
-                    note(sec, f"Δ CICLe − few-shot {tag} {var} k∈{{1,4}}: {delta_txt(res)}")
-            rows.append(f"{NAME[d]} & {label} & & \\multicolumn{{2}}{{c}}{{{cells[0]}}} & "
-                        f"\\multicolumn{{2}}{{c}}{{{cells[1]}}} \\\\")
-    write_table("relabel", "llrcccc", head, rows,
+    if rows and rows[-1] == r"\midrule":
+        rows.pop()
+    write_table("relabel", "llrcccccc", head, rows,
                 comment="Table 3. Macro-F1 with the original class names and with every name "
                         "replaced by a nonsense word (same mapping for all seeds); mean over 6 "
-                        "models x 3 seeds. Δ rows: paired bootstrap CI, 36 pairs.")
+                        "models x 3 seeds. k = 0: the candidate set alone, no examples. Δ columns: "
+                        "CICLe − few-shot paired over k in {1,4} (36 pairs; needs \\usepackage{multirow}), "
+                        "same k grid for original and renamed labels. Ohsumed: Fixed only.")
 
 
 # ---------------------------------------------------------------------------
@@ -582,8 +600,6 @@ def tab4(B):
     for d in ("yahoo-answers", "sst"):
         for imb in (1, 10, 100):
             cols.append((imb_tag(d, imb), f"{NAME[d]} {imb}$\\times$"))
-        for n in (250, 500, 1000):
-            cols.append((f"{d}-n{n}", f"{NAME[d]} $n$={n}"))
     for d in ("semeval-18", "go-emotions", "ohsumed"):
         cols.append((d, NAME[d]))
     for t, _ in cols:
@@ -592,12 +608,12 @@ def tab4(B):
     cols = [(t, l) for t, l in cols if fd.has_results(t)]
     values = {}  # (row, tag) -> value
 
-    def fill(row, method, var=None, k=None, only_1x=False):
+    def fill(row, method, var=None, k=None, only_1x=False, **kw):
         for t, _ in cols:
             if only_1x and ("imb" in t):
                 values[(row, t)] = None
                 continue
-            val, n = fd.mean_metric(t, method, var, k)
+            val, n = fd.mean_metric(t, method, var, k, **kw)
             if val is None and method in ("fewshot", "cicle") and t == "ohsumed" and var == "pc":
                 val, n = fd.mean_metric(t, method, "fixed", k)  # Ohsumed: Fixed only
                 values[(row, t)] = (val, "F")
@@ -606,12 +622,12 @@ def tab4(B):
             if val is None and not only_1x:
                 pending(sec, f"{t} {method} {var or ''} k={k or ''}")
             if val is not None:
-                note(sec, f"{t} {method} {var or ''} k={k or ''}: {val:.2f} (n={n})")
+                note(sec, f"{t} {method} {var or ''} {kw.get('emb', '')} k={k or ''}: {val:.2f} (n={n})")
 
-    labels = ["MiniLM + LR", "RoBERTa-base, fine-tuned", "Zero-shot", "Few-shot PC, $k$=4",
-              "CICLe PC, $k$=4"]
-    fill(0, "base"); fill(1, "finetuned"); fill(2, "zeroshot", only_1x=True)
-    fill(3, "fewshot", "pc", 4); fill(4, "cicle", "pc", 4)
+    labels = ["MiniLM + LR", "RoBERTa-base, fine-tuned", "RoBERTa-large, fine-tuned", "Zero-shot",
+              "Few-shot PC, $k$=4", "CICLe PC, $k$=4"]
+    fill(0, "base"); fill(1, "finetuned"); fill(2, "finetuned", emb="roberta-large")
+    fill(3, "zeroshot", only_1x=True); fill(4, "fewshot", "pc", 4); fill(5, "cicle", "pc", 4)
     best = {}
     for t, _ in cols:
         cand = []
@@ -656,10 +672,11 @@ def tab4(B):
                         "F = Fixed retrieval (Ohsumed has no Per-Class runs). Bold = best per column.")
     # per-seed RoBERTa / LR values for the appendix version
     for t, _ in cols:
-        for method in ("base", "finetuned"):
-            vals = fd.metric_values(t, method)
+        for method, kw in (("base", {}), ("finetuned", {}), ("finetuned", {"emb": "roberta-large"})):
+            vals = fd.metric_values(t, method, **kw)
             if vals:
-                note(sec, f"{t} {method} per seed: " + ", ".join(f"{s}: {v:.1f}" for (_, s), v in sorted(vals.items())))
+                note(sec, f"{t} {method} {kw.get('emb', '')} per seed: "
+                          + ", ".join(f"{s}: {v:.1f}" for (_, s), v in sorted(vals.items())))
 
 
 # ---------------------------------------------------------------------------
@@ -764,7 +781,7 @@ def tabC1(B):
                 res = fd.paired_delta(tag, "cicle", comp, var, ks, B=B)
                 if res is None:
                     cells.append("--")
-                    if comp in ("fewshot", "topk", "mass") and not (tag == "ohsumed" and var == "pc"):
+                    if not (tag.startswith("ohsumed") and var == "pc"):
                         pending(sec, f"{tag} {var} vs {comp}")
                     continue
                 any_cell = True
@@ -894,7 +911,7 @@ def tabF1(B):
             r" & & & & $k$=1 & $k$=4 & $k$=1 & $k$=4 & & \\"]
     rows = []
     for m in LARGE:
-        for d in SHORT:
+        for d in CORE:
             v = fd.variant(d)
             seeds = sorted({key[7] for key in v.select(models=[m])})
             if not seeds:
@@ -957,7 +974,8 @@ def tabG1(B):
             r" & & & \multicolumn{4}{c}{(\% of pairs)} & share & fixed & broken & share & fixed & broken \\"]
     rows = []
     tags = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed", "yahoo-answers-imb100",
-            "sst-imb100", "yahoo-answers-relabel", "go-emotions-relabel"]
+            "sst-imb100", "yahoo-answers-relabel", "sst-relabel", "semeval-18-relabel",
+            "go-emotions-relabel", "ohsumed-relabel"]
     for tag in tags:
         if not fd.has_results(tag):
             pending(sec, tag)
@@ -983,7 +1001,7 @@ def tabG1(B):
                     agg["fsout"] += (~fs_in).sum(); agg["fsout_fix"] += (~fs_in & ar & ~br).sum()
                     agg["fsout_brk"] += (~fs_in & ~ar & br).sum()
             if not agg["n"]:
-                if not (tag == "ohsumed" and var == "pc"):
+                if not (tag.startswith("ohsumed") and var == "pc"):
                     pending(sec, f"{tag} {var}")
                 continue
             n = agg["n"]
@@ -1139,6 +1157,217 @@ def tabH1(B):
 
 
 # ---------------------------------------------------------------------------
+# Pool size -- table (tables/pool_size.tex) and figure (pool_size.pdf)
+# ---------------------------------------------------------------------------
+def pool_tag(d, n):
+    return d if n == 2000 else f"{d}-n{n}"
+
+
+POOL_SERIES = [("base", {}, "MiniLM + LR"), ("finetuned", {}, "RoBERTa-base"),
+               ("finetuned", {"emb": "roberta-large"}, "RoBERTa-large"),
+               ("fewshot", {"variant_name": "pc", "k": 4}, "Few-shot PC, $k$=4"),
+               ("cicle", {"variant_name": "pc", "k": 4}, "CICLe PC, $k$=4")]
+
+
+def pool_values(sec):
+    """(dataset, n, series label) -> (value, n_runs); best pipeline under 'best'."""
+    out = {}
+    for d in ("yahoo-answers", "sst"):
+        for n in POOL_SIZES:
+            tag = pool_tag(d, n)
+            if not fd.has_results(tag):
+                pending(sec, f"{tag} (no results directory)")
+                continue
+            for method, kw, label in POOL_SERIES:
+                val, nr = fd.mean_metric(tag, method, **kw)
+                if val is None:
+                    pending(sec, f"{tag} {label}")
+                else:
+                    out[(d, n, label)] = (val, nr)
+                    per_seed = ""
+                    if method in ("base", "finetuned"):
+                        vs = fd.metric_values(tag, method, **kw)
+                        per_seed = "; per seed " + ", ".join(f"{s}: {x:.1f}" for (_, s), x in sorted(vs.items()))
+                    note(sec, f"{tag} {label}: {val:.2f} (n={nr}){per_seed}")
+            cand = []
+            for m in ("fewshot", "cicle"):
+                for var in ("fixed", "pc"):
+                    for k in (1, 2, 4, 8):
+                        val, _ = fd.mean_metric(tag, m, var, k)
+                        if val is not None:
+                            cand.append((val, f"{'CICLe' if m == 'cicle' else 'FS'} "
+                                              f"{'F' if var == 'fixed' else 'PC'} $k$={k}"))
+            if cand:
+                out[(d, n, "best")] = max(cand)
+                note(sec, f"{tag} best LLM pipeline: {max(cand)[0]:.2f} ({max(cand)[1]})")
+    return out
+
+
+def tabP(B):
+    sec = "Table P (pool size)"
+    vals = pool_values(sec)
+    labels = [s[2] for s in POOL_SERIES]
+    head = [r"Dataset & labelled pool & " + " & ".join(labels) + r" & best LLM pipeline \\"]
+    rows = []
+    for d in ("yahoo-answers", "sst"):
+        for n in POOL_SIZES:
+            cells = [vals.get((d, n, lab)) for lab in labels]
+            best = vals.get((d, n, "best"))
+            present = [c[0] for c in cells if c] + ([best[0]] if best else [])
+            if not present:
+                continue
+            top = max(present)
+            tex = [(r"\textbf{" + num(c[0]) + "}" if c[0] >= top - 1e-9 else num(c[0])) if c else "--"
+                   for c in cells]
+            if best:
+                b = num(best[0])
+                tex.append((r"\textbf{" + b + "}" if best[0] >= top - 1e-9 else b)
+                           + r" {\scriptsize " + best[1] + "}")
+            else:
+                tex.append("--")
+            rows.append(f"{NAME[d] if n == POOL_SIZES[0] else ''} & {n:,} & " + " & ".join(tex) + r" \\")
+        rows.append(r"\midrule")
+    if rows and rows[-1] == r"\midrule":
+        rows.pop()
+    write_table("pool_size", "lr" + "c" * (len(labels) + 1), head, rows,
+                comment="Table P. Macro-F1 against the size of the labelled pool (train + calibration; "
+                        "the base classifier, retrieval pool and fine-tuned models all see 80% of it). "
+                        "Supervised rows mean over 3 seeds, LLM rows over 6 models x 3 seeds; the test "
+                        "sample is the same at every pool size. Best pipeline: argmax over (method, "
+                        "variant, k) of the 18-run mean (k in {1,4} below 2,000). Bold = best per row.")
+
+
+def figP(B):
+    sec = "Figure P (macro-F1 vs pool size)"
+    vals = pool_values(sec)
+    style = {"MiniLM + LR": dict(color=COLOR["base"], ls=":", marker="v"),
+             "RoBERTa-base": dict(color=COLOR["finetuned"], ls="-.", marker="^"),
+             "RoBERTa-large": dict(color=COLOR["finetuned"], ls="--", marker="D", mfc="white"),
+             "Few-shot PC, $k$=4": dict(color=COLOR["fewshot"], ls="-", marker="o"),
+             "CICLe PC, $k$=4": dict(color=COLOR["cicle"], ls="-", marker="o")}
+    fig, axes = plt.subplots(1, 2, figsize=(COLWIDTH, 1.7))
+    for ax, d in zip(axes, ("yahoo-answers", "sst")):
+        for lab, st in style.items():
+            pts = [(n, vals[(d, n, lab)][0]) for n in POOL_SIZES if (d, n, lab) in vals]
+            if pts:
+                ax.plot([p[0] for p in pts], [p[1] for p in pts], label=lab, markersize=3.5, lw=1.0,
+                        **st)
+        zs, _ = fd.mean_metric(d, "zeroshot")
+        if zs is not None:
+            ax.axhline(zs, color=COLOR["zeroshot"], lw=0.6, ls=(0, (1, 2)))
+            ax.annotate("zero-shot", xy=(0.02, zs), xycoords=("axes fraction", "data"), fontsize=7,
+                        color="#52514e", va="bottom", xytext=(0, 1), textcoords="offset points")
+        ax.set_xscale("log"); ax.set_xticks(POOL_SIZES)
+        ax.set_xticklabels([str(n) for n in POOL_SIZES], fontsize=7)
+        ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+        ax.set_title(NAME[d], fontsize=8, pad=3)
+        ax.set_xlabel("labelled pool size")
+    axes[0].set_ylabel("macro-F1 (pp)")
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=3, bbox_to_anchor=(0.5, -0.33),
+               handletextpad=0.5, columnspacing=0.8)
+    fig.subplots_adjust(wspace=0.35)
+    save_fig(fig, "pool_size")
+
+
+# ---------------------------------------------------------------------------
+# Legacy protocol -- tables/legacy.tex
+# ---------------------------------------------------------------------------
+def tabL(B):
+    sec = "Table L (legacy vs corrected protocol, seed 42, Fixed, k in {1,4})"
+    head = [r"Dataset & Model & \multicolumn{2}{c}{invalid outputs (\%): ZS / FS / CICLe} & "
+            r"\multicolumn{2}{c}{macro-F1: ZS / FS / CICLe} & \multicolumn{2}{c}{$\Delta$ CICLe $-$ few-shot} \\",
+            r" & & legacy & corrected & legacy & corrected & legacy & corrected \\"]
+    rows = []
+    for d in CORE:
+        leg, cor = "legacy:" + d, d
+        if not fd.has_results(leg):
+            pending(sec, f"{d}: no results_legacy directory")
+            continue
+        for m in SMALL:
+            cells = []
+            for tag in (leg, cor):
+                parts_inv, parts_f1 = [], []
+                for method, k_list in (("zeroshot", [None]), ("fewshot", [1, 4]), ("cicle", [1, 4])):
+                    invs, f1s = [], []
+                    for k in k_list:
+                        inv, n = fd.mean_metric(tag, method, "fixed" if k else None, k, models=[m],
+                                                seeds=[42], metric="invalid_rate")
+                        f, _ = fd.mean_metric(tag, method, "fixed" if k else None, k, models=[m],
+                                              seeds=[42])
+                        if inv is not None:
+                            invs.append(inv); f1s.append(f)
+                    if len(invs) < len(k_list):
+                        pending(sec, f"{tag} {m} {method}")
+                        parts_inv.append("--"); parts_f1.append("--")
+                    else:
+                        parts_inv.append(f"{np.mean(invs):.1f}"); parts_f1.append(f"{np.mean(f1s):.1f}")
+                        note(sec, f"{tag} {MODEL_NAME[m]} {method} (mean over k): invalid "
+                                  f"{np.mean(invs):.1f}%, macro-F1 {np.mean(f1s):.2f}")
+                cells.append((" / ".join(parts_inv), " / ".join(parts_f1)))
+            deltas = []
+            for tag in (leg, cor):
+                res = fd.paired_delta(tag, "cicle", "fewshot", "fixed", [1, 4], models=[m], seeds=[42], B=B)
+                deltas.append(delta_tex(res))
+                if res is None:
+                    pending(sec, f"Δ {tag} {m}")
+                else:
+                    note(sec, f"Δ CICLe − few-shot {tag} {MODEL_NAME[m]} (2 cells): {delta_txt(res)}")
+            rows.append(f"{NAME[d] if m == SMALL[0] else ''} & {MODEL_NAME[m]} & {cells[0][0]} & "
+                        f"{cells[1][0]} & {cells[0][1]} & {cells[1][1]} & {deltas[0]} & {deltas[1]} \\\\")
+        rows.append(r"\midrule")
+    if rows and rows[-1] == r"\midrule":
+        rows.pop()
+    write_table("legacy", "llcccccc", head, rows,
+                comment="Table L. Original (DS2026) protocol vs the corrected one on the same seed-42 "
+                        "test sample: zero-shot, few-shot Fixed and CICLe Fixed at k in {1,4} (FS / CICLe "
+                        "cells are means over k). Legacy = no label list in the few-shot/CICLe prompts, "
+                        "different wording, 5-token generation cap, exact matching. Δ = CICLe − few-shot "
+                        "paired over the 1,000 instances and k in {1,4} (2 cells), 95% bootstrap CI.")
+
+
+# ---------------------------------------------------------------------------
+# Prompt robustness and random retrieval -- tables/robustness.tex
+# ---------------------------------------------------------------------------
+def tabR(B):
+    sec = "Table R (alternative prompt / random retrieval; seed 42, 6 models, k in {1,4})"
+    head = [r"Dataset & Condition & FS Fixed & CICLe Fixed & $\Delta$ Fixed & FS PC & CICLe PC & $\Delta$ PC \\"]
+    rows = []
+    conds = [("", "default prompt"), ("-altprompt", "alternative prompt"), ("-random", "random retrieval")]
+    for d in CORE:
+        variants = ("fixed", "pc") if d != "ohsumed" else ("fixed",)
+        for suffix, label in conds:
+            tag = d + suffix
+            if not fd.has_results(tag):
+                pending(sec, f"{tag} (no results directory)")
+                rows.append(f"{NAME[d] if suffix == '' else ''} & {label} & "
+                            + " & ".join(["[pending]"] * 6) + r" \\")
+                continue
+            cells = []
+            for var in ("fixed", "pc"):
+                if var not in variants:
+                    cells += ["--", "--", "--"]
+                    continue
+                res = fd.paired_delta(tag, "cicle", "fewshot", var, [1, 4], seeds=[42], B=B)
+                if res is None:
+                    pending(sec, f"{tag} {var}")
+                    cells += ["[pending]"] * 3
+                    continue
+                cells += [num(res["mean_b"]), num(res["mean_a"]), delta_tex(res)]
+                note(sec, f"{tag} {var}: few-shot {res['mean_b']:.2f}, CICLe {res['mean_a']:.2f}, "
+                          f"Δ {delta_txt(res)}")
+            rows.append(f"{NAME[d] if suffix == '' else ''} & {label} & " + " & ".join(cells) + r" \\")
+        rows.append(r"\midrule")
+    if rows and rows[-1] == r"\midrule":
+        rows.pop()
+    write_table("robustness", "llcccccc", head, rows,
+                comment="Table R. CICLe vs few-shot under the default prompt, an alternative prompt "
+                        "wording and random (instead of similarity-based) example retrieval; seed 42, "
+                        "six small models, k in {1,4}: means over the 12 runs and the paired Δ over "
+                        "the 1,000 instances x 12 cells, 95% bootstrap CI. Ohsumed: Fixed only.")
+
+
+# ---------------------------------------------------------------------------
 # NUMBERS.md
 # ---------------------------------------------------------------------------
 def write_numbers(B, built):
@@ -1198,6 +1427,10 @@ STEPS = {
     "tabG2": ("Table G2: invalid outputs -> tables/invalid.tex, invalid_raw.tex", tabG2),
     "tabG3": ("Table G3: qualitative examples -> tables/examples.tex", tabG3),
     "tabH1": ("Table H1: imbalance class counts, relabel words -> tables/imbalance_counts.tex, relabel_words.tex", tabH1),
+    "tabP": ("Table P: pool size -> tables/pool_size.tex", tabP),
+    "figP": ("Figure P: macro-F1 vs pool size -> pool_size.pdf", figP),
+    "tabL": ("Table L: legacy vs corrected protocol -> tables/legacy.tex", tabL),
+    "tabR": ("Table R: alternative prompt / random retrieval -> tables/robustness.tex", tabR),
 }
 
 

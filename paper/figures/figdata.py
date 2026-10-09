@@ -66,8 +66,9 @@ def run_key(method, variant=None, k=None, model=None, emb="minilm", clf="lr", al
         return (method, variant, k, model, emb, None, None, seed)
     if method == "base":
         return (method, None, None, "none", emb, clf, None, seed)
-    if method == "finetuned":
-        return (method, None, None, "none", "roberta-base", None, None, seed)
+    if method == "finetuned":  # emb names the fine-tuned encoder (roberta-base / roberta-large)
+        enc = emb if str(emb).startswith("roberta") else "roberta-base"
+        return (method, None, None, "none", enc, None, None, seed)
     return (method, variant, k, model, emb, clf, alpha, seed)
 
 
@@ -111,11 +112,26 @@ def _reduce(d, vocab):
     return run
 
 
+LEGACY_PREFIX = "legacy:"  # variant("legacy:<dataset>") reads results_legacy/<dataset>/
+
+
+def _root_and_dir(tag):
+    """(results root, directory name, cache stem) of a variant tag."""
+    if tag.startswith(LEGACY_PREFIX):
+        d = tag[len(LEGACY_PREFIX):]
+        return os.path.join(ROOT, "results_legacy"), d, "legacy_" + d
+    return RESULTS, tag, tag
+
+
 class Variant:
-    """All runs of one dataset variant (a directory under results/)."""
+    """All runs of one dataset variant (a directory under results/, or under
+    results_legacy/ for a "legacy:<dataset>" tag, where the original-prompt
+    files that analyze.load skips are kept)."""
 
     def __init__(self, tag):
         self.tag = tag
+        self.root, self.dirname, self.stem = _root_and_dir(tag)
+        self.legacy = tag.startswith(LEGACY_PREFIX)
         self.runs = {}        # run_key -> run dict
         self.vocab = {}       # label -> code
         self.manifest = {}    # file path -> (mtime, size)
@@ -128,13 +144,13 @@ class Variant:
 
     def load(self):
         os.makedirs(CACHE, exist_ok=True)
-        cache_path = os.path.join(CACHE, f"{self.tag}.pkl")
+        cache_path = os.path.join(CACHE, f"{self.stem}.pkl")
         if os.path.exists(cache_path):
             with open(cache_path, "rb") as f:
                 state = pickle.load(f)
             self.runs, self.vocab, self.manifest = state["runs"], state["vocab"], state["manifest"]
         files = {p: (os.path.getmtime(p), os.path.getsize(p))
-                 for p in glob.glob(os.path.join(RESULTS, self.tag, "seed-*", "*.json"))}
+                 for p in glob.glob(os.path.join(self.root, self.dirname, "seed-*", "*.json"))}
         stale = [p for p in self.manifest if p not in files]
         fresh = [p for p, sig in files.items() if self.manifest.get(p) != sig]
         if not stale and not fresh:
@@ -148,8 +164,8 @@ class Variant:
             with open(p) as f:
                 d = json.load(f)
             c = d["config"]
-            if c.get("legacy_prompt") or c["n_test"] != len(d["records"]):
-                continue  # same filters as analyze.load
+            if bool(c.get("legacy_prompt")) != self.legacy or c["n_test"] != len(d["records"]):
+                continue  # same filters as analyze.load (inverted for the legacy directory)
             run = _reduce(d, self.vocab)
             run["_path"] = p
             key = (c["method"], c.get("variant"), c.get("k"), c["model"], c.get("emb"),
@@ -211,7 +227,8 @@ def variant(tag):
 
 
 def has_results(tag):
-    return bool(glob.glob(os.path.join(RESULTS, tag, "seed-*", "*.json")))
+    root, d, _ = _root_and_dir(tag)
+    return bool(glob.glob(os.path.join(root, d, "seed-*", "*.json")))
 
 
 # ---------------------------------------------------------------------------

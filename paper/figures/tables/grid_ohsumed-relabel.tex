@@ -1,0 +1,21 @@
+% Table B: ohsumed-relabel, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
+\begin{tabular}{llrrrrrrr}
+\toprule
+Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+\midrule
+Few-shot & Fixed & 1 & 18 & 27.1 & 32.0 & 2.4 & 1.0 & 829 \\
+Few-shot & Fixed & 4 & 18 & 40.2 & 47.0 & 1.5 & 4.0 & 1,749 \\
+CICLe & Fixed & 0 & 18 & 4.5 & 7.5 & 2.6 & 0.0 & 476 \\
+CICLe & Fixed & 1 & 18 & 27.8 & 32.9 & 0.9 & 1.0 & 792 \\
+CICLe & Fixed & 4 & 18 & 41.5 & 49.4 & 0.9 & 4.0 & 1,712 \\
+\midrule
+Top-$m$ & Fixed & 1 & 18 & 28.2 & 33.3 & 1.5 & 1.0 & 789 \\
+Top-$m$ & Fixed & 4 & 18 & 41.1 & 47.6 & 0.8 & 4.0 & 1,709 \\
+Prob. mass & Fixed & 1 & 18 & 27.3 & 32.9 & 1.9 & 1.0 & 795 \\
+Prob. mass & Fixed & 4 & 18 & 39.9 & 46.6 & 1.1 & 4.0 & 1,714 \\
+Marginal CP & Fixed & 1 & 18 & 33.9 & 40.5 & 0.4 & 1.0 & 762 \\
+Marginal CP & Fixed & 4 & 18 & 42.1 & 48.3 & 0.4 & 4.0 & 1,676 \\
+Oracle & Fixed & 1 & 18 & 30.3 & 36.2 & 1.0 & 1.0 & 791 \\
+Oracle & Fixed & 4 & 18 & 47.4 & 54.7 & 0.7 & 4.0 & 1,709 \\
+\bottomrule
+\end{tabular}

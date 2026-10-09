@@ -1,0 +1,33 @@
+% Table B: sst-relabel, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
+\begin{tabular}{llrrrrrrr}
+\toprule
+Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+\midrule
+Few-shot & Fixed & 1 & 18 & 24.3 & 26.5 & 0.6 & 1.0 & 223 \\
+Few-shot & Fixed & 4 & 18 & 32.1 & 33.4 & 0.3 & 4.0 & 307 \\
+Few-shot & Per-Class & 1 & 18 & 33.3 & 34.8 & 0.1 & 5.0 & 337 \\
+Few-shot & Per-Class & 4 & 18 & 36.8 & 38.3 & 0.0 & 20.0 & 771 \\
+CICLe & Fixed & 0 & 15 & 21.9 & 24.3 & 3.1 & 0.0 & 201 \\
+CICLe & Fixed & 1 & 18 & 28.4 & 29.4 & 0.3 & 1.0 & 219 \\
+CICLe & Fixed & 4 & 18 & 35.5 & 36.4 & 0.2 & 4.0 & 303 \\
+CICLe & Per-Class & 1 & 18 & 35.4 & 36.4 & 0.1 & 3.9 & 300 \\
+CICLe & Per-Class & 4 & 18 & 38.8 & 39.8 & 0.0 & 15.5 & 635 \\
+\midrule
+Top-$m$ & Fixed & 1 & 18 & 25.4 & 27.2 & 0.1 & 1.0 & 219 \\
+Top-$m$ & Fixed & 4 & 18 & 34.6 & 35.6 & 0.1 & 4.0 & 304 \\
+Top-$m$ & Per-Class & 1 & 18 & 35.4 & 36.4 & 0.1 & 4.0 & 305 \\
+Top-$m$ & Per-Class & 4 & 18 & 39.2 & 40.3 & 0.0 & 16.0 & 651 \\
+Prob. mass & Fixed & 1 & 18 & 25.2 & 27.0 & 0.5 & 1.0 & 221 \\
+Prob. mass & Fixed & 4 & 18 & 33.5 & 34.5 & 0.2 & 4.0 & 305 \\
+Prob. mass & Per-Class & 1 & 18 & 34.4 & 35.5 & 0.1 & 4.5 & 321 \\
+Prob. mass & Per-Class & 4 & 18 & 37.9 & 39.1 & 0.0 & 18.0 & 712 \\
+Marginal CP & Fixed & 1 & 3 & 32.8 & 35.5 & 0.0 & 1.0 & 138 \\
+Marginal CP & Fixed & 4 & 3 & 37.6 & 40.3 & 0.0 & 4.0 & 221 \\
+Marginal CP & Per-Class & 1 & 3 & 35.4 & 38.7 & 0.0 & 3.7 & 213 \\
+Marginal CP & Per-Class & 4 & 3 & 41.8 & 44.0 & 0.0 & 14.7 & 522 \\
+Oracle & Fixed & 1 & 3 & 37.2 & 39.6 & 0.0 & 1.0 & 140 \\
+Oracle & Fixed & 4 & 3 & 44.2 & 46.7 & 0.0 & 4.0 & 222 \\
+Oracle & Per-Class & 1 & 3 & 42.8 & 45.5 & 0.0 & 4.0 & 223 \\
+Oracle & Per-Class & 4 & 3 & 47.2 & 49.3 & 0.0 & 16.0 & 561 \\
+\bottomrule
+\end{tabular}
