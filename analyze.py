@@ -29,8 +29,8 @@ import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 METHOD_ORDER = ["base", "finetuned", "zeroshot", "fewshot", "cicle", "topk", "mass",
-                "marginal", "oracle"]
-NARROWING = ["cicle", "topk", "mass", "marginal", "oracle"]
+                "marginal", "oracle", "massmatch", "margmatch"]
+NARROWING = ["cicle", "topk", "mass", "marginal", "oracle", "massmatch", "margmatch"]
 CORE_MODELS = ["llama-3.2-3b", "ministral-3b", "qwen-2.5-3b",
                "mistral-7b-v0.3", "qwen-2.5-7b", "llama-3.1-8b"]
 
@@ -189,7 +189,7 @@ def main():
         print(f"\n===== {dataset}: {len(runs)} runs, {len(models)} models, seeds {seeds}")
         summary_table(runs)
         narrowing_table(runs)
-        for other in ("fewshot", "topk", "mass", "marginal", "oracle"):
+        for other in ("fewshot", "topk", "mass", "marginal", "oracle", "massmatch", "margmatch"):
             for variant in ("fixed", "pc"):
                 res = paired_test(runs, other, variant, args.bootstrap, rng)
                 if res:

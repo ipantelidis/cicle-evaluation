@@ -35,7 +35,7 @@ SMALL = ["llama-3.2-3b", "ministral-3b", "qwen-2.5-3b", "mistral-7b-v0.3", "qwen
          "llama-3.1-8b"]
 LARGE = ["mistral-nemo-2407", "qwen-2.5-32b"]
 SEEDS = [42, 43, 44]
-NARROWING = ["cicle", "topk", "mass", "marginal", "oracle"]
+NARROWING = ["cicle", "topk", "mass", "marginal", "oracle", "massmatch", "margmatch"]
 INVALID_MAX_RAW = 2000  # raw outputs kept per run for the invalid-output table
 
 _PENDING = []  # (step, message) collected while building

@@ -71,7 +71,11 @@ EMBEDDINGS = ["tfidf", "minilm", "contriever"]
 #          calibration, isolating the effect of calibrating per class
 #   oracle the true label plus random other classes, at the mean conformal set
 #          size: the ceiling for what narrowing at that budget could achieve
-NARROWING = ["cicle", "topk", "mass", "marginal", "oracle"]
+#   massmatch / margmatch  probability-mass and marginal conformal sets whose
+#          threshold is set so that their mean size on the test inputs equals
+#          the mean CICLe set size (labels are not used), isolating the rule
+#          from the number of candidates it offers
+NARROWING = ["cicle", "topk", "mass", "marginal", "oracle", "massmatch", "margmatch"]
 CLASSIFIERS = ["lr", "svm"]
 
 
@@ -363,6 +367,20 @@ class Data:
             return conformal, point
         if method == "marginal":
             return self.prediction_sets(emb, clf, alpha, class_cond=False)
+        target = np.mean([len(s) for s in conformal])
+        if method == "margmatch":
+            wrapped = self.base_classifier(emb, clf, class_cond=False)
+            E_test = self.embeddings(emb)[2]
+            size_at = lambda a: wrapped.predict_set(E_test, confidence=1 - a, seed=self.seed).astype(bool)
+            lo, hi = 1e-4, 0.9999           # mean size decreases as alpha grows
+            for _ in range(40):
+                mid = (lo + hi) / 2
+                if size_at(mid).sum(1).mean() > target:
+                    lo = mid
+                else:
+                    hi = mid
+            a = lo if abs(size_at(lo).sum(1).mean() - target) <= abs(size_at(hi).sum(1).mean() - target) else hi
+            return [self.classes[s] for s in size_at(a)], point
         if method == "oracle":
             rng = np.random.default_rng(self.seed)
             m = max(1, int(round(np.mean([len(s) for s in conformal]))))
@@ -377,9 +395,21 @@ class Data:
         if method == "topk":
             m = max(1, int(round(np.mean([len(s) for s in conformal]))))
             sizes = np.full(len(proba), m)
-        else:  # mass
+        else:  # mass, massmatch
             cumulative = np.cumsum(np.take_along_axis(proba, ranked, axis=1), axis=1)
-            sizes = np.minimum((cumulative < 1 - alpha).sum(axis=1) + 1, proba.shape[1])
+            size_at = lambda tau: np.minimum((cumulative < tau).sum(axis=1) + 1, proba.shape[1])
+            if method == "mass":
+                sizes = size_at(1 - alpha)
+            else:
+                lo, hi = 0.0, 1.0               # mean size grows with the mass threshold
+                for _ in range(50):
+                    mid = (lo + hi) / 2
+                    if size_at(mid).mean() < target:
+                        lo = mid
+                    else:
+                        hi = mid
+                tau = lo if abs(size_at(lo).mean() - target) <= abs(size_at(hi).mean() - target) else hi
+                sizes = size_at(tau)
         # keep the label order used for conformal sets (alphabetical)
         return [self.classes[np.sort(r[:n])] for r, n in zip(ranked, sizes)], point
 
