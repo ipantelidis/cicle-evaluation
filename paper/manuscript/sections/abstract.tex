@@ -1,10 +1,9 @@
-% Abstract: at most 150 words (wc -w on the text without comments). Numbers follow paper/figures/NUMBERS.md.
+% Abstract: at most 150 words (wc -w on the text without comments). Only completed experiments support sentences here.
 \begin{abstract}
-In-context classification with small large language models (LLMs) is hard when there are many classes and the labelled data are skewed.
-A small classifier can narrow the label set before prompting, which raises the question of how it should narrow.
-We compare narrowing rules built from the same classifier on six English datasets with eight open LLMs, pairing every comparison instance by instance.
-When the labelled pool is long-tailed, class-conditional conformal sets, as used by Conformal In-Context Learning (CICLe), keep about 90\% coverage or more on every class, while top-$k$, probability-mass and marginal conformal sets lose the rarest classes and 4 to 13 macro-F1 points.
-Narrowing also gives a small, reliable gain over few-shot prompting, 0.5 to 1.8 points with 11 to 45\% shorter prompts, largest when label names carry no meaning. % PENDING: MASSIVE changes both ranges
-With plentiful balanced labels a fine-tuned encoder is the better choice.
-Comparisons across prompting methods must also hold the label information constant, since prompts that show only a few labels leave up to 65\% of outputs unparseable. % PENDING: label-list ablation (only the list removed, same parser and token budget; every dataset, seed 42, Fixed and Per-Class, k in {1,4}) will replace the original-format comparison as the main evidence and separate the list from the parser and the 5-token cap; MASSIVE
+A small classifier can narrow the label space before a large language model (LLM) classifies, but a label left out of the candidate set cannot be predicted.
+We ask how much the narrowing rule matters for the final prediction once prompt content, retrieval and mean set size are held fixed, and under which data conditions.
+On five English datasets with six open LLMs, we compare the class-conditional conformal sets of Conformal In-Context Learning (CICLe) with size-matched top-$k$ sets, under controlled and natural class imbalance. % PENDING: six datasets once MASSIVE is complete
+On balanced data the rules are interchangeable.
+Under a 100-fold skew of the labelled pool, top-$k$ sets cover the rarest class for at most 36\% of its instances and lose 3 to 7 macro-F1 points, and the LLM almost never recovers a label missing from the set.
+These losses exceed the gain of narrowing over few-shot prompting, 0.5 to 1.8 points on short texts, which grows when label names carry no meaning.
 \end{abstract}

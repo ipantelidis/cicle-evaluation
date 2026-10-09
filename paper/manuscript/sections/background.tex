@@ -9,9 +9,10 @@ If the new input is exchangeable with the calibration split, the true label is i
 A weak classifier does not lower the coverage, it makes the sets larger.
 
 \paragraph{Class-conditional calibration.}
-The guarantee above is marginal.
+The guarantee above is marginal over classes.
 On a long-tailed dataset the set can cover 95\% of inputs overall while missing most inputs of a rare class, because the rare class contributes few calibration examples to the shared threshold.
-Class-conditional conformal prediction computes one threshold per class from the calibration examples of that class only \citep{vovk2012conditional}, so coverage holds within each class.
+Class-conditional conformal prediction computes one threshold per class from the $n_c$ calibration examples of class $c$ only, which guarantees $P(y \in \mathcal{C}(x) \mid y = c) \geq 1-\alpha$ for every class, in expectation over the draw of the calibration split \citep{vovk2012conditional}.
+The coverage realised on a finite test sample fluctuates around this level, more so when $n_c$ is small, and with fewer than $1/\alpha - 1$ calibration examples (19 at $\alpha = 0.05$) the class is kept in almost every set.
 Top-$k$ selection and probability thresholds give no such guarantee, the first because it ignores the classifier's confidence, the second because it trusts a confidence that is rarely calibrated.
 
 \paragraph{The CICLe pipeline.}

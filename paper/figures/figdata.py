@@ -298,42 +298,106 @@ def boot_f1(v, run, B):
     return out
 
 
-def paired_delta(tag, method_a, method_b, variant_name, ks, models=SMALL, seeds=SEEDS, B=5000,
-                 alpha=0.05, emb="minilm", clf="lr", variants=None, allow_partial=False):
-    """`method_a` minus `method_b` macro-F1 (pp), paired on (model, seed, k[, variant]).
-
-    Returns dict(mean, lo, hi, p, n, cells) or None when no pair exists.
-    `variants` (list) pools several retrieval variants into one test; otherwise
-    `variant_name` is used. few-shot partners never carry clf / alpha. Unless
-    `allow_partial`, a grid with missing cells is treated as pending (None), so
-    a half-finished experiment never enters a paper number."""
+def paired_runs(tag, pairs, B=5000):
+    """Paired bootstrap on explicit run pairs [(run_a, run_b), ...]: mean over
+    pairs of F1(a) - F1(b), one resample of the test instances per seed shared
+    by every pair of that seed. Returns dict(mean, lo, hi, p, n, ...)."""
     v = variant(tag)
-    variants = variants or [variant_name]
-    a_vecs, b_vecs, a_obs, b_obs, cells = [], [], [], [], []
-    for var in variants:
-        for m in models:
-            for k in ks:
-                for s in seeds:
-                    a = v.get(method_a, var, k, m, seed=s, emb=emb, clf=clf, alpha=alpha)
-                    b = v.get(method_b, var, k, m, seed=s, emb=emb, clf=clf, alpha=alpha)
-                    if a is None or b is None:
-                        continue
-                    a_vecs.append(boot_f1(v, a, B)); b_vecs.append(boot_f1(v, b, B))
-                    a_obs.append(f1(v, a)); b_obs.append(f1(v, b))
-                    cells.append((var, m, k, s))
-    if not cells:
-        return None
-    expected = len(variants) * len(models) * len(ks) * len(seeds)
-    if len(cells) < expected and not allow_partial:
-        pending("paired_delta", f"{tag} {method_a} - {method_b} {variants} k={ks}: "
-                                f"{len(cells)}/{expected} cells present, slot left empty")
-        return None
+    a_vecs = [boot_f1(v, a, B) for a, _ in pairs]
+    b_vecs = [boot_f1(v, b, B) for _, b in pairs]
+    a_obs = [f1(v, a) for a, _ in pairs]
+    b_obs = [f1(v, b) for _, b in pairs]
     boots = np.mean(a_vecs, axis=0) - np.mean(b_vecs, axis=0)
     lo, hi = np.percentile(boots, [2.5, 97.5])
     p = min(1.0, 2 * min(np.mean(boots <= 0), np.mean(boots >= 0)))
     return {"mean": float(np.mean(a_obs) - np.mean(b_obs)), "lo": float(lo), "hi": float(hi),
-            "p": float(p), "n": len(cells), "cells": cells,
-            "mean_a": float(np.mean(a_obs)), "mean_b": float(np.mean(b_obs))}
+            "p": float(p), "n": len(pairs), "mean_a": float(np.mean(a_obs)),
+            "mean_b": float(np.mean(b_obs))}
+
+
+def collect_pairs(tag, method_a, method_b, cells, alpha=0.05, emb="minilm", clf="lr",
+                  allow_partial=False, label=""):
+    """Run pairs for cells [(variant, model, k, seed)]; None (pending) if any is missing."""
+    v = variant(tag)
+    pairs, used = [], []
+    for var, m, k, s in cells:
+        a = v.get(method_a, var, k, m, seed=s, emb=emb, clf=clf, alpha=alpha)
+        b = v.get(method_b, var, k, m, seed=s, emb=emb, clf=clf, alpha=alpha)
+        if a is not None and b is not None:
+            pairs.append((a, b)); used.append((var, m, k, s))
+    if not pairs:
+        return None, []
+    if len(pairs) < len(cells) and not allow_partial:
+        pending("paired_delta", f"{tag} {method_a} - {method_b} {label}: {len(pairs)}/{len(cells)} "
+                                "cells present, slot left empty")
+        return None, []
+    return pairs, used
+
+
+def grid_cells(variants, models, ks, seeds):
+    return [(var, m, k, s) for var in variants for m in models for k in ks for s in seeds]
+
+
+def paired_delta(tag, method_a, method_b, variant_name, ks, models=SMALL, seeds=SEEDS, B=5000,
+                 alpha=0.05, emb="minilm", clf="lr", variants=None, allow_partial=False, cells=None):
+    """`method_a` minus `method_b` macro-F1 (pp), paired on (model, seed, k[, variant]).
+
+    Returns dict(mean, lo, hi, p, n, cells) or None when no pair exists.
+    `variants` (list) pools several retrieval variants into one test; otherwise
+    `variant_name` is used; `cells` overrides the grid with an explicit list of
+    (variant, model, k, seed). few-shot partners never carry clf / alpha. Unless
+    `allow_partial`, a grid with missing cells is treated as pending (None), so
+    a half-finished experiment never enters a paper number."""
+    variants = variants or [variant_name]
+    cells = cells or grid_cells(variants, models, ks, seeds)
+    pairs, used = collect_pairs(tag, method_a, method_b, cells, alpha, emb, clf, allow_partial,
+                                label=f"{variants} k={ks}")
+    if pairs is None:
+        return None
+    res = paired_runs(tag, pairs, B)
+    res["cells"] = used
+    return res
+
+
+def hierarchical_delta(tag, method_a, method_b, cells, B=5000, alpha=0.05, seed=7):
+    """Hierarchical bootstrap of the mean F1 difference: resample models and
+    seeds with replacement, and test instances within each drawn seed (an
+    independent instance resample for every seed position). `cells` is a full
+    grid (variant, model, k, seed). Returns dict(mean, lo, hi, sign_pos,
+    sign_n) or None; sign = (model, seed) cells whose mean difference is > 0."""
+    pairs, used = collect_pairs(tag, method_a, method_b, cells, alpha, label="hierarchical")
+    if pairs is None:
+        return None
+    v = variant(tag)
+    models = sorted({c[1] for c in used})
+    seeds = sorted({c[3] for c in used})
+    sub = sorted({(c[0], c[2]) for c in used})
+    if len(used) != len(models) * len(seeds) * len(sub):
+        pending("hierarchical", f"{tag} {method_a} - {method_b}: grid not rectangular")
+        return None
+    R = B * len(seeds)
+    idx = {(c[1], c[3], (c[0], c[2])): pr for c, pr in zip(used, pairs)}
+    D = np.zeros((len(models), len(seeds), len(sub), R))
+    obs = np.zeros((len(models), len(seeds), len(sub)))
+    for i, m in enumerate(models):
+        for j, s in enumerate(seeds):
+            for c, vk in enumerate(sub):
+                a, b = idx[(m, s, vk)]
+                D[i, j, c] = boot_f1(v, a, R) - boot_f1(v, b, R)
+                obs[i, j, c] = f1(v, a) - f1(v, b)
+    rng = np.random.default_rng(seed)
+    nm, ns, nc = len(models), len(seeds), len(sub)
+    M = rng.integers(0, nm, (B, nm))
+    S = rng.integers(0, ns, (B, ns))
+    row = np.arange(B)[:, None] + np.arange(ns)[None, :] * B          # independent rows per position
+    vals = D[M[:, :, None, None], S[:, None, :, None], np.arange(nc)[None, None, None, :],
+             row[:, None, :, None]]
+    boots = vals.mean(axis=(1, 2, 3))
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    per_cell = obs.mean(axis=2)
+    return {"mean": float(obs.mean()), "lo": float(lo), "hi": float(hi),
+            "sign_pos": int((per_cell > 0).sum()), "sign_n": int(per_cell.size),
+            "n_models": nm, "n_seeds": ns}
 
 
 def mean_ci(tag, method, variant_name=None, k=None, models=SMALL, seeds=SEEDS, B=5000,
@@ -487,3 +551,81 @@ def test_texts(dataset, seed):
         meta[key] = [str(x) for x in d.X_test]
         _save_meta()
     return meta[key]
+
+
+# ---------------------------------------------------------------------------
+# Candidate sets recomputed on CPU with experiment.Data (no LLM). The sets of
+# every narrowing rule are a deterministic function of (dataset, imbalance,
+# seed, emb, clf, alpha), so coverage statistics for a rule are available
+# before its LLM runs land; they are checked against the run records wherever
+# both exist (check_cpu_sets).
+# ---------------------------------------------------------------------------
+SET_METHODS = ["cicle", "topk", "mass", "marginal", "massmatch", "margmatch"]
+
+
+def base_tag(tag):
+    """(dataset, imbalance) of a results tag; renamed / prompt / retrieval
+    variants share the candidate sets of their base dataset."""
+    m = __import__("re").match(r"(.+?)(?:-imb(\d+))?(?:-relabel)?(?:-n\d+)?(?:-\w+prompt)?(?:-random)?$", tag)
+    return m.group(1), float(m.group(2) or 1)
+
+
+def cpu_sets(dataset, imbalance, seed, emb="minilm", clf="lr", alpha=0.05):
+    """dict(classes, gold (codes), sets {method: bool matrix n x C}, cal_counts,
+    train_counts) for one subsample; cached in cache/figures/sets/."""
+    d = os.path.join(CACHE, "sets")
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, f"{dataset}-imb{imbalance:g}-seed{seed}-{emb}-{clf}-{alpha:g}.pkl")
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    try:
+        data = _data(dataset, seed, imbalance=imbalance)
+    except Exception as e:
+        pending("cpu_sets", f"{dataset} imb {imbalance:g} seed {seed}: {str(e)[:80]}")
+        return None
+    classes = [str(c) for c in data.classes]
+    code = {c: i for i, c in enumerate(classes)}
+    out = {"classes": classes, "gold": np.array([code[str(y)] for y in data.y_test]),
+           "cal_counts": dict(Counter(str(y) for y in data.y_dev)),
+           "train_counts": dict(Counter(str(y) for y in data.y_train)), "sets": {}}
+    for m in SET_METHODS:
+        sets, _ = data.candidate_sets(m, emb, clf, alpha)
+        mat = np.zeros((len(sets), len(classes)), dtype=bool)
+        for i, s in enumerate(sets):
+            for lab in s:
+                mat[i, code[str(lab)]] = True
+        out["sets"][m] = mat
+    tmp = path + f".{os.getpid()}.tmp"
+    with open(tmp, "wb") as f:
+        pickle.dump(out, f)
+    os.replace(tmp, path)
+    return out
+
+
+def set_stats(S, method):
+    """Coverage statistics of one rule on one subsample: mean size, overall
+    coverage, per-class coverage (dict), worst-class and class-averaged coverage (%)."""
+    mat, gold = S["sets"][method], S["gold"]
+    gis = mat[np.arange(len(gold)), gold]
+    per = {S["classes"][c]: 100 * gis[gold == c].mean() for c in np.unique(gold)}
+    return {"size": float(mat.sum(1).mean()), "cov": 100 * float(gis.mean()), "per_class": per,
+            "worst": min(per.values()), "macro": float(np.mean(list(per.values()))), "gis": gis}
+
+
+def check_cpu_sets(tag, seed, method):
+    """True if the CPU sets equal those in a run record of `method` (None if no run)."""
+    run = one_set_run(tag, method, seed)
+    if run is None:
+        return None
+    ds, imb = base_tag(tag)
+    S = cpu_sets(ds, imb, seed)
+    if S is None:
+        return None
+    v = variant(tag)
+    mat = v.set_matrix(run)
+    labels = v.labels
+    cols = [labels.index(c) if c in labels else None for c in S["classes"]]
+    if None in cols:
+        return False
+    return bool(np.array_equal(mat[:, cols], S["sets"][method]))

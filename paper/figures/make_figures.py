@@ -16,6 +16,9 @@ stdout as "[pending] ...".
 Specification: paper/plan/figures_and_tables.md and figure_scripts_todo.md.
 Data layer and statistics: figdata.py (next to this file).
 """
+import os as _os
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+    _os.environ.setdefault(_v, "16")  # shared server: cap BLAS threads
 import argparse
 import json
 import os
@@ -47,14 +50,15 @@ ALL_TAGS = ["yahoo-answers", "yahoo-answers-imb10", "yahoo-answers-imb100", "yah
             "go-emotions", "go-emotions-relabel", "ohsumed", "ohsumed-relabel"]
 POOL_SIZES = [250, 500, 1000, 2000]
 NAME = {"yahoo-answers": "Yahoo Answers", "sst": "SST-5", "semeval-18": "SemEval-18",
-        "go-emotions": "GoEmotions", "ohsumed": "Ohsumed"}
+        "go-emotions": "GoEmotions", "ohsumed": "Ohsumed", "massive": "MASSIVE"}
 MODEL_NAME = {"llama-3.2-3b": "Llama-3.2-3B", "ministral-3b": "Ministral-3B",
               "qwen-2.5-3b": "Qwen2.5-3B", "mistral-7b-v0.3": "Mistral-7B",
               "qwen-2.5-7b": "Qwen2.5-7B", "llama-3.1-8b": "Llama-3.1-8B",
               "mistral-nemo-2407": "Mistral-Nemo-12B", "qwen-2.5-32b": "Qwen2.5-32B"}
 METHOD_NAME = {"zeroshot": "Zero-shot", "fewshot": "Few-shot", "cicle": "CICLe",
                "topk": "Top-$m$", "mass": "Prob. mass", "marginal": "Marginal CP",
-               "oracle": "Oracle", "base": "MiniLM + LR", "finetuned": "RoBERTa-base"}
+               "oracle": "Oracle", "base": "MiniLM + LR", "finetuned": "RoBERTa-base",
+               "massmatch": "Prob. mass (matched)", "margmatch": "Marginal CP (matched)"}
 METHOD_PLAIN = {"zeroshot": "zero-shot", "fewshot": "few-shot", "cicle": "CICLe", "topk": "top-m",
                 "mass": "prob. mass", "marginal": "marginal CP", "oracle": "oracle"}
 VARIANT_NAME = {"fixed": "Fixed", "pc": "Per-Class"}
@@ -83,10 +87,12 @@ def tag_name(tag):
 # ---------------------------------------------------------------------------
 COLOR = {"fewshot": "#6b6a66", "cicle": "#2a78d6", "topk": "#eb6834", "mass": "#1baf7a",
          "marginal": "#4a3aa7", "oracle": "#0b0b0b", "zeroshot": "#0b0b0b",
-         "base": "#52514e", "finetuned": "#0b0b0b"}
+         "base": "#52514e", "finetuned": "#0b0b0b",
+         "massmatch": "#1baf7a", "margmatch": "#4a3aa7"}  # matched rules share their rule's hue
 MARKER = {"fewshot": "o", "cicle": "o", "topk": "s", "mass": "D", "marginal": "^", "oracle": "x",
-          "zeroshot": "*"}
-LSTYLE = {"fewshot": "-", "cicle": "-", "topk": "-", "mass": "-", "marginal": "--", "oracle": "--"}
+          "zeroshot": "*", "massmatch": "D", "margmatch": "^"}
+LSTYLE = {"fewshot": "-", "cicle": "-", "topk": "-", "mass": "-", "marginal": "--", "oracle": "--",
+          "massmatch": "-", "margmatch": "--"}
 DS_COLOR = {"yahoo-answers": "#2a78d6", "sst": "#eb6834", "semeval-18": "#1baf7a",
             "go-emotions": "#4a3aa7"}
 DS_MARKER = {"yahoo-answers": "o", "sst": "s", "semeval-18": "D", "go-emotions": "^"}
@@ -447,18 +453,63 @@ def _rank_ticks(ax, n):
     ax.set_xticklabels([str(i) if (i == 1 or i % 2 == 0 or i == n) else "" for i in range(1, n + 1)])
 
 
-def panel_a(ax, d, variant, B, sec, drawn):
+MATCHED = ["topk", "massmatch", "margmatch"]          # rules at CICLe's mean set size
+UNMATCHED = ["mass", "marginal"]
+EXTRA_SEEDS = [45, 46]
+
+
+def present_seeds(tag):
+    """Seeds with a results directory for a variant (42-44, plus 45/46 when they land)."""
+    root = os.path.join(fd.RESULTS, tag)
+    return sorted(int(x[5:]) for x in os.listdir(root) if x.startswith("seed-")) if os.path.isdir(root) else []
+
+
+def extra_seeds_complete(tag, methods, variant, k=4):
+    """Extra seeds (45, 46) for which every small model has every method at (variant, k)."""
+    v = fd.variant(tag)
+    return [s for s in EXTRA_SEEDS if s in present_seeds(tag)
+            and all(v.get(m, variant, k, mdl, seed=s) is not None for m in methods for mdl in SMALL)]
+
+
+def fig2_cells(tag, comp, variant):
+    """Cells for the imbalance comparison: k in {1,4} on seeds 42-44, plus k=4 on
+    seeds 45/46 when those runs are complete for both methods."""
+    cells = fd.grid_cells([variant], SMALL, [1, 4], SEEDS)
+    extra = extra_seeds_complete(tag, ["cicle", comp], variant)
+    return cells + fd.grid_cells([variant], SMALL, [4], extra), extra
+
+
+def set_seeds(tag):
+    """Seeds whose candidate sets enter coverage statistics (those with results)."""
+    return [s for s in present_seeds(tag) if s in SEEDS + EXTRA_SEEDS] or SEEDS
+
+
+def cpu_set_stats(tag, method, seeds=None):
+    """Per-seed set statistics of a rule on the base dataset of `tag` (CPU sets)."""
+    ds, imb = fd.base_tag(tag)
+    out = []
+    for s in seeds or set_seeds(tag):
+        S = fd.cpu_sets(ds, imb, s)
+        if S is not None:
+            out.append((s, S, fd.set_stats(S, method)))
+    return out
+
+
+def panel_a(ax, d, variant, B, sec, drawn, comps=("fewshot",) + tuple(MATCHED)):
     """Paired Δ CICLe − alternative against pool imbalance; oracle − few-shot dashed."""
-    for comp in ("fewshot", "topk", "mass", "marginal"):
+    for comp in comps:
         xs, ys, lo, hi = [], [], [], []
         for i, imb in enumerate((1, 10, 100)):
-            res = fd.paired_delta(imb_tag(d, imb), "cicle", comp, variant, [1, 4], B=B)
+            tag = imb_tag(d, imb)
+            cells, extra = fig2_cells(tag, comp, variant)
+            res = fd.paired_delta(tag, "cicle", comp, variant, None, cells=cells, B=B)
             if res is None:
-                pending(sec, f"(a) {imb_tag(d, imb)} CICLe − {comp} {variant}")
+                pending(sec, f"(a) {tag} CICLe − {comp} {variant}")
                 continue
             xs.append(i); ys.append(res["mean"]); lo.append(res["mean"] - res["lo"])
             hi.append(res["hi"] - res["mean"])
-            note(sec, f"(a) {imb_tag(d, imb)} {variant} k∈{{1,4}} CICLe − {comp}: {delta_txt(res)}")
+            note(sec, f"(a) {tag} {variant} k∈{{1,4}}{' + k=4 seeds ' + str(extra) if extra else ''} "
+                      f"CICLe − {comp}: {delta_txt(res)}")
         if xs:
             c = COLOR[comp]
             drawn.add(comp)
@@ -466,12 +517,15 @@ def panel_a(ax, d, variant, B, sec, drawn):
                         mfc=c if variant == "pc" else "white", mec=c, zorder=3, **ERR)
     xs, ys = [], []
     for i, imb in enumerate((1, 10, 100)):
-        res = fd.paired_delta(imb_tag(d, imb), "oracle", "fewshot", variant, [1, 4], B=B)
+        tag = imb_tag(d, imb)
+        cells, extra = fig2_cells(tag, "oracle", variant)
+        cells = [c for c in cells if c[3] in SEEDS] if not extra_seeds_complete(tag, ["fewshot", "oracle"], variant) else cells
+        res = fd.paired_delta(tag, "oracle", "fewshot", variant, None, cells=cells, B=B)
         if res is None:
-            pending(sec, f"(a) {imb_tag(d, imb)} oracle − few-shot {variant} (ceiling)")
+            pending(sec, f"(a) {tag} oracle − few-shot {variant} (ceiling)")
             continue
         xs.append(i); ys.append(res["mean"])
-        note(sec, f"(a) {imb_tag(d, imb)} {variant} oracle − few-shot (ceiling): {delta_txt(res)}")
+        note(sec, f"(a) {tag} {variant} oracle − few-shot (ceiling): {delta_txt(res)}")
     if xs:
         drawn.add("oracle")
         ax.plot(xs, ys, color=COLOR["oracle"], ls="--", marker="x", zorder=2)
@@ -482,30 +536,34 @@ def panel_a(ax, d, variant, B, sec, drawn):
     ax.set_xlabel("pool imbalance" if COMPACT[0] else "imbalance of the labelled pool")
 
 
-def panel_b(ax, d, variant, B, sec, drawn):
-    """Coverage against mean candidate-set size, marker size grows with imbalance."""
-    for method in ("cicle", "topk", "mass", "marginal", "oracle"):
+def panel_b(ax, d, variant, B, sec, drawn,
+            methods=("cicle", "topk", "massmatch", "margmatch", "mass", "marginal")):
+    """Coverage against mean candidate-set size (CPU sets), marker size grows with
+    imbalance; unmatched rules hollow."""
+    for method in methods:
         pts = []
         for imb, size in ((1, 22), (10, 48), (100, 95)):
             tag = imb_tag(d, imb)
-            vals = [fd.one_set_run(tag, method, s) for s in SEEDS]
-            vals = [r for r in vals if r is not None]
-            if not vals:
+            st = cpu_set_stats(tag, method)
+            if not st:
                 pending(sec, f"(b) {tag} {method} candidate sets")
                 continue
-            cov = 100 * np.mean([r["gold_in_set"].mean() for r in vals])
-            sz = np.mean([r["set_size"].mean() for r in vals])
+            cov = np.mean([x["cov"] for _, _, x in st])
+            sz = np.mean([x["size"] for _, _, x in st])
             pts.append((sz, cov, size, imb))
             note(sec, f"(b) {tag} {method}: coverage {cov:.1f}%, mean set size {sz:.2f} "
-                      f"({len(vals)} seeds)")
+                      f"({len(st)} seeds)")
         if not pts:
             continue
         c = COLOR[method]
         drawn.add(method)
-        ax.plot([p[0] for p in pts], [p[1] for p in pts], color=c, lw=0.9, ls=LSTYLE[method], zorder=2)
+        hollow = method in UNMATCHED
+        ax.plot([p[0] for p in pts], [p[1] for p in pts], color=c, lw=0.9,
+                ls=":" if hollow else LSTYLE[method], zorder=2)
         for x, y, size, imb in pts:
-            ax.scatter([x], [y], s=size, color=c, marker=MARKER[method], edgecolor="white",
-                       linewidth=0.7, zorder=3)
+            ax.scatter([x], [y], s=size, marker=MARKER[method], zorder=3,
+                       facecolor="white" if hollow else c, edgecolor=c if hollow else "white",
+                       linewidth=1.2 if hollow else 0.7)
         if method == "cicle":
             for x, y, size, imb in pts:
                 if imb in (1, 100):
@@ -516,30 +574,29 @@ def panel_b(ax, d, variant, B, sec, drawn):
     ax.set_xlabel("mean set size" if COMPACT[0] else "mean candidate-set size")
 
 
-def panel_c(ax, d, variant, B, sec, drawn, methods=("cicle", "topk", "mass", "marginal")):
-    """Per-class coverage at 100x by class-frequency rank in the pool."""
+def panel_c(ax, d, variant, B, sec, drawn, methods=("cicle",) + tuple(MATCHED)):
+    """Per-class coverage at 100x by class-frequency rank in the pool (CPU sets,
+    all seeds with results; aggregated by rank because the class order is a
+    seed-dependent permutation)."""
     tag = imb_tag(d, 100)
-    v = fd.variant(tag)
     n = 0
     for method in methods:
         by_rank = defaultdict(list)
-        for s in SEEDS:
-            rank, counts = rank_map(d, s, 100)
-            run = fd.one_set_run(tag, method, s)
-            if rank is None or run is None:
-                if run is None and s == SEEDS[0]:
-                    pending(sec, f"(c) {tag} {method} candidate sets")
-                continue
-            for lab, cov in fd.per_class_coverage(v, run).items():
-                by_rank[rank[lab]].append(cov)
+        st = cpu_set_stats(tag, method)
+        for s, S, x in st:
+            order = [lab for lab, _ in sorted(S["train_counts"].items(), key=lambda kv: -kv[1])]
+            for lab, cov in x["per_class"].items():
+                by_rank[order.index(lab)].append(cov)
         if not by_rank:
+            pending(sec, f"(c) {tag} {method} candidate sets")
             continue
         xs = sorted(by_rank)
-        ys = [np.mean(by_rank[x]) for x in xs]
+        ys = [np.mean(by_rank[r]) for r in xs]
         drawn.add(method)
-        ax.plot([x + 1 for x in xs], ys, color=COLOR[method], marker=MARKER[method], ls=LSTYLE[method],
+        ax.plot([x + 1 for x in xs], ys, color=COLOR[method], marker=MARKER[method],
+                ls=LSTYLE[method], mfc="white" if method in UNMATCHED and "massmatch" in methods else COLOR[method],
                 zorder=3)
-        note(sec, f"(c) {tag} {method} per-class coverage by rank (mean over seeds): "
+        note(sec, f"(c) {tag} {method} per-class coverage by rank (mean over {len(st)} seeds): "
                   + ", ".join(f"{x + 1}:{y:.0f}" for x, y in zip(xs, ys)))
         n = len(xs)
     ax.axhline(95, color=MUTED, lw=0.8, ls=":", zorder=1)
@@ -551,12 +608,13 @@ def panel_c(ax, d, variant, B, sec, drawn, methods=("cicle", "topk", "mass", "ma
     ax.set_xlabel("class rank" if COMPACT[0] else "class rank (frequent to rare)")
 
 
-def panel_d(ax, d, variant, B, sec, drawn):
-    """Per-class F1 at 100x, k = 4, by class-frequency rank."""
+def panel_d(ax, d, variant, B, sec, drawn,
+            methods=("fewshot", "cicle") + tuple(MATCHED) + ("oracle",)):
+    """Per-class F1 at 100x, k = 4, by class-frequency rank (6 models x seeds 42-44)."""
     tag = imb_tag(d, 100)
     v = fd.variant(tag)
     n = 0
-    for method in ("fewshot", "cicle", "topk", "mass", "marginal", "oracle"):
+    for method in methods:
         by_rank = defaultdict(list)
         n_runs = 0
         for s in SEEDS:
@@ -594,22 +652,33 @@ PANELS = {"a": panel_a, "b": panel_b, "c": panel_c, "d": panel_d}
 COMPACT = [False]  # shorter axis labels for the four-column appendix figure
 
 
-def narrowing_figure(B, variant, panels, name, sec, height):
-    """Rows Yahoo / SST-5, one column per panel letter, shared legend below."""
+def narrowing_figure(B, variant, panels, name, sec, height, kwargs=None):
+    """Rows Yahoo / SST-5, one column per panel letter, shared legend below.
+    kwargs: {panel letter: dict of keyword arguments for that panel}."""
     datasets = ["yahoo-answers", "sst"]
     drawn = set()
     COMPACT[0] = len(panels) > 2
+    kwargs = kwargs or {}
     fig, axes = plt.subplots(2, len(panels), figsize=(TEXTWIDTH, height), squeeze=False)
     for row, d in enumerate(datasets):
         for col, p in enumerate(panels):
             ax = axes[row, col]
-            PANELS[p](ax, d, variant, B, sec, drawn)
+            PANELS[p](ax, d, variant, B, sec, drawn, **kwargs.get(p, {}))
             if col == 0:
                 ax.set_ylabel(f"{NAME[d]}\n" + ax.get_ylabel())
             if row == 0:
                 ax.set_xlabel("")
-    handles = [legend_handle(m, variant, METHOD_NAME[m]) for m in
-               ("fewshot", "cicle", "topk", "mass", "marginal") if m in drawn]
+    order = ["fewshot", "cicle", "topk", "massmatch", "margmatch", "mass", "marginal"]
+    both = any(m in drawn for m in MATCHED[1:]) and any(m in drawn for m in UNMATCHED)
+    handles = []
+    for m in order:
+        if m not in drawn:
+            continue
+        h = legend_handle(m, variant, METHOD_NAME[m] if not (both and m in UNMATCHED)
+                          else METHOD_NAME[m] + " (unmatched)")
+        if both and m in UNMATCHED:
+            h.set_markerfacecolor("white"); h.set_linestyle(":")
+        handles.append(h)
     if "oracle" in drawn:
         handles.append(Line2D([], [], color=COLOR["oracle"], ls="--", marker="x",
                               label="Oracle $-$ few-shot (ceiling, left)" if "a" in panels
@@ -620,7 +689,7 @@ def narrowing_figure(B, variant, panels, name, sec, height):
     legend_rows = -(-len(handles) // ncol)
     fig.subplots_adjust(wspace=0.36 if len(panels) <= 2 else 0.6, hspace=0.25,
                         left=0.12 if len(panels) <= 2 else 0.09, right=0.98, top=0.97,
-                        bottom=0.10 + 0.045 * legend_rows)
+                        bottom=0.10 + 0.045 * legend_rows * FS[0])
     COMPACT[0] = False
     save_fig(fig, name)
 
@@ -628,13 +697,20 @@ def narrowing_figure(B, variant, panels, name, sec, height):
 def fig2(B):
     with plt.rc_context(scaled_rc(0.8)):  # printed at 0.8 text width
         narrowing_figure(B, "pc", "ac", "fig_main_narrowing",
-                         "Figure 2 (Per-Class; narrowing under imbalance, panels a and c)", 5.8)
+                         "Figure 2 (Per-Class; size-matched narrowing under imbalance, panels a and c)", 5.8)
     FS[0] = 1.0
 
 
 def figAN(B):
     narrowing_figure(B, "pc", "bd", "fig_app_narrowing_extra",
                      "Figure 2 appendix extra (Per-Class; panels b and d)", 5.6)
+
+
+def figAU(B):
+    narrowing_figure(B, "pc", "ac", "fig_app_narrowing_unmatched",
+                     "Figure 2 appendix (Per-Class; unmatched mass and marginal CP)", 5.6,
+                     kwargs={"a": {"comps": ("fewshot", "topk", "mass", "marginal")},
+                             "c": {"methods": ("cicle", "topk", "mass", "marginal")}})
 
 
 def figC1(B):

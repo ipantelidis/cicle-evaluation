@@ -1,10 +1,10 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-How a small classifier narrows the label space matters once the labelled pool is long-tailed. Class-conditional conformal sets keep the rare classes, top-$m$, probability-mass and marginal sets lose them, and the LLM cannot recover a label it was not offered. Rule: calibrate per class whenever the pool is skewed.
+Overall coverage hides unreachable classes. A narrowing rule can contain the gold label for almost every test instance and still never offer a rare class. Rule: inspect per-class coverage, not overall coverage, before trusting a narrowing rule.
 
-Narrowing gives a small, reliable gain over few-shot prompting and a shorter prompt, most when label names carry no meaning. Rule: expect a point or two and a third fewer tokens, and more when labels are codes. % PENDING: MASSIVE
+At matched set size the narrowing rule matters under a skewed labelled pool and not on balanced data, and under a 100-fold skew the wrong rule costs several times what narrowing gains over few-shot prompting. Rule: calibrate per class whenever the labelled pool is skewed.
 
-An LLM pipeline pays when labels are skewed or scarce, and a fine-tuned encoder or the base classifier wins when they are plentiful and balanced. Rule: fine-tune on a large balanced pool, otherwise prompt with a narrowed list and loosen $\alpha$ as the classifier improves.
+The LLM almost never recovers a label that is missing from the candidate set, so the set is a hard constraint. Rule: choose $\alpha$ with the rare classes in mind, since their coverage bounds macro-F1.
 
-Prompts with different label information compare formats, not methods. Rule: list the admissible labels, or the candidate set for very large label spaces, in every prompt.
+Narrowing pays off modestly on short texts with informative labels and more when label names carry no meaning, and for the encoder recipes we tested, fine-tuning wins on a plentiful balanced pool. Rule: prompt with a class-conditionally narrowed list when labels are skewed or scarce, and fine-tune when they are plentiful and balanced.
