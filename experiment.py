@@ -163,7 +163,31 @@ def _load_ohsumed():
     return out
 
 
+def _load_massive():
+    import pandas as pd
+    from datasets import load_dataset
+    out = []
+    name = "SetFit/amazon_massive_intent_en-US"
+    # the official test split has a single example of one intent, too few to
+    # stratify, so the validation and test splits together form the test pool
+    for splits in (["train"], ["validation", "test"]):
+        df = pd.concat([load_dataset(name, split=s).to_pandas() for s in splits])
+        df = df.rename(columns={"label": "label_id"})
+        df["label"] = df["label_text"]
+        out.append(df[["text", "label", "label_id"]])
+    # one intent (cooking_query) has 4 training examples, too few to appear in
+    # both the training and calibration splits of a 2,000-example subsample;
+    # it is dropped, leaving 59 intents
+    counts = out[0]["label"].value_counts()
+    keep = set(counts[counts >= 10].index)
+    return [df[df["label"].isin(keep)] for df in out]
+
+
 DATASETS = {
+    "massive": {
+        "loader": _load_massive,
+        "task": "We classify voice-assistant commands by their intent.",
+    },
     "ohsumed": {
         "loader": _load_ohsumed,
         "task": "We classify medical abstracts into disease categories based on their text.",
