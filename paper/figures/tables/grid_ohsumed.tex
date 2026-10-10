@@ -4,7 +4,7 @@
 Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 MiniLM + LR & -- & -- & 3 & 45.2 & 65.0 & 0.0 & 0.0 & 0 \\
-RoBERTa-base & -- & -- & 6 & 60.5 & 71.9 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 3 & 55.4 & 70.3 & 0.0 & 0.0 & 0 \\
 \midrule
 Zero-shot & -- & -- & 18 & 35.9 & 43.2 & 5.2 & 0.0 & 579 \\
 \midrule
@@ -26,6 +26,10 @@ Prob. mass & Fixed & 1 & 18 & 46.2 & 51.9 & 3.6 & 1.0 & 843 \\
 Prob. mass & Fixed & 4 & 18 & 50.1 & 56.3 & 2.7 & 4.0 & 1,771 \\
 Marginal CP & Fixed & 1 & 18 & 45.5 & 50.7 & 0.9 & 1.0 & 782 \\
 Marginal CP & Fixed & 4 & 18 & 48.1 & 53.6 & 0.7 & 4.0 & 1,704 \\
+Prob. mass (matched) & Fixed & 1 & 18 & 46.1 & 51.5 & 3.2 & 1.0 & 831 \\
+Prob. mass (matched) & Fixed & 4 & 18 & 49.9 & 55.7 & 2.5 & 4.0 & 1,759 \\
+Marginal CP (matched) & Fixed & 1 & 18 & 46.1 & 51.2 & 3.1 & 1.0 & 832 \\
+Marginal CP (matched) & Fixed & 4 & 18 & 49.8 & 55.3 & 2.4 & 4.0 & 1,759 \\
 Oracle & Fixed & 1 & 18 & 55.9 & 62.0 & 2.6 & 1.0 & 826 \\
 Oracle & Fixed & 4 & 18 & 60.3 & 66.9 & 1.8 & 4.0 & 1,754 \\
 \bottomrule

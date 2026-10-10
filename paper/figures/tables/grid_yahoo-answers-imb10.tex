@@ -3,30 +3,38 @@
 \toprule
 Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
-MiniLM + LR & -- & -- & 3 & 50.4 & 53.6 & 0.0 & 0.0 & 0 \\
-RoBERTa-base & -- & -- & 6 & 60.8 & 61.4 & 0.0 & 0.0 & 0 \\
+MiniLM + LR & -- & -- & 5 & 50.3 & 53.4 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 3 & 58.7 & 59.4 & 0.0 & 0.0 & 0 \\
 \midrule
 Few-shot & Fixed & 1 & 18 & 54.2 & 53.4 & 4.8 & 1.0 & 285 \\
-Few-shot & Fixed & 4 & 18 & 56.4 & 56.0 & 2.9 & 4.0 & 452 \\
+Few-shot & Fixed & 4 & 30 & 55.9 & 55.6 & 2.9 & 4.0 & 453 \\
 Few-shot & Per-Class & 1 & 18 & 56.8 & 56.3 & 3.0 & 10.0 & 710 \\
-Few-shot & Per-Class & 4 & 18 & 59.4 & 59.2 & 1.7 & 40.0 & 2,198 \\
+Few-shot & Per-Class & 4 & 30 & 59.2 & 59.2 & 1.8 & 40.0 & 2,200 \\
 CICLe & Fixed & 1 & 18 & 53.6 & 53.1 & 3.0 & 1.0 & 277 \\
-CICLe & Fixed & 4 & 18 & 56.0 & 55.8 & 1.7 & 4.0 & 447 \\
+CICLe & Fixed & 4 & 30 & 55.9 & 55.6 & 1.7 & 4.0 & 447 \\
 CICLe & Per-Class & 1 & 18 & 58.2 & 57.9 & 1.7 & 6.2 & 539 \\
-CICLe & Per-Class & 4 & 18 & 60.3 & 60.3 & 0.9 & 25.0 & 1,509 \\
+CICLe & Per-Class & 4 & 30 & 60.2 & 60.2 & 0.8 & 24.5 & 1,465 \\
 \midrule
 Top-$m$ & Fixed & 1 & 18 & 53.2 & 52.6 & 2.7 & 1.0 & 276 \\
-Top-$m$ & Fixed & 4 & 18 & 55.3 & 55.2 & 1.3 & 4.0 & 445 \\
+Top-$m$ & Fixed & 4 & 30 & 55.2 & 55.1 & 1.4 & 4.0 & 445 \\
 Top-$m$ & Per-Class & 1 & 18 & 56.1 & 55.8 & 1.3 & 6.0 & 518 \\
-Top-$m$ & Per-Class & 4 & 18 & 58.8 & 58.8 & 0.6 & 24.0 & 1,420 \\
+Top-$m$ & Per-Class & 4 & 30 & 58.9 & 59.0 & 0.7 & 24.0 & 1,433 \\
 Prob. mass & Fixed & 1 & 18 & 53.5 & 52.9 & 3.6 & 1.0 & 280 \\
-Prob. mass & Fixed & 4 & 18 & 55.6 & 55.3 & 2.0 & 4.0 & 448 \\
+Prob. mass & Fixed & 4 & 30 & 55.2 & 54.9 & 2.1 & 4.0 & 448 \\
 Prob. mass & Per-Class & 1 & 18 & 56.4 & 56.0 & 1.9 & 7.5 & 591 \\
-Prob. mass & Per-Class & 4 & 18 & 59.3 & 59.1 & 1.1 & 30.0 & 1,714 \\
+Prob. mass & Per-Class & 4 & 30 & 59.1 & 59.1 & 1.2 & 29.9 & 1,714 \\
 Marginal CP & Fixed & 1 & 18 & 54.0 & 53.6 & 2.4 & 1.0 & 274 \\
-Marginal CP & Fixed & 4 & 18 & 56.3 & 56.2 & 1.3 & 4.0 & 442 \\
+Marginal CP & Fixed & 4 & 30 & 55.9 & 55.9 & 1.3 & 4.0 & 441 \\
 Marginal CP & Per-Class & 1 & 18 & 57.6 & 57.5 & 1.2 & 5.3 & 485 \\
-Marginal CP & Per-Class & 4 & 18 & 59.7 & 59.7 & 0.6 & 21.4 & 1,289 \\
+Marginal CP & Per-Class & 4 & 30 & 59.5 & 59.7 & 0.7 & 21.2 & 1,281 \\
+Prob. mass (matched) & Fixed & 1 & 18 & 53.3 & 52.8 & 3.1 & 1.0 & 277 \\
+Prob. mass (matched) & Fixed & 4 & 30 & 55.5 & 55.3 & 1.6 & 4.0 & 445 \\
+Prob. mass (matched) & Per-Class & 1 & 18 & 56.6 & 56.3 & 1.6 & 6.3 & 533 \\
+Prob. mass (matched) & Per-Class & 4 & 30 & 59.2 & 59.3 & 0.8 & 24.8 & 1,463 \\
+Marginal CP (matched) & Fixed & 1 & 18 & 53.6 & 53.1 & 3.1 & 1.0 & 277 \\
+Marginal CP (matched) & Fixed & 4 & 30 & 55.5 & 55.4 & 1.7 & 4.0 & 445 \\
+Marginal CP (matched) & Per-Class & 1 & 18 & 56.8 & 56.6 & 1.7 & 6.4 & 539 \\
+Marginal CP (matched) & Per-Class & 4 & 30 & 59.3 & 59.4 & 0.9 & 25.3 & 1,479 \\
 Oracle & Fixed & 1 & 18 & 60.4 & 59.7 & 3.2 & 1.0 & 277 \\
 Oracle & Fixed & 4 & 18 & 63.0 & 62.6 & 1.5 & 4.0 & 444 \\
 Oracle & Per-Class & 1 & 18 & 64.9 & 64.7 & 1.4 & 6.0 & 515 \\

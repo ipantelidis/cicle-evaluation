@@ -43,11 +43,12 @@ PREVIEW = os.path.join(fd.CACHE, "preview")
 NUMBERS_JSON = os.path.join(fd.CACHE, "numbers.json")
 NUMBERS_MD = os.path.join(HERE, "NUMBERS.md")
 
-CORE = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed"]
-SHORT = ["yahoo-answers", "sst", "semeval-18", "go-emotions"]
+CORE = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed", "massive"]
+SHORT = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "massive"]
 ALL_TAGS = ["yahoo-answers", "yahoo-answers-imb10", "yahoo-answers-imb100", "yahoo-answers-relabel",
             "sst", "sst-imb10", "sst-imb100", "sst-relabel", "semeval-18", "semeval-18-relabel",
-            "go-emotions", "go-emotions-relabel", "ohsumed", "ohsumed-relabel"]
+            "go-emotions", "go-emotions-relabel", "ohsumed", "ohsumed-relabel", "massive",
+            "massive-relabel"]
 POOL_SIZES = [250, 500, 1000, 2000]
 NAME = {"yahoo-answers": "Yahoo Answers", "sst": "SST-5", "semeval-18": "SemEval-18",
         "go-emotions": "GoEmotions", "ohsumed": "Ohsumed", "massive": "MASSIVE"}
@@ -62,6 +63,8 @@ METHOD_NAME = {"zeroshot": "Zero-shot", "fewshot": "Few-shot", "cicle": "CICLe",
 METHOD_PLAIN = {"zeroshot": "zero-shot", "fewshot": "few-shot", "cicle": "CICLe", "topk": "top-m",
                 "mass": "prob. mass", "marginal": "marginal CP", "oracle": "oracle"}
 VARIANT_NAME = {"fixed": "Fixed", "pc": "Per-Class"}
+SHORT_NAME_T = {"yahoo-answers": "Yahoo", "sst": "SST-5", "semeval-18": "SemEval-18",
+                "go-emotions": "GoEmotions", "ohsumed": "Ohsumed", "massive": "MASSIVE"}
 ALPHAS = [0.01, 0.05, 0.10, 0.20]
 LLAMAS = ["llama-3.1-8b", "llama-3.2-3b"]
 
@@ -94,8 +97,8 @@ MARKER = {"fewshot": "o", "cicle": "o", "topk": "s", "mass": "D", "marginal": "^
 LSTYLE = {"fewshot": "-", "cicle": "-", "topk": "-", "mass": "-", "marginal": "--", "oracle": "--",
           "massmatch": "-", "margmatch": "--"}
 DS_COLOR = {"yahoo-answers": "#2a78d6", "sst": "#eb6834", "semeval-18": "#1baf7a",
-            "go-emotions": "#4a3aa7"}
-DS_MARKER = {"yahoo-answers": "o", "sst": "s", "semeval-18": "D", "go-emotions": "^"}
+            "go-emotions": "#4a3aa7", "massive": "#0b0b0b"}
+DS_MARKER = {"yahoo-answers": "o", "sst": "s", "semeval-18": "D", "go-emotions": "^", "massive": "v"}
 GRID = "#e1e0d9"
 MUTED = "#898781"
 INK = "#0b0b0b"
@@ -295,37 +298,35 @@ def tab2(B):
                         "(supervised rows over 3 seeds). dagger: Ohsumed Per-Class is run at k=1 only. "
                         "Prompt tokens are in tables/main_results.tex (appendix).")
     # -- main-text delta body: one line per cell, bold when the CI excludes 0 --
+    # transposed (one row per dataset) so six datasets fit a column
     drows = []
-    for var in ("fixed", "pc"):
+    for d in CORE:
         cells = []
-        for d in CORE:
+        for var in ("fixed", "pc"):
             res = fd.paired_delta(d, "cicle", "fewshot", var, ks_for(d, var), B=B)
             if res is None:
                 cells.append("--")
                 pending(sec, f"Δ {d} {var}")
                 continue
-            cells.append(delta_tex(res, inline=True))
+            cells.append(delta_tex(res, inline=True) + (r"$^{\dagger}$" if d == "ohsumed" and var == "pc" else ""))
             note(sec, f"Δ CICLe − few-shot {d} {var} (all k): {delta_txt(res)}")
-        drows.append(f"{VARIANT_NAME[var]} & " + " & ".join(cells) + r" \\")
-    saved = []
-    for d in CORE:
         k = 4 if 4 in ks_for(d, "pc") else ks_for(d, "pc")[0]
         tf, _ = fd.mean_metric(d, "fewshot", "pc", k, metric="mean_prompt_tokens")
         tc, _ = fd.mean_metric(d, "cicle", "pc", k, metric="mean_prompt_tokens")
         if tf is None or tc is None:
-            saved.append("--")
-            continue
-        saved.append(f"{100 * (1 - tc / tf):.0f}\\%" + (r"$^{\dagger}$" if k != 4 else ""))
-        note(sec, f"{d} tokens saved by CICLe Per-Class at k={k}: {100 * (1 - tc / tf):.1f}% "
-                  f"({tf:,.0f} -> {tc:,.0f} tokens per call)")
-    drows.append(r"\midrule")
-    drows.append("Tokens saved & " + " & ".join(saved) + r" \\")
-    write_table("body_main_delta", "l" + "c" * len(CORE), head, drows,
-                comment="Table 2b body (main text). Paired Δ CICLe − few-shot (pp) with the 95% "
-                        "bootstrap CI over test instances, pooled over all k: 72 (model, seed, k) "
-                        "pairs per cell; Ohsumed Fixed 36, Ohsumed Per-Class 18 (k=1 only, dagger). "
-                        "Bold: interval excludes zero. Last row: 1 - CICLe PC tokens / few-shot PC "
-                        "tokens per LLM call at k=4 (Ohsumed k=1).")
+            cells.append("--")
+        else:
+            cells.append(f"{100 * (1 - tc / tf):.0f}\\%" + (r"$^{\dagger}$" if k != 4 else ""))
+            note(sec, f"{d} tokens saved by CICLe Per-Class at k={k}: {100 * (1 - tc / tf):.1f}% "
+                      f"({tf:,.0f} -> {tc:,.0f} tokens per call)")
+        drows.append(f"{SHORT_NAME_T[d]} & " + " & ".join(cells) + r" \\")
+    head = [r" & Fixed & Per-Class & tokens saved \\"]
+    write_table("body_main_delta", "lccr", head, drows,
+                comment="Table 2b body (main text), one row per dataset. Paired Δ CICLe − few-shot (pp) "
+                        "with the 95% bootstrap CI over test instances, pooled over all k: 72 (model, "
+                        "seed, k) pairs per cell; Ohsumed Fixed 36, Ohsumed Per-Class 18 (k=1 only, "
+                        "dagger). Bold: interval excludes zero. Last column: 1 - CICLe PC tokens / "
+                        "few-shot PC tokens per LLM call at k=4 (Ohsumed k=1).")
     # -- appendix version with prompt tokens --------------------------------
     rows.append(f1_row("MiniLM + LR (no LLM)", "base", tokens=False))
     rows.append(f1_row("RoBERTa-base, fine-tuned", "finetuned", tokens=False))
@@ -363,7 +364,7 @@ def fig1(B):
 
 def _fig1(B):
     sec = "Figure 1 (macro-F1 vs prompt tokens)"
-    fig, axes = plt.subplots(2, 3, figsize=(TEXTWIDTH, 4.9))
+    fig, axes = plt.subplots(2, 3, figsize=(TEXTWIDTH, 4.9 if len(CORE) < 6 else 5.9))
     axes = axes.ravel()
     for ax, d in zip(axes, CORE):
         ks = ks_for(d)
@@ -426,12 +427,18 @@ def _fig1(B):
                legend_handle("cicle", "pc", "CICLe, Per-Class"),
                Line2D([], [], color=COLOR["base"], ls=":", lw=pt(1.1), label="MiniLM + LR"),
                Line2D([], [], color=COLOR["finetuned"], ls="-.", lw=pt(1.1), label="RoBERTa-base")]
-    axes[-1].axis("off")
-    axes[-1].legend(handles=handles, loc="center", ncol=1, fontsize=pt(8.5), handlelength=2.2,
-                    labelspacing=0.8, borderaxespad=0, handletextpad=0.6)
-    fig.supxlabel("mean prompt tokens per LLM call (log scale)", fontsize=pt(9), y=0.012)
+    if len(CORE) < len(axes):   # five datasets: legend in the free cell
+        axes[-1].axis("off")
+        axes[-1].legend(handles=handles, loc="center", ncol=1, fontsize=pt(8.5), handlelength=2.2,
+                        labelspacing=0.8, borderaxespad=0, handletextpad=0.6)
+        bottom, xlab_y = 0.12, 0.012
+    else:                       # six datasets: legend below the panels
+        fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=pt(8.5), handlelength=2.2,
+                   columnspacing=1.2, handletextpad=0.6, bbox_to_anchor=(0.53, -0.005))
+        bottom, xlab_y = 0.23, 0.12
+    fig.supxlabel("mean prompt tokens per LLM call (log scale)", fontsize=pt(9), y=xlab_y)
     fig.supylabel("macro-F1 (pp)", fontsize=pt(9), x=0.01)
-    fig.subplots_adjust(wspace=0.28, hspace=0.36, left=0.095, right=0.99, top=0.95, bottom=0.12)
+    fig.subplots_adjust(wspace=0.28, hspace=0.36, left=0.095, right=0.99, top=0.95, bottom=bottom)
     save_fig(fig, "fig_main_tokens")
 
 
@@ -784,7 +791,7 @@ def tab4(B):
     for d in ("yahoo-answers", "sst"):
         for imb in (1, 10, 100):
             cols.append((imb_tag(d, imb), f"{NAME[d]} {imb}$\\times$"))
-    for d in ("semeval-18", "go-emotions", "ohsumed"):
+    for d in ("semeval-18", "go-emotions", "ohsumed", "massive"):
         cols.append((d, NAME[d]))
     for t, _ in cols:
         if not fd.has_results(t):
@@ -934,7 +941,7 @@ def fig3(B):
 # ---------------------------------------------------------------------------
 def tabB(B):
     sec = "Appendix B (full grids)"
-    order = ["base", "finetuned", "zeroshot", "fewshot", "cicle", "topk", "mass", "marginal", "oracle"]
+    order = ["base", "finetuned", "zeroshot", "fewshot", "cicle", "topk", "mass", "marginal", "massmatch", "margmatch", "oracle"]
     for tag in ALL_TAGS:
         if not fd.has_results(tag):
             pending(sec, tag)
@@ -943,7 +950,7 @@ def tabB(B):
         groups = defaultdict(list)
         for key, run in v.select(models=SMALL + ["none"]).items():
             m, var, k = key[0], key[1], key[2]
-            if m == "base" and (key[4], key[5]) != ("minilm", "lr"):
+            if (m == "base" and (key[4], key[5]) != ("minilm", "lr")) or (m == "finetuned" and key[4] != "roberta-base"):
                 continue
             groups[(m, var or "-", k or 0)].append(run["metrics"])
         rows = []
@@ -1195,9 +1202,9 @@ def tabG1(B):
              r"\multicolumn{3}{c}{few-shot answer outside the set} \\",
              r" & & share & fixed & broken & share & fixed & broken \\"]
     rows, rows2 = [], []
-    tags = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed", "yahoo-answers-imb100",
-            "sst-imb100", "yahoo-answers-relabel", "sst-relabel", "semeval-18-relabel",
-            "go-emotions-relabel", "ohsumed-relabel"]
+    tags = ["yahoo-answers", "sst", "semeval-18", "go-emotions", "ohsumed", "massive",
+            "yahoo-answers-imb100", "sst-imb100", "yahoo-answers-relabel", "sst-relabel",
+            "semeval-18-relabel", "go-emotions-relabel", "ohsumed-relabel", "massive-relabel"]
     for tag in tags:
         if not fd.has_results(tag):
             pending(sec, tag)
@@ -1612,7 +1619,7 @@ def tabR(B):
 # Post-review analyses (2026-10-09): size-matched narrowing, coverage vs F1,
 # hierarchical uncertainty, class-wise coverage, cost, Ohsumed control, label list
 # ---------------------------------------------------------------------------
-EXT = CORE + ["massive"]
+EXT = CORE
 SHORT_NAME = {"yahoo-answers": "Yahoo", "sst": "SST-5", "semeval-18": "SemEval",
               "go-emotions": "GoEmo", "ohsumed": "Ohsumed", "massive": "MASSIVE"}
 MATCHED_ROWS = [("yahoo-answers", 1), ("yahoo-answers", 10), ("yahoo-answers", 100),
@@ -1683,7 +1690,7 @@ def coverage_cells(B):
     """(tag, rule, variant, k, ΔF1 rule − CICLe, Δoverall, Δworst, Δmacro) for every
     cell with complete runs (6 models x seeds 42-44)."""
     out = []
-    for tag in ALL_TAGS + ["massive"]:
+    for tag in ALL_TAGS:
         if not fd.has_results(tag):
             continue
         for rule in ["topk", "mass", "marginal", "massmatch", "margmatch"]:
@@ -1778,20 +1785,24 @@ def tabH(B):
                       f"hierarchical CI [{h['lo']:+.2f}, {h['hi']:+.2f}] ({h['n_models']} models, "
                       f"{h['n_seeds']} seeds), positive in {h['sign_pos']}/{h['sign_n']} (model, seed) cells")
     rows.append(r"\midrule")
-    for d in ("yahoo-answers", "sst"):
-        tag = imb_tag(d, 100)
+    for d, imb in MATCHED_ROWS:
+        tag = imb_tag(d, imb)
+        if not fd.has_results(tag):
+            continue
+        var = main_variant(d)
         for comp in MATCHED:
-            cells, seeds = k4_cells(tag, comp, "pc")
-            res = fd.paired_delta(tag, "cicle", comp, "pc", None, cells=cells, B=B)
+            cells, seeds = k4_cells(tag, comp, var)
+            res = fd.paired_delta(tag, "cicle", comp, var, None, cells=cells, B=B)
             h = fd.hierarchical_delta(tag, "cicle", comp, cells, B=B) if res else None
-            label = f"{SHORT_NAME[d]} 100$\\times$ PC $k$=4, CICLe $-$ {METHOD_NAME[comp].replace(' (matched)', ' (m.)')}"
+            label = (f"{row_label(d, imb)} {'F' if var == 'fixed' else 'PC'} $k$=4, CICLe $-$ "
+                     f"{METHOD_NAME[comp].replace(' (matched)', ' (m.)')}")
             if res is None or h is None:
                 pending(sec, f"{tag} CICLe − {comp}")
                 rows.append(f"{label} & [pending] & & & \\\\")
                 continue
             rows.append(f"{label} & {res['mean']:+.2f} & {ci_str(res)} & [{h['lo']:+.2f}, {h['hi']:+.2f}] & "
                         f"{h['sign_pos']}/{h['sign_n']} \\\\")
-            note(sec, f"{tag} pc k=4 CICLe − {comp} (seeds {seeds}): {res['mean']:+.2f}, instance CI "
+            note(sec, f"{tag} {var} k=4 CICLe − {comp} (seeds {seeds}): {res['mean']:+.2f}, instance CI "
                       f"{ci_str(res)}, hierarchical CI [{h['lo']:+.2f}, {h['hi']:+.2f}], positive in "
                       f"{h['sign_pos']}/{h['sign_n']} (model, seed) cells")
     write_table("body_hierarchical", "lcccc", head, rows,
@@ -1978,8 +1989,7 @@ def tabNL(B):
             pending(sec, f"{tag_nl} (no results directory)")
             continue
         for var in (("fixed", "pc") if d != "ohsumed" else ("fixed", "pc")):
-            ks = ks_for(d, var)[:2] if d != "ohsumed" else ([1, 4] if var == "fixed" else [1])
-            ks = [k for k in (1, 4) if k in ks] or ks
+            ks = [1] if (d == "ohsumed" and var == "pc") else [1, 4]
             first = True
             for tag, cond in ((d, "yes"), (tag_nl, "no")):
                 cells = fd.grid_cells([var], SMALL, ks, [42])

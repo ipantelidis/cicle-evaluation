@@ -4,7 +4,7 @@
 Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 MiniLM + LR & -- & -- & 3 & 9.7 & 26.4 & 0.0 & 0.0 & 0 \\
-RoBERTa-base & -- & -- & 6 & 23.9 & 39.6 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 3 & 24.5 & 39.0 & 0.0 & 0.0 & 0 \\
 \midrule
 Zero-shot & -- & -- & 18 & 12.2 & 19.7 & 5.1 & 0.0 & 236 \\
 \midrule
@@ -38,6 +38,14 @@ Marginal CP & Fixed & 1 & 18 & 14.9 & 20.0 & 6.8 & 1.0 & 251 \\
 Marginal CP & Fixed & 4 & 18 & 15.7 & 21.1 & 4.9 & 4.0 & 323 \\
 Marginal CP & Per-Class & 1 & 18 & 16.0 & 21.3 & 3.7 & 16.0 & 616 \\
 Marginal CP & Per-Class & 4 & 18 & 15.9 & 22.4 & 2.3 & 64.1 & 1,795 \\
+Prob. mass (matched) & Fixed & 1 & 18 & 14.8 & 20.2 & 7.0 & 1.0 & 255 \\
+Prob. mass (matched) & Fixed & 4 & 18 & 15.7 & 21.2 & 5.2 & 4.0 & 327 \\
+Prob. mass (matched) & Per-Class & 1 & 18 & 15.6 & 20.8 & 3.9 & 17.1 & 647 \\
+Prob. mass (matched) & Per-Class & 4 & 18 & 15.5 & 22.0 & 2.3 & 68.5 & 1,908 \\
+Marginal CP (matched) & Fixed & 1 & 18 & 14.8 & 19.9 & 7.1 & 1.0 & 255 \\
+Marginal CP (matched) & Fixed & 4 & 18 & 15.4 & 20.8 & 5.2 & 4.0 & 327 \\
+Marginal CP (matched) & Per-Class & 1 & 18 & 15.8 & 20.9 & 3.9 & 17.1 & 647 \\
+Marginal CP (matched) & Per-Class & 4 & 18 & 15.4 & 21.9 & 2.3 & 68.5 & 1,908 \\
 Oracle & Fixed & 1 & 18 & 15.8 & 21.6 & 7.4 & 1.0 & 255 \\
 Oracle & Fixed & 4 & 18 & 17.0 & 23.1 & 5.9 & 4.0 & 328 \\
 Oracle & Per-Class & 1 & 18 & 16.9 & 22.6 & 4.7 & 17.0 & 647 \\
