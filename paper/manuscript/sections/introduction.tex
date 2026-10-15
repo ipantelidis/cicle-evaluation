@@ -12,16 +12,17 @@ We compare the class-conditional conformal sets of Conformal In-Context Learning
 
 Conformal theory already says that class-conditional calibration gives coverage within every class \citep{vovk2012conditional}.
 What is not known is whether and when this matters for an LLM that chooses from the set, and that is what we measure.
-A size-matched rule with higher overall coverage can still lose macro-F1, as top-$m$ sets do on GoEmotions, where they cover more test instances than CICLe's sets and lose about 2.5 points.
-Marginal calibration is level with class-conditional calibration on balanced data and collapses under a skewed pool. % PENDING: size-matched marginal and probability-mass rules on the naturally long-tailed datasets
+In most settings overall and per-class coverage move together, but on naturally long-tailed data with many classes they come apart.
+There a size-matched rule can cover more test instances overall while dropping whole classes, as top-$m$ sets do on GoEmotions, which cover 3.4 points more instances and 9.5 points less of the average class than CICLe's sets and lose 2 to 3 points of macro-F1.
+Marginal calibration, which shares one threshold across classes, also drops the rarest classes under skew when it is matched to CICLe's set size. % PENDING: macro-F1 of the size-matched marginal and probability-mass rules
 Under a 100-fold skew the loss from the wrong rule is several times larger than the gain of CICLe over few-shot prompting.
 Our contributions follow the order of the Results.
 \begin{enumerate}
   \setlength\itemsep{0pt}
-  \item \textbf{Overall coverage hides unreachable classes.} Rules with similar overall coverage differ sharply in which classes they keep (Section~\ref{sec:res-coverage}).
-  \item \textbf{The rule matters under skew, not on balanced data.} At matched set size, top-$m$ sets lose 3 to 7 points to class-conditional sets under a 100-fold skew and nothing measurable on balanced data (Section~\ref{sec:res-narrowing}).
-  \item \textbf{The LLM does not recover a label left out.} It answers correctly for 0.9\% of the instances whose gold label the set misses, so per-class coverage, not overall coverage, bounds macro-F1 (Section~\ref{sec:res-consequence}). % PENDING: class-averaged coverage against macro-F1 analysis
-  \item \textbf{When narrowing pays off.} Narrowing gains 0.5 to 1.8 points over few-shot prompting on short texts and more when label names carry no meaning, while fine-tuned encoders and the choice of $\alpha$ give qualified, dataset-dependent advice (Sections~\ref{sec:res-gain} and~\ref{sec:res-secondary}).
+  \item \textbf{Overall coverage can hide unreachable classes.} On naturally long-tailed data with many classes, a size-matched rule can cover more instances overall while never offering some classes (Section~\ref{sec:res-coverage}).
+  \item \textbf{The rule matters under skew, not on balanced data.} At matched set size, top-$m$ sets lose 4 to 7 points to class-conditional sets under a 100-fold skew, with intervals over models, seeds and instances that exclude zero, and nothing measurable on balanced data (Section~\ref{sec:res-narrowing}).
+  \item \textbf{The LLM does not recover a label left out.} It answers correctly for 0.9\% of the instances whose gold label the set misses. Overall and class-averaged coverage both track the resulting F1 difference, and the per-class view is the one that matches F1 where they disagree (Section~\ref{sec:res-consequence}).
+  \item \textbf{When narrowing pays off.} The gain over few-shot prompting is under 2 points on short texts, consistent across models and seeds in only some settings, larger when label names carry no meaning, and comes with fewer input tokens per instance, while the encoder comparison and the choice of $\alpha$ give qualified, dataset-dependent advice (Sections~\ref{sec:res-gain} and~\ref{sec:res-secondary}).
 \end{enumerate}
 Section~\ref{sec:setup} also motivates a protocol choice that the comparison needs, holding the label information in the prompt constant across methods.
 Code, prompts and per-instance records will be released.

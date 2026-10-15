@@ -2,8 +2,8 @@
 \begin{abstract}
 A small classifier can narrow the label space before a large language model (LLM) classifies, but a label left out of the candidate set cannot be predicted.
 We ask how much the narrowing rule matters for the final prediction once prompt content, retrieval and mean set size are held fixed, and under which data conditions.
-On five English datasets with six open LLMs, we compare the class-conditional conformal sets of Conformal In-Context Learning (CICLe) with size-matched top-$k$ sets, under controlled and natural class imbalance. % PENDING: six datasets once MASSIVE is complete
+On five English datasets with six open LLMs, we compare the class-conditional conformal sets of Conformal In-Context Learning (CICLe) with size-matched top-$k$ sets under controlled and natural class imbalance. % PENDING: six datasets once MASSIVE is complete
 On balanced data the rules are interchangeable.
-Under a 100-fold skew of the labelled pool, top-$k$ sets cover the rarest class for at most 36\% of its instances and lose 3 to 7 macro-F1 points, and the LLM almost never recovers a label missing from the set.
-These losses exceed the gain of narrowing over few-shot prompting, 0.5 to 1.8 points on short texts, which grows when label names carry no meaning.
+Under a 100-fold skew of the labelled pool, top-$k$ sets cover the rarest class for at most 36\% of its instances and lose 4 to 7 macro-F1 points, consistently across models and seeds, and the LLM almost never recovers a label missing from the set.
+The gain of narrowing over few-shot prompting is smaller, under 2 points on short texts, and not consistent across models and seeds on every dataset.
 \end{abstract}

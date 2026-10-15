@@ -41,7 +41,7 @@ The reference setting is MiniLM, logistic regression and $\alpha = 0.05$, the ch
 \label{sec:experiments}
 
 Each experiment beyond the main grid isolates one variable.
-\emph{Narrowing rules}: the four alternative rules of Section~\ref{sec:rules} on every dataset and variant, $k \in \{1, 4\}$. Top-$m$ is matched to CICLe's mean set size. % PENDING: size-matched probability-mass and marginal rules
+\emph{Narrowing rules}: the four alternative rules of Section~\ref{sec:rules} on every dataset and variant, $k \in \{1, 4\}$. Top-$m$ and the size-matched probability-mass and marginal rules have CICLe's mean set size, and the unmatched rules are reported in the appendix. % PENDING: macro-F1 of the size-matched probability-mass and marginal rules
 \emph{Controlled imbalance}: on SST-5 and Yahoo Answers the training sample is replaced by a long-tailed one whose class sizes decay geometrically to a ratio of 10 or 100, with at least five examples per class and a class order drawn from the seed, while the test sample is unchanged (Appendix~\ref{app:data}).
 \emph{Label renaming}: on all six datasets every class name is replaced by a nonsense word, the same for all seeds, leaving texts, splits and classifier unchanged.
 \emph{No examples}: CICLe with $k = 0$ shows the candidate list alone.
@@ -63,8 +63,8 @@ The recipe is not tuned further, so the encoder scores are a floor. All baseline
 \subsection{Metrics and Statistics}
 \label{sec:metrics}
 
-We report macro-F1 over the classes present in the test sample (accuracy is in Appendix~\ref{app:full}), the invalid-output rate, the expected input tokens per test instance with no-call instances counted as zero, and the overall, class-averaged and lowest per-class coverage and mean size of the candidate sets. % PENDING: expected tokens per instance and class-averaged coverage in the tables
+We report macro-F1 over the classes present in the test sample (accuracy is in Appendix~\ref{app:full}), the invalid-output rate, the expected input tokens per test instance with no-call instances counted as zero, and the overall, class-averaged and lowest per-class coverage and mean size of the candidate sets.
 Every comparison between two methods is paired, with both sharing the model, seed, $k$ and retrieval variant, hence the same test instances, pool and conformal sets.
 We report the mean paired macro-F1 difference over all such cells with a 95\% interval from a bootstrap with 5,000 resamples of the test instances \citep{koehn2004statistical,dror2018hitchhiker}, with the same resample applied to both methods in every cell, so the interval reflects test-sample noise and not the spread over hyperparameters.
 The number of pairs is 72 for the main grid (six models, three seeds, four values of $k$), 36 where $k \in \{1, 4\}$, 12 or 6 per model and 12 for the seed-42 checks.
-For the main deltas we also report a hierarchical bootstrap that resamples models, seeds and instances, and the number of (model, seed) cells with a positive sign. A difference is significant when its interval excludes zero, printed in bold in the tables, otherwise marked n.s. % PENDING: hierarchical intervals and sign counts
+For the main differences we also report a hierarchical bootstrap that resamples models, seeds and instances, and the number of (model, seed) cells with a positive sign (Table~\ref{tab:hier}). A difference is significant when its interval excludes zero, printed in bold in the tables, otherwise marked n.s.

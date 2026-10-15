@@ -28,6 +28,7 @@ To separate narrowing as such from conformal calibration, we build candidate set
 \emph{Top-$m$} keeps the $m$ most probable classes, where $m$ is the mean CP set size on that dataset and seed, so the budget matches but the size does not adapt to the input.
 \emph{Probability mass} keeps the most probable classes until their predicted probabilities sum to $1-\alpha$, which adapts but trusts the uncalibrated confidence.
 \emph{Oracle} contains the gold label plus $m-1$ random classes and bounds any rule at that size.
+The size-matched versions of probability mass and marginal CP set their threshold so that the mean set size on the test sample equals CICLe's, without using test labels.
 All rules share the prompt, the retrieval and the singleton and empty-set behaviour.
 
 \paragraph{Fixed and Per-Class retrieval.}
