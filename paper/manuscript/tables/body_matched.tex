@@ -1,0 +1,56 @@
+% Size-matched narrowing. Top-m, probability mass and marginal CP with their threshold set so the mean test-set size equals CICLe's (labels unused). Set statistics from the candidate sets of every seed with results (3; 5 for Yahoo/SST once seeds 45/46 land), worst class = min over classes of the class coverage, averaged over seeds. Delta F1: paired over 6 models x seeds at Per-Class k=4 (Ohsumed Fixed k=4), 95% bootstrap CI over test instances; bold when the interval excludes zero.
+\begin{tabular}{llrrrc}
+\toprule
+Data & Rule & size & cov.\ (\%) & worst class (\%) & $\Delta$ F1 (CICLe $-$ rule) \\
+\midrule
+Yahoo 1$\times$ & CICLe & 5.67 & 95.0 & 90.6 & -- \\
+ & Top-$m$ & 5.67 & 93.7 & 87.1 & \textbf{+0.56 [+0.10, +1.02]} \\
+ & Prob. mass & 5.67 & 94.7 & 88.8 & [pending] \\
+ & Marginal CP & 5.67 & 95.7 & 90.6 & [pending] \\
+\addlinespace
+Yahoo 10$\times$ & CICLe & 6.21 & 94.9 & 84.1 & -- \\
+ & Top-$m$ & 6.00 & 90.5 & 65.0 & \textbf{+1.44 [+0.82, +2.06]} \\
+ & Prob. mass & 6.21 & 93.0 & 76.8 & [pending] \\
+ & Marginal CP & 6.21 & 93.2 & 79.3 & [pending] \\
+\addlinespace
+Yahoo 100$\times$ & CICLe & 7.73 & 96.7 & 92.2 & -- \\
+ & Top-$m$ & 7.67 & 81.6 & 8.8 & \textbf{+6.93 [+6.18, +7.73]} \\
+ & Prob. mass & 7.73 & 87.3 & 25.5 & [pending] \\
+ & Marginal CP & 7.73 & 89.3 & 38.2 & [pending] \\
+\addlinespace
+SST-5 1$\times$ & CICLe & 3.86 & 95.4 & 92.3 & -- \\
+ & Top-$m$ & 4.00 & 95.5 & 84.7 & +0.35 [-0.47, +1.18] \\
+ & Prob. mass & 3.86 & 95.0 & 83.6 & [pending] \\
+ & Marginal CP & 3.86 & 95.5 & 87.2 & [pending] \\
+\addlinespace
+SST-5 10$\times$ & CICLe & 4.04 & 96.5 & 91.5 & -- \\
+ & Top-$m$ & 4.00 & 89.4 & 56.6 & \textbf{+2.44 [+1.42, +3.45]} \\
+ & Prob. mass & 4.04 & 91.4 & 66.3 & [pending] \\
+ & Marginal CP & 4.04 & 91.5 & 67.5 & [pending] \\
+\addlinespace
+SST-5 100$\times$ & CICLe & 4.35 & 96.0 & 89.1 & -- \\
+ & Top-$m$ & 4.33 & 88.4 & 36.1 & \textbf{+3.91 [+3.01, +4.77]} \\
+ & Prob. mass & 4.35 & 87.2 & 39.0 & [pending] \\
+ & Marginal CP & 4.35 & 87.6 & 42.7 & [pending] \\
+\addlinespace
+SemEval & CICLe & 17.12 & 94.4 & 79.9 & -- \\
+ & Top-$m$ & 17.00 & 97.1 & 77.7 & +0.02 [-0.36, +0.42] \\
+ & Prob. mass & 17.12 & 97.4 & 80.8 & [pending] \\
+ & Marginal CP & 17.12 & 97.3 & 80.8 & [pending] \\
+\addlinespace
+GoEmo & CICLe & 22.10 & 95.4 & 73.9 & -- \\
+ & Top-$m$ & 22.00 & 98.8 & 0.0 & \textbf{+2.99 [+1.67, +3.88]} \\
+ & Prob. mass & 22.10 & 99.0 & 0.0 & [pending] \\
+ & Marginal CP & 22.10 & 99.3 & 0.0 & [pending] \\
+\addlinespace
+Ohsumed & CICLe & 12.27 & 96.4 & 84.9 & -- \\
+ & Top-$m$ & 12.00 & 98.8 & 0.0 & \textbf{+1.37 [+0.47, +2.24]} \\
+ & Prob. mass & 12.27 & 99.2 & 0.0 & [pending] \\
+ & Marginal CP & 12.27 & 99.2 & 33.3 & [pending] \\
+\addlinespace
+MASSIVE & CICLe & 39.67 & 94.8 & 22.7 & -- \\
+ & Top-$m$ & 39.67 & 99.4 & 0.0 & [pending] \\
+ & Prob. mass & 39.67 & 99.8 & 0.0 & [pending] \\
+ & Marginal CP & 39.67 & 99.8 & 0.0 & [pending] \\
+\bottomrule
+\end{tabular}

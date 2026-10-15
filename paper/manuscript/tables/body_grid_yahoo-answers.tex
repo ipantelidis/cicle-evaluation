@@ -1,10 +1,10 @@
 % Table B: yahoo-answers, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
 \begin{tabular}{llrrrrrrr}
 \toprule
-Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 MiniLM + LR & -- & -- & 3 & 65.4 & 66.0 & 0.0 & 0.0 & 0 \\
-RoBERTa-base (fine-tuned) & -- & -- & 6 & 63.2 & 63.6 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 6 & 63.5 & 64.0 & 0.0 & 0.0 & 0 \\
 \midrule
 Zero-shot & -- & -- & 18 & 55.3 & 54.6 & 6.1 & 0.0 & 221 \\
 \midrule

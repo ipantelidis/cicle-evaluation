@@ -1,0 +1,13 @@
+% Expected input tokens per test instance (instances answered without an LLM call count 0), mean over 6 models x 3 seeds, k=4 (dagger: Ohsumed Per-Class k=1). no call: share of instances CICLe answers without the LLM (Per-Class). saved: 1 - CICLe / few-shot on the same basis.
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Data & ZS & FS F & CICLe F & FS PC & CICLe PC & no call (\%) & saved F & saved PC \\
+\midrule
+Yahoo & 221 & 455 & 432 & 2,166 & 1,331 & 3.4 & 5\% & 39\% \\
+SST-5 & 184 & 298 & 295 & 746 & 615 & 0.0 & 1\% & 18\% \\
+SemEval & 236 & 338 & 328 & 2,209 & 1,911 & 0.0 & 3\% & 14\% \\
+GoEmo & 220 & 305 & 293 & 2,422 & 1,942 & 0.0 & 4\% & 20\% \\
+Ohsumed & 579 & 1,826 & 1,756 & 7,518$^{\dagger}$ & 4,159$^{\dagger}$ & 0.0 & 4\% & 45\% \\
+MASSIVE & -- & -- & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}

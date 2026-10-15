@@ -1,10 +1,10 @@
 % Table B: go-emotions, six small models, reference setting (MiniLM, LR, alpha 0.05); means over runs. A row with fewer than 18 runs (3 for the supervised rows) is an incomplete, still-running configuration.
 \begin{tabular}{llrrrrrrr}
 \toprule
-Method & Retrieval & $k$ & runs & macro-F1 & acc. & invalid (\%) & shots & tokens \\
+Method & Retr. & $k$ & runs & F1 & acc. & inv.\ (\%) & shots & tokens \\
 \midrule
 MiniLM + LR & -- & -- & 3 & 11.2 & 43.7 & 0.0 & 0.0 & 0 \\
-RoBERTa-base (fine-tuned) & -- & -- & 6 & 32.2 & 50.9 & 0.0 & 0.0 & 0 \\
+RoBERTa-base & -- & -- & 6 & 35.6 & 54.5 & 0.0 & 0.0 & 0 \\
 \midrule
 Zero-shot & -- & -- & 18 & 24.9 & 24.2 & 3.0 & 0.0 & 220 \\
 \midrule
